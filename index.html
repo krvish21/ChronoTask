@@ -1,1537 +1,1559 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-   <meta name="theme-color" content="#0B0F19">
-   <title>ChronoTask Pro</title>
-   <script src="https://cdn.tailwindcss.com"></script>
-   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-   <script>
-       tailwind.config = {
-           theme: {
-               extend: {
-                   fontFamily: {
-                       sans: ['Inter', 'sans-serif'],
-                       mono: ['JetBrains Mono', 'monospace'],
-                   },
-                   colors: {
-                       gray: { 850: '#1f2937', 900: '#111827', 950: '#0B0F19' },
-                       accent: { blue: '#3b82f6', purple: '#8b5cf6', cyan: '#06b6d4', pink: '#ec4899', success: '#10b981', orange: '#f97316', red: '#ef4444' }
-                   }
-               }
-           }
-       }
-   </script>
-   <style>
-       * { -webkit-tap-highlight-color: transparent; }
-       body { 
-           overscroll-behavior-y: none; 
-           touch-action: pan-y; 
-           padding-bottom: env(safe-area-inset-bottom);
-       }
-       ::-webkit-scrollbar { width: 0; height: 0; }
-       
-       .safe-top { padding-top: env(safe-area-inset-top); }
-       
-       .glass {
-           background: rgba(17, 24, 39, 0.95);
-           backdrop-filter: blur(20px);
-           -webkit-backdrop-filter: blur(20px);
-       }
-       
-       .progress-gradient {
-           background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #ef4444);
-           background-size: 300% 300%;
-           animation: gradientMove 5s ease infinite;
-           box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-       }
-       
-       @keyframes gradientMove {
-           0% { background-position: 0% 50%; }
-           50% { background-position: 100% 50%; }
-           100% { background-position: 0% 50%; }
-       }
-       
-       .slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-       @keyframes slideUp {
-           from { transform: translateY(100%); }
-           to { transform: translateY(0); }
-       }
-       
-       .pulse-ring {
-           animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-       }
-       @keyframes pulseRing {
-           0% { transform: scale(0.8); opacity: 0.8; }
-           100% { transform: scale(2); opacity: 0; }
-       }
-       
-       .task-card { transition: all 0.2s ease; }
-       .task-card:active { transform: scale(0.98); }
-       
-       .modal-sheet {
-           transform: translateY(100%);
-           transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-       }
-       .modal-sheet.open { transform: translateY(0); }
-       
-       .ongoing-pulse {
-           animation: ongoingPulse 2s ease-in-out infinite;
-       }
-       @keyframes ongoingPulse {
-           0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
-           50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6); }
-       }
-       
-       .stat-card {
-           background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
-           border: 1px solid rgba(255, 255, 255, 0.05);
-       }
-       
-       .toggle-checkbox:checked {
-           right: 0;
-           border-color: #8b5cf6;
-       }
-       .toggle-checkbox:checked + .toggle-label {
-           background-color: #8b5cf6;
-       }
-       
-       .calendar-day {
-           aspect-ratio: 1;
-           display: flex;
-           flex-direction: column;
-           align-items: center;
-           justify-content: center;
-           border-radius: 12px;
-           position: relative;
-           transition: all 0.15s ease;
-       }
-       .calendar-day:active { transform: scale(0.9); background: rgba(59, 130, 246, 0.2); }
-       
-       .fab {
-           box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
-       }
-       
-       .nav-indicator {
-           position: absolute;
-           bottom: 0;
-           height: 3px;
-           background: #8b5cf6;
-           border-radius: 3px 3px 0 0;
-           transition: all 0.3s ease;
-       }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0B0F19">
+    <title>ChronoTask Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        gray: { 850: '#1f2937', 900: '#111827', 950: '#0B0F19' },
+                        accent: { blue: '#3b82f6', purple: '#8b5cf6', cyan: '#06b6d4', pink: '#ec4899', success: '#10b981', orange: '#f97316', red: '#ef4444' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { 
+            overscroll-behavior-y: none; 
+            touch-action: pan-y; 
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        ::-webkit-scrollbar { width: 0; height: 0; }
+        
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        
+        .glass {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .progress-gradient {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #ef4444);
+            background-size: 300% 300%;
+            animation: gradientMove 5s ease infinite;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .pulse-ring {
+            animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        .task-card { transition: all 0.2s ease; }
+        .task-card:active { transform: scale(0.98); }
+        
+        .modal-sheet {
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-sheet.open { transform: translateY(0); }
+        
+        .ongoing-pulse {
+            animation: ongoingPulse 2s ease-in-out infinite;
+        }
+        @keyframes ongoingPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6); }
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #8b5cf6;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #8b5cf6;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+        .calendar-day:active { transform: scale(0.9); background: rgba(59, 130, 246, 0.2); }
+        
+        .fab {
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        .nav-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 3px;
+            background: #8b5cf6;
+            border-radius: 3px 3px 0 0;
+            transition: all 0.3s ease;
+        }
 
-       /* Timeline styles */
-       .timeline-hour {
-           position: relative;
-           min-height: 60px;
-           border-bottom: 1px solid rgba(55, 65, 81, 0.5);
-       }
-       
-       .timeline-task {
-           position: absolute;
-           left: 60px;
-           right: 8px;
-           border-radius: 8px;
-           padding: 8px;
-           overflow: hidden;
-           z-index: 10;
-       }
+        /* Timeline styles */
+        .timeline-hour {
+            position: relative;
+            min-height: 60px;
+            border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+        }
+        
+        .timeline-task {
+            position: absolute;
+            left: 60px;
+            right: 8px;
+            border-radius: 8px;
+            padding: 8px;
+            overflow: hidden;
+            z-index: 10;
+        }
 
-       /* Notification styles */
-       .notification-toast {
-           animation: notifySlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-       }
-       @keyframes notifySlide {
-           from { transform: translateX(100%); opacity: 0; }
-           to { transform: translateX(0); opacity: 1; }
-       }
-       
-       .urgent-pulse {
-           animation: urgentPulse 1s ease-in-out infinite;
-       }
-       @keyframes urgentPulse {
-           0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-           50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-       }
+        /* Notification styles */
+        .notification-toast {
+            animation: notifySlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes notifySlide {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .urgent-pulse {
+            animation: urgentPulse 1s ease-in-out infinite;
+        }
+        @keyframes urgentPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
 
-       /* Progress bar emphasis */
-       .progress-container {
-           box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
-       }
-       
-       .time-display {
-           text-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
-       }
-   </style>
+        /* Progress bar emphasis */
+        .progress-container {
+            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+        }
+        
+        .time-display {
+            text-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+        }
+    </style>
 </head>
 <body class="bg-gray-950 text-gray-100 font-sans h-screen overflow-hidden">
-   <!-- Enhanced Progress Bar with Time Display -->
-   <div class="fixed top-0 left-0 w-full z-[9999] progress-container">
-       <div class="h-2 bg-gray-900 relative">
-           <div id="daily-progress" class="h-full progress-gradient w-0 transition-all duration-1000 relative">
-               <div class="absolute right-0 top-0 bottom-0 w-2 bg-white/50 animate-pulse"></div>
-           </div>
-       </div>
-       <div class="absolute top-2 right-3 text-[10px] font-mono text-accent-purple time-display bg-gray-900/80 px-2 py-0.5 rounded-full border border-accent-purple/30">
-           <span id="day-progress-text">0%</span> of day complete
-       </div>
-   </div>
-
-   <!-- Notification Container -->
-   <div id="notification-container" class="fixed top-6 left-2 right-2 z-[10002] space-y-2 pointer-events-none"></div>
-
-   <!-- Main Container -->
-   <div class="h-full flex flex-col safe-top pt-2">
-       
-       <!-- Header -->
-       <header class="px-4 py-2 flex items-center justify-between glass sticky top-2 z-50">
-           <div>
-               <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-                   ChronoTask
-               </h1>
-               <p class="text-xs text-gray-500 font-mono mt-0.5" id="current-date">Loading...</p>
-           </div>
-           <div class="flex gap-2">
-               <button onclick="showDayView()" class="w-9 h-9 rounded-xl bg-gray-800 flex items-center justify-center active:scale-95 transition">
-                   <i class="fas fa-clock text-accent-cyan text-sm"></i>
-               </button>
-               <button onclick="showCalendar()" class="w-9 h-9 rounded-xl bg-gray-800 flex items-center justify-center active:scale-95 transition">
-                   <i class="fas fa-calendar-alt text-gray-400 text-sm"></i>
-               </button>
-           </div>
-       </header>
-
-       <!-- Content Area -->
-       <main class="flex-1 overflow-y-auto" id="main-content">
-           
-           <!-- TASKS TAB -->
-           <div id="tab-tasks" class="tab-content px-4 pt-3">
-               <!-- Ongoing Task Section -->
-               <div id="ongoing-section" class="mb-4 hidden">
-                   <div class="ongoing-pulse rounded-2xl bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-accent-cyan/50 p-4 relative overflow-hidden">
-                       <div class="absolute inset-0 bg-accent-cyan/5"></div>
-                       <div class="absolute -right-10 -top-10 w-40 h-40 bg-accent-cyan/20 rounded-full blur-3xl"></div>
-                       
-                       <div class="relative">
-                           <div class="flex items-center justify-between mb-2">
-                               <div class="flex items-center gap-2">
-                                   <div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
-                                   <span class="text-xs font-bold text-accent-cyan uppercase tracking-wider">Currently Working On</span>
-                               </div>
-                               <button onclick="pauseOngoing()" class="w-7 h-7 rounded-full bg-gray-800/80 flex items-center justify-center text-gray-400 active:scale-95">
-                                   <i class="fas fa-pause text-xs"></i>
-                               </button>
-                           </div>
-                           
-                           <h2 class="text-lg font-bold text-white mb-2 leading-tight" id="ongoing-title">Task Name</h2>
-                           
-                           <div id="ongoing-preview" class="mb-3 space-y-1">
-                               <div id="ongoing-refs-preview" class="hidden flex items-center gap-2 text-xs text-gray-400">
-                                   <i class="fas fa-link text-accent-cyan"></i>
-                                   <span id="ongoing-refs-count">0 references</span>
-                               </div>
-                               <div id="ongoing-notes-preview" class="hidden text-xs text-gray-400 line-clamp-2 italic">
-                                   "<span id="ongoing-notes-text"></span>"
-                               </div>
-                           </div>
-                           
-                           <div class="flex items-center gap-3">
-                               <div class="flex-1">
-                                   <div class="flex justify-between text-xs text-gray-400 mb-1">
-                                       <span>Time Remaining</span>
-                                       <span id="ongoing-time" class="font-mono text-accent-cyan font-bold">00:00:00</span>
-                                   </div>
-                                   <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
-                                       <div id="ongoing-progress" class="h-full bg-gradient-to-r from-accent-cyan to-blue-500 transition-all duration-1000" style="width: 100%"></div>
-                                   </div>
-                               </div>
-                               <div class="flex gap-2">
-                                   <button onclick="viewOngoingDetails()" class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center active:scale-95 transition">
-                                       <i class="fas fa-ellipsis-v text-xs"></i>
-                                   </button>
-                                   <button onclick="completeOngoing()" class="w-10 h-10 rounded-full bg-accent-success text-gray-900 flex items-center justify-center shadow-lg shadow-green-500/30 active:scale-95 transition">
-                                       <i class="fas fa-check text-sm"></i>
-                                   </button>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-
-               <!-- Upcoming Alert Section -->
-               <div id="upcoming-alert" class="mb-4 hidden">
-                   <div class="rounded-xl bg-gradient-to-r from-accent-orange/20 to-red-500/20 border border-accent-orange/50 p-3 flex items-center gap-3">
-                       <div class="w-10 h-10 rounded-full bg-accent-orange/20 flex items-center justify-center urgent-pulse">
-                           <i class="fas fa-bell text-accent-orange"></i>
-                       </div>
-                       <div class="flex-1">
-                           <h3 class="text-sm font-bold text-accent-orange">Upcoming: <span id="upcoming-task-name">Task Name</span></h3>
-                           <p class="text-xs text-gray-400">Starts in <span id="upcoming-time" class="font-mono text-white">5:00</span></p>
-                       </div>
-                       <button onclick="startUpcomingTask()" class="px-3 py-1.5 rounded-lg bg-accent-orange text-gray-900 text-xs font-bold active:scale-95">
-                           START NOW
-                       </button>
-                   </div>
-               </div>
-
-               <!-- Timer Running Out Alert -->
-               <div id="timer-alert" class="mb-4 hidden">
-                   <div class="rounded-xl bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-500/50 p-3 flex items-center gap-3">
-                       <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center urgent-pulse">
-                           <i class="fas fa-hourglass-end text-red-400"></i>
-                       </div>
-                       <div class="flex-1">
-                           <h3 class="text-sm font-bold text-red-400">Time Running Out!</h3>
-                           <p class="text-xs text-gray-400"><span id="timer-task-name">Task</span> ends in <span id="timer-remaining" class="font-mono text-white font-bold">2:00</span></p>
-                       </div>
-                   </div>
-               </div>
-
-               <!-- Stats Row -->
-               <div class="grid grid-cols-4 gap-2 mb-4">
-                   <div class="stat-card rounded-xl p-2 text-center">
-                       <div class="text-lg font-bold text-white" id="stat-pending">0</div>
-                       <div class="text-[10px] text-gray-500">Pending</div>
-                   </div>
-                   <div class="stat-card rounded-xl p-2 text-center">
-                       <div class="text-lg font-bold text-accent-purple" id="stat-ongoing-count">0</div>
-                       <div class="text-[10px] text-gray-500">Ongoing</div>
-                   </div>
-                   <div class="stat-card rounded-xl p-2 text-center">
-                       <div class="text-lg font-bold text-accent-success" id="stat-done">0</div>
-                       <div class="text-[10px] text-gray-500">Done</div>
-                   </div>
-                   <div class="stat-card rounded-xl p-2 text-center">
-                       <div class="text-lg font-bold text-accent-orange" id="stat-upcoming">0</div>
-                       <div class="text-[10px] text-gray-500">Next 1h</div>
-                   </div>
-               </div>
-
-               <!-- Filter Tabs -->
-               <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-3">
-                   <button onclick="setFilter('all')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-accent-purple text-white whitespace-nowrap transition" data-filter="all">
-                       All
-                   </button>
-                   <button onclick="setFilter('ongoing')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="ongoing">
-                       Ongoing
-                   </button>
-                   <button onclick="setFilter('today')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="today">
-                       Today
-                   </button>
-                   <button onclick="setFilter('upcoming')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="upcoming">
-                       Upcoming
-                   </button>
-               </div>
-
-               <!-- Task List -->
-               <div class="space-y-2 pb-4" id="task-list"></div>
-               
-               <!-- Empty State -->
-               <div id="empty-state" class="hidden flex-col items-center justify-center py-12 text-gray-600">
-                   <div class="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-3">
-                       <i class="fas fa-clipboard-check text-2xl text-gray-600"></i>
-                   </div>
-                   <p class="text-sm">No tasks found</p>
-                   <button onclick="openAddModal()" class="mt-3 text-accent-purple text-sm font-medium">Create one</button>
-               </div>
-           </div>
-
-           <!-- DAY VIEW TAB -->
-           <div id="tab-day" class="tab-content hidden px-4 pt-3">
-               <div class="flex items-center justify-between mb-4">
-                   <h2 class="text-xl font-bold">Day Map</h2>
-                   <div class="text-xs text-gray-500 font-mono" id="day-view-date">Today</div>
-               </div>
-               
-               <!-- Timeline -->
-               <div class="relative bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden">
-                   <!-- Current time indicator -->
-                   <div id="current-time-line" class="absolute left-0 right-0 border-t-2 border-accent-red z-20 pointer-events-none" style="top: 0;">
-                       <div class="absolute -top-1.5 left-0 w-3 h-3 rounded-full bg-accent-red"></div>
-                       <span class="absolute -top-3 left-4 text-[10px] text-accent-red font-mono bg-gray-900 px-1">NOW</span>
-                   </div>
-                   
-                   <!-- Hour labels and slots -->
-                   <div id="day-timeline" class="relative">
-                       <!-- Generated by JS -->
-                   </div>
-               </div>
-               
-               <div class="mt-4 text-center">
-                   <button onclick="switchTab('tasks')" class="text-sm text-gray-500 hover:text-white transition">
-                       <i class="fas fa-arrow-left mr-1"></i> Back to list
-                   </button>
-               </div>
-               
-               <div class="h-20"></div>
-           </div>
-
-           <!-- STATS TAB -->
-           <div id="tab-stats" class="tab-content hidden px-4 pt-3">
-               <h2 class="text-xl font-bold mb-4">Analytics</h2>
-               
-               <div class="stat-card rounded-2xl p-4 mb-3">
-                   <h3 class="text-sm font-medium text-gray-400 mb-3">Weekly Completion</h3>
-                   <div class="flex items-end justify-between h-24 gap-1" id="weekly-chart"></div>
-                   <div class="flex justify-between mt-2 text-xs text-gray-500">
-                       <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                   </div>
-               </div>
-
-               <div class="stat-card rounded-2xl p-4 mb-3 flex items-center justify-between">
-                   <div>
-                       <h3 class="text-sm font-medium text-gray-400">Productivity Score</h3>
-                       <p class="text-2xl font-bold text-accent-purple mt-1" id="productivity-score">85%</p>
-                       <p class="text-xs text-gray-500 mt-0.5">Based on completion rate</p>
-                   </div>
-                   <div class="w-16 h-16 rounded-full border-4 border-accent-purple/30 flex items-center justify-center relative">
-                       <div class="absolute inset-0 rounded-full border-4 border-accent-purple border-t-transparent rotate-45"></div>
-                       <i class="fas fa-chart-line text-xl text-accent-purple"></i>
-                   </div>
-               </div>
-
-               <div class="stat-card rounded-2xl p-4">
-                   <h3 class="text-sm font-medium text-gray-400 mb-3">Priority Distribution</h3>
-                   <div class="space-y-2" id="priority-stats"></div>
-               </div>
-
-               <div class="h-20"></div>
-           </div>
-
-           <!-- SETTINGS TAB -->
-           <div id="tab-settings" class="tab-content hidden px-4 pt-3">
-               <h2 class="text-xl font-bold mb-4">Settings</h2>
-               
-               <div class="space-y-3">
-                   <div class="stat-card rounded-xl p-3 flex items-center justify-between">
-                       <div class="flex items-center gap-3">
-                           <div class="w-9 h-9 rounded-full bg-accent-purple/20 flex items-center justify-center text-accent-purple">
-                               <i class="fas fa-bell text-sm"></i>
-                           </div>
-                           <div>
-                               <h3 class="font-medium text-sm">Notifications</h3>
-                               <p class="text-xs text-gray-500">Task reminders & alerts</p>
-                           </div>
-                       </div>
-                       <label class="relative inline-block w-10 h-5 align-middle select-none">
-                           <input type="checkbox" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-0 border-accent-purple"/>
-                           <label class="toggle-label block overflow-hidden h-5 rounded-full bg-accent-purple cursor-pointer"></label>
-                       </label>
-                   </div>
-
-                   <div class="stat-card rounded-xl p-3 flex items-center justify-between">
-                       <div class="flex items-center gap-3">
-                           <div class="w-9 h-9 rounded-full bg-accent-blue/20 flex items-center justify-center text-accent-blue">
-                               <i class="fas fa-volume-up text-sm"></i>
-                           </div>
-                           <div>
-                               <h3 class="font-medium text-sm">Sound Effects</h3>
-                               <p class="text-xs text-gray-500">Completion sounds</p>
-                           </div>
-                       </div>
-                       <label class="relative inline-block w-10 h-5 align-middle select-none">
-                           <input type="checkbox" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-0 border-accent-purple"/>
-                           <label class="toggle-label block overflow-hidden h-5 rounded-full bg-accent-purple cursor-pointer"></label>
-                       </label>
-                   </div>
-
-                   <div class="stat-card rounded-xl p-4">
-                       <h3 class="font-medium text-sm mb-3">Data Management</h3>
-                       <div class="space-y-2">
-                           <button onclick="exportData()" class="w-full py-3 rounded-lg bg-gray-800 text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition">
-                               <i class="fas fa-download"></i> Export Tasks
-                           </button>
-                           <button onclick="clearAllData()" class="w-full py-3 rounded-lg bg-red-500/10 text-red-400 text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition">
-                               <i class="fas fa-trash"></i> Clear All Data
-                           </button>
-                       </div>
-                   </div>
-
-                   <div class="text-center text-xs text-gray-600 mt-6 pb-4">
-                       <p>ChronoTask Pro v2.0</p>
-                       <p class="mt-1">Built for productivity</p>
-                   </div>
-               </div>
-
-               <div class="h-20"></div>
-           </div>
-       </main>
-
-       <!-- Fixed Bottom Navigation - 5 items -->
-       <nav id="bottom-nav" class="glass border-t border-gray-800 px-2 pt-2 pb-3 flex items-center justify-around fixed bottom-0 left-0 right-0 z-[9999]">
-           <div class="nav-indicator" id="nav-indicator" style="width: 16%; left: 2%;"></div>
-           
-           <button onclick="switchTab('tasks')" class="nav-btn flex flex-col items-center gap-1 py-1 text-accent-purple w-14" data-tab="tasks">
-               <i class="fas fa-tasks text-base"></i>
-               <span class="text-[9px]">Tasks</span>
-           </button>
-           
-           <button onclick="switchTab('day')" class="nav-btn flex flex-col items-center gap-1 py-1 text-gray-500 w-14" data-tab="day">
-               <i class="fas fa-clock text-base"></i>
-               <span class="text-[9px]">Day</span>
-           </button>
-           
-           <button onclick="showCalendar()" class="nav-btn flex flex-col items-center gap-1 py-1 text-gray-500 w-14" data-tab="calendar">
-               <i class="fas fa-calendar text-base"></i>
-               <span class="text-[9px]">Calendar</span>
-           </button>
-           
-           <button onclick="switchTab('stats')" class="nav-btn flex flex-col items-center gap-1 py-1 text-gray-500 w-14" data-tab="stats">
-               <i class="fas fa-chart-pie text-base"></i>
-               <span class="text-[9px]">Stats</span>
-           </button>
-           
-           <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 py-1 text-gray-500 w-14" data-tab="settings">
-               <i class="fas fa-cog text-base"></i>
-               <span class="text-[9px]">Settings</span>
-           </button>
-       </nav>
-
-       <!-- Floating Action Button -->
-       <button onclick="openAddModal()" class="fab fixed bottom-20 left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full bg-gradient-to-r from-accent-purple to-accent-blue text-white flex items-center justify-center text-lg z-[9999] active:scale-90 transition shadow-lg">
-           <i class="fas fa-plus"></i>
-       </button>
-   </div>
-
-   <!-- Add Task Modal -->
-   <div id="add-modal" class="fixed inset-0 z-[10000] hidden">
-       <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAddModal()"></div>
-       <div class="modal-sheet absolute bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl border-t border-gray-700 max-h-[85vh] overflow-y-auto">
-           <div class="sticky top-0 bg-gray-900 pt-2 pb-3 px-4 border-b border-gray-800 z-10">
-               <div class="w-10 h-1 bg-gray-700 rounded-full mx-auto mb-3"></div>
-               <div class="flex justify-between items-center">
-                   <h2 class="text-base font-bold">New Task</h2>
-                   <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                       <i class="fas fa-times text-gray-400 text-sm"></i>
-                   </button>
-               </div>
-           </div>
-           
-           <form id="add-task-form" onsubmit="handleAddTask(event)" class="p-4 space-y-3">
-               <div>
-                   <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Task Name</label>
-                   <input type="text" id="input-title" required placeholder="What needs to be done?" 
-                       class="w-full bg-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">
-               </div>
-
-               <div class="grid grid-cols-2 gap-2">
-                   <div>
-                       <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Date</label>
-                       <input type="date" id="input-date" required
-                           class="w-full bg-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-purple">
-                   </div>
-                   <div>
-                       <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Time</label>
-                       <input type="time" id="input-time" required
-                           class="w-full bg-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-purple">
-                   </div>
-               </div>
-
-               <div>
-                   <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Duration</label>
-                   <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                       <button type="button" onclick="setDuration(15)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-transparent" data-dur="15">15m</button>
-                       <button type="button" onclick="setDuration(30)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-transparent" data-dur="30">30m</button>
-                       <button type="button" onclick="setDuration(60)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-accent-purple text-accent-purple" data-dur="60">1h</button>
-                       <button type="button" onclick="setDuration(120)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-transparent" data-dur="120">2h</button>
-                   </div>
-                   <input type="hidden" id="input-duration" value="60">
-               </div>
-
-               <div>
-                   <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Priority</label>
-                   <div class="flex gap-2">
-                       <label class="flex-1">
-                           <input type="radio" name="priority" value="low" class="peer hidden">
-                           <div class="py-2 rounded-lg bg-gray-800 text-center text-xs text-gray-400 peer-checked:bg-blue-500/20 peer-checked:text-blue-400 peer-checked:border-blue-500 border border-transparent transition">Low</div>
-                       </label>
-                       <label class="flex-1">
-                           <input type="radio" name="priority" value="medium" class="peer hidden" checked>
-                           <div class="py-2 rounded-lg bg-gray-800 text-center text-xs text-gray-400 peer-checked:bg-yellow-500/20 peer-checked:text-yellow-400 peer-checked:border-yellow-500 border border-transparent transition">Medium</div>
-                       </label>
-                       <label class="flex-1">
-                           <input type="radio" name="priority" value="high" class="peer hidden">
-                           <div class="py-2 rounded-lg bg-gray-800 text-center text-xs text-gray-400 peer-checked:bg-red-500/20 peer-checked:text-red-400 peer-checked:border-red-500 border border-transparent transition">High</div>
-                       </label>
-                   </div>
-               </div>
-
-               <div class="flex items-center justify-between p-2 rounded-lg bg-gray-800/50">
-                   <div class="flex items-center gap-2">
-                       <div class="w-8 h-8 rounded-full bg-accent-cyan/20 flex items-center justify-center text-accent-cyan">
-                           <i class="fas fa-play text-xs"></i>
-                       </div>
-                       <div>
-                           <h3 class="font-medium text-xs">Start Immediately</h3>
-                           <p class="text-xs text-gray-500">Set as ongoing task</p>
-                       </div>
-                   </div>
-                   <label class="relative inline-block w-10 h-5 align-middle select-none">
-                       <input type="checkbox" id="input-start-now" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0 border-gray-600"/>
-                       <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-700 cursor-pointer transition-colors duration-300"></label>
-                   </label>
-               </div>
-
-               <div>
-                   <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">References (URLs)</label>
-                   <div id="refs-container" class="space-y-1">
-                       <input type="url" placeholder="https://..." class="ref-input w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">
-                   </div>
-                   <button type="button" onclick="addRefInput()" class="mt-1 text-xs text-accent-purple font-medium flex items-center gap-1">
-                       <i class="fas fa-plus"></i> Add link
-                   </button>
-               </div>
-
-               <div>
-                   <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Notes</label>
-                   <textarea id="input-notes" rows="2" placeholder="Add any details..." 
-                       class="w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple resize-none"></textarea>
-               </div>
-
-               <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-accent-purple to-accent-blue text-white font-semibold text-sm shadow-lg shadow-purple-500/25 active:scale-95 transition mt-2">
-                   Create Task
-               </button>
-           </form>
-       </div>
-   </div>
-
-   <!-- Task Details Modal -->
-   <div id="details-modal" class="fixed inset-0 z-[10000] hidden">
-       <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" onclick="closeDetailsModal()"></div>
-       <div class="absolute inset-x-0 top-0 bottom-0 bg-gray-900 overflow-y-auto">
-           <div class="sticky top-0 bg-gray-900/95 backdrop-blur border-b border-gray-800 px-4 py-3 flex items-center justify-between z-10">
-               <button onclick="closeDetailsModal()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                   <i class="fas fa-arrow-left text-sm"></i>
-               </button>
-               <h2 class="text-sm font-bold">Task Details</h2>
-               <button onclick="deleteCurrentTask()" class="w-8 h-8 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center">
-                   <i class="fas fa-trash text-sm"></i>
-               </button>
-           </div>
-           
-           <div class="p-4" id="details-content"></div>
-       </div>
-   </div>
-
-   <!-- Calendar Modal -->
-   <div id="calendar-modal" class="fixed inset-0 z-[10000] hidden">
-       <div class="absolute inset-0 bg-black/95 backdrop-blur-xl">
-           <div class="h-full flex flex-col p-4">
-               <div class="flex justify-between items-center mb-4">
-                   <h2 class="text-lg font-bold">Calendar</h2>
-                   <button onclick="closeCalendar()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                       <i class="fas fa-times text-sm"></i>
-                   </button>
-               </div>
-               
-               <div class="flex justify-between items-center mb-3">
-                   <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center active:scale-95">
-                       <i class="fas fa-chevron-left text-xs"></i>
-                   </button>
-                   <h3 class="text-sm font-semibold" id="calendar-month-year">Month Year</h3>
-                   <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center active:scale-95">
-                       <i class="fas fa-chevron-right text-xs"></i>
-                   </button>
-               </div>
-
-               <div class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 mb-2 font-medium">
-                   <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
-               </div>
-               <div id="calendar-grid" class="grid grid-cols-7 gap-1 flex-1 content-start"></div>
-           </div>
-       </div>
-   </div>
-
-   <script>
-       // State
-       const state = {
-           tasks: [],
-           filter: 'all',
-           currentDate: new Date(),
-           nextId: 1,
-           currentViewingTask: null,
-           ongoingTaskId: null,
-           notifiedTasks: new Set(),
-           upcomingAlertShown: false,
-           timerAlertShown: false
-       };
-
-       // Init
-       document.addEventListener('DOMContentLoaded', () => {
-           loadData();
-           if (state.tasks.length === 0) {
-               const now = new Date();
-               addTask({
-                   title: "Review Project Alpha",
-                   date: new Date(now.getTime() + 2 * 60 * 60 * 1000),
-                   priority: "high",
-                   duration: 45,
-                   status: "pending",
-                   refs: ["https://docs.example.com"],
-                   notes: "Check the API documentation first"
-               });
-               addTask({
-                   title: "Team Meeting",
-                   date: new Date(now.getTime() + 30 * 60 * 1000),
-                   priority: "medium",
-                   duration: 30,
-                   status: "ongoing",
-                   refs: [],
-                   notes: "Prepare slides"
-               });
-           }
-           renderAll();
-           startClocks();
-           
-           document.getElementById('input-date').valueAsDate = new Date();
-           document.getElementById('input-time').value = new Date().toTimeString().slice(0, 5);
-       });
-
-       function addTask(taskData) {
-           const task = {
-               id: state.nextId++,
-               ...taskData,
-               notified: false,
-               createdAt: new Date()
-           };
-           state.tasks.push(task);
-           if (task.status === 'ongoing') {
-               state.ongoingTaskId = task.id;
-           }
-           saveData();
-           return task;
-       }
-
-       function loadData() {
-           const saved = localStorage.getItem('chronotask_data');
-           if (saved) {
-               const parsed = JSON.parse(saved);
-               state.tasks = parsed.tasks.map(t => ({
-                   ...t,
-                   date: new Date(t.date),
-                   createdAt: new Date(t.createdAt)
-               }));
-               state.nextId = parsed.nextId || 1;
-               state.ongoingTaskId = parsed.ongoingTaskId || null;
-           }
-       }
-
-       function saveData() {
-           localStorage.setItem('chronotask_data', JSON.stringify({
-               tasks: state.tasks,
-               nextId: state.nextId,
-               ongoingTaskId: state.ongoingTaskId
-           }));
-       }
-
-       // Task Management
-       function handleAddTask(e) {
-           e.preventDefault();
-           const title = document.getElementById('input-title').value;
-           const dateVal = document.getElementById('input-date').value;
-           const timeVal = document.getElementById('input-time').value;
-           const priority = document.querySelector('input[name="priority"]:checked').value;
-           const duration = parseInt(document.getElementById('input-duration').value);
-           const startNow = document.getElementById('input-start-now').checked;
-           const notes = document.getElementById('input-notes').value;
-           
-           const refs = Array.from(document.querySelectorAll('.ref-input'))
-               .map(input => input.value)
-               .filter(v => v.trim() !== '');
-
-           const dateObj = startNow ? new Date() : new Date(`${dateVal}T${timeVal}`);
-           
-           if (startNow && state.ongoingTaskId) {
-               const current = state.tasks.find(t => t.id === state.ongoingTaskId);
-               if (current) current.status = 'pending';
-           }
-
-           addTask({
-               title,
-               date: dateObj,
-               priority,
-               duration,
-               status: startNow ? 'ongoing' : 'pending',
-               refs,
-               notes
-           });
-           
-           closeAddModal();
-           renderAll();
-           showToast(startNow ? 'Task started!' : 'Task created');
-           
-           document.getElementById('add-task-form').reset();
-           document.getElementById('input-date').valueAsDate = new Date();
-           document.getElementById('input-time').value = new Date().toTimeString().slice(0, 5);
-           document.getElementById('refs-container').innerHTML = '<input type="url" placeholder="https://..." class="ref-input w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">';
-           setDuration(60);
-       }
-
-       function setOngoing(id) {
-           if (state.ongoingTaskId) {
-               const current = state.tasks.find(t => t.id === state.ongoingTaskId);
-               if (current) current.status = 'pending';
-           }
-           
-           const task = state.tasks.find(t => t.id === id);
-           if (task) {
-               task.status = 'ongoing';
-               task.date = new Date();
-               state.ongoingTaskId = id;
-               saveData();
-               renderAll();
-               showToast('Task is now ongoing', 'success');
-           }
-       }
-
-       function pauseOngoing() {
-           if (state.ongoingTaskId) {
-               const task = state.tasks.find(t => t.id === state.ongoingTaskId);
-               if (task) {
-                   task.status = 'pending';
-                   state.ongoingTaskId = null;
-                   saveData();
-                   renderAll();
-                   showToast('Task paused');
-               }
-           }
-       }
-
-       function completeOngoing() {
-           if (state.ongoingTaskId) {
-               completeTask(state.ongoingTaskId);
-           }
-       }
-
-       function completeTask(id) {
-           const task = state.tasks.find(t => t.id === id);
-           if (task) {
-               task.status = 'completed';
-               task.completedAt = new Date();
-               if (state.ongoingTaskId === id) state.ongoingTaskId = null;
-               saveData();
-               renderAll();
-               showToast('Task completed! 🎉', 'success');
-           }
-       }
-
-       function deleteTask(id) {
-           if (confirm('Delete this task?')) {
-               state.tasks = state.tasks.filter(t => t.id !== id);
-               if (state.ongoingTaskId === id) state.ongoingTaskId = null;
-               saveData();
-               renderAll();
-               closeDetailsModal();
-           }
-       }
-
-       function deleteCurrentTask() {
-           if (state.currentViewingTask) {
-               deleteTask(state.currentViewingTask.id);
-           }
-       }
-
-       function startUpcomingTask() {
-           const upcoming = getUpcomingTask();
-           if (upcoming) {
-               setOngoing(upcoming.id);
-               document.getElementById('upcoming-alert').classList.add('hidden');
-           }
-       }
-
-       // Getters
-       function getOngoingTask() {
-           return state.tasks.find(t => t.id === state.ongoingTaskId && t.status === 'ongoing');
-       }
-
-       function getUpcomingTask() {
-           const now = new Date();
-           return state.tasks.find(t => {
-               if (t.status !== 'pending') return false;
-               const diff = t.date - now;
-               return diff > 0 && diff <= 60 * 60 * 1000; // Within 1 hour
-           });
-       }
-
-       // Rendering
-       function renderAll() {
-           renderTasks();
-           renderOngoing();
-           renderDayView();
-           renderStats();
-           updateStats();
-           checkNotifications();
-       }
-
-       function renderOngoing() {
-           const section = document.getElementById('ongoing-section');
-           if (!state.ongoingTaskId) {
-               section.classList.add('hidden');
-               return;
-           }
-           
-           const task = state.tasks.find(t => t.id === state.ongoingTaskId);
-           if (!task || task.status !== 'ongoing') {
-               section.classList.add('hidden');
-               return;
-           }
-           
-           section.classList.remove('hidden');
-           document.getElementById('ongoing-title').innerText = task.title;
-           
-           const refsPreview = document.getElementById('ongoing-refs-preview');
-           if (task.refs && task.refs.length > 0) {
-               refsPreview.classList.remove('hidden');
-               document.getElementById('ongoing-refs-count').innerText = `${task.refs.length} reference${task.refs.length > 1 ? 's' : ''}`;
-           } else {
-               refsPreview.classList.add('hidden');
-           }
-           
-           const notesPreview = document.getElementById('ongoing-notes-preview');
-           if (task.notes) {
-               notesPreview.classList.remove('hidden');
-               document.getElementById('ongoing-notes-text').innerText = task.notes;
-           } else {
-               notesPreview.classList.add('hidden');
-           }
-       }
-
-       function updateOngoingTimer() {
-           if (!state.ongoingTaskId) return;
-           
-           const task = state.tasks.find(t => t.id === state.ongoingTaskId);
-           if (!task || task.status !== 'ongoing') return;
-           
-           const now = new Date();
-           const endTime = new Date(task.date.getTime() + task.duration * 60000);
-           const diff = endTime - now;
-           
-           if (diff <= 0) {
-               document.getElementById('ongoing-time').innerText = "00:00:00";
-               document.getElementById('ongoing-progress').style.width = "0%";
-               
-               // Timer running out alert
-               if (!state.timerAlertShown && diff > -60000) {
-                   showTimerAlert(task, diff);
-               }
-               return;
-           }
-           
-           const hrs = Math.floor(diff / 3600000);
-           const mins = Math.floor((diff % 3600000) / 60000);
-           const secs = Math.floor((diff % 60000) / 1000);
-           
-           const timeStr = hrs > 0 
-               ? `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-               : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-           
-           document.getElementById('ongoing-time').innerText = timeStr;
-           
-           const total = task.duration * 60000;
-           const elapsed = now - task.date;
-           const progress = Math.max(0, 100 - (elapsed / total) * 100);
-           document.getElementById('ongoing-progress').style.width = `${progress}%`;
-           
-           // Warning when less than 5 minutes
-           if (diff <= 5 * 60000 && diff > 0) {
-               document.getElementById('ongoing-time').classList.add('text-accent-red');
-               document.getElementById('ongoing-time').classList.remove('text-accent-cyan');
-           } else {
-               document.getElementById('ongoing-time').classList.remove('text-accent-red');
-               document.getElementById('ongoing-time').classList.add('text-accent-cyan');
-           }
-       }
-
-       function renderTasks() {
-           const list = document.getElementById('task-list');
-           const empty = document.getElementById('empty-state');
-           list.innerHTML = '';
-           
-           const now = new Date();
-           let filtered = state.tasks.filter(t => {
-               if (state.filter === 'all') return t.status !== 'completed';
-               if (state.filter === 'ongoing') return t.status === 'ongoing';
-               if (state.filter === 'today') {
-                   return t.status !== 'completed' && t.date.toDateString() === now.toDateString();
-               }
-               if (state.filter === 'upcoming') {
-                   return t.status !== 'completed' && t.date > now;
-               }
-               return t.status !== 'completed';
-           });
-
-           filtered = filtered.filter(t => t.id !== state.ongoingTaskId);
-
-           if (filtered.length === 0) {
-               empty.classList.remove('hidden');
-               empty.classList.add('flex');
-           } else {
-               empty.classList.add('hidden');
-               empty.classList.remove('flex');
-           }
-
-           filtered.forEach(task => {
-               const el = document.createElement('div');
-               el.className = 'task-card bg-gray-800/50 rounded-xl p-3 border border-gray-700/50';
-               
-               let priorityColor = task.priority === 'high' ? 'text-red-400 bg-red-500/10' : 
-                                 task.priority === 'medium' ? 'text-yellow-400 bg-yellow-500/10' : 
-                                 'text-blue-400 bg-blue-500/10';
-               
-               const timeStr = task.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-               const isOngoing = task.status === 'ongoing';
-               
-               el.innerHTML = `
-                   <div class="flex items-start gap-2">
-                       <button onclick="toggleComplete(${task.id})" class="mt-0.5 w-5 h-5 rounded-full border-2 ${task.status === 'completed' ? 'bg-accent-success border-accent-success' : 'border-gray-600'} flex items-center justify-center flex-shrink-0">
-                           ${task.status === 'completed' ? '<i class="fas fa-check text-[10px] text-gray-900"></i>' : ''}
-                       </button>
-                       <div class="flex-1 min-w-0" onclick="viewTaskDetails(${task.id})">
-                           <h3 class="font-semibold text-sm text-white truncate ${task.status === 'completed' ? 'line-through text-gray-500' : ''}">${task.title}</h3>
-                           <div class="flex items-center gap-2 mt-1 flex-wrap">
-                               <span class="text-[10px] ${priorityColor} px-1.5 py-0.5 rounded font-medium uppercase">${task.priority}</span>
-                               <span class="text-[10px] text-gray-500">${timeStr}</span>
-                               <span class="text-[10px] text-gray-500">${task.duration}m</span>
-                               ${task.refs?.length ? '<span class="text-[10px] text-accent-cyan"><i class="fas fa-link"></i></span>' : ''}
-                               ${task.notes ? '<span class="text-[10px] text-gray-400"><i class="fas fa-sticky-note"></i></span>' : ''}
-                           </div>
-                       </div>
-                       ${!isOngoing ? `
-                       <button onclick="setOngoing(${task.id})" class="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 active:scale-95">
-                           <i class="fas fa-play text-[10px]"></i>
-                       </button>
-                       ` : '<div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse mt-2"></div>'}
-                   </div>
-               `;
-               list.appendChild(el);
-           });
-       }
-
-       function renderDayView() {
-           const timeline = document.getElementById('day-timeline');
-           const now = new Date();
-           document.getElementById('day-view-date').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-           
-           timeline.innerHTML = '';
-           
-           // Create 24 hours
-           for (let hour = 0; hour < 24; hour++) {
-               const hourDiv = document.createElement('div');
-               hourDiv.className = 'timeline-hour flex';
-               hourDiv.style.height = '60px';
-               
-               const timeLabel = document.createElement('div');
-               timeLabel.className = 'w-14 flex items-center justify-center text-xs text-gray-500 font-mono border-r border-gray-800';
-               timeLabel.innerText = `${hour.toString().padStart(2, '0')}:00`;
-               
-               const slot = document.createElement('div');
-               slot.className = 'flex-1 relative';
-               slot.dataset.hour = hour;
-               
-               hourDiv.appendChild(timeLabel);
-               hourDiv.appendChild(slot);
-               timeline.appendChild(hourDiv);
-           }
-           
-           // Place tasks
-           const todayTasks = state.tasks.filter(t => 
-               t.date.toDateString() === now.toDateString() && t.status !== 'completed'
-           );
-           
-           todayTasks.forEach(task => {
-               const startHour = task.date.getHours();
-               const startMin = task.date.getMinutes();
-               const durationHours = task.duration / 60;
-               const top = startMin;
-               const height = Math.max(30, (task.duration / 60) * 60);
-               
-               const taskEl = document.createElement('div');
-               taskEl.className = `timeline-task text-xs ${task.status === 'ongoing' ? 'bg-accent-cyan/30 border border-accent-cyan' : 'bg-accent-purple/20 border border-accent-purple/50'}`;
-               taskEl.style.top = `${top}px`;
-               taskEl.style.height = `${height}px`;
-               
-               const endTime = new Date(task.date.getTime() + task.duration * 60000);
-               
-               taskEl.innerHTML = `
-                   <div class="font-semibold text-white truncate">${task.title}</div>
-                   <div class="text-[10px] text-gray-400">
-                       ${task.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                       ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                   </div>
-               `;
-               
-               taskEl.onclick = () => viewTaskDetails(task.id);
-               
-               const slot = timeline.children[startHour].querySelector('[data-hour="' + startHour + '"]');
-               if (slot) slot.appendChild(taskEl);
-           });
-           
-           // Position current time line
-           const currentHour = now.getHours();
-           const currentMin = now.getMinutes();
-           const line = document.getElementById('current-time-line');
-           line.style.top = `${(currentHour * 60) + currentMin}px`;
-       }
-
-       function renderStats() {
-           const completed = state.tasks.filter(t => t.status === 'completed');
-           const total = state.tasks.length;
-           const score = total > 0 ? Math.round((completed.length / total) * 100) : 0;
-           document.getElementById('productivity-score').innerText = score + '%';
-           
-           const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-           const chart = document.getElementById('weekly-chart');
-           chart.innerHTML = '';
-           
-           days.forEach((day, i) => {
-               const count = Math.floor(Math.random() * 5) + (i === new Date().getDay() - 1 ? 2 : 0);
-               const height = Math.min(100, count * 20);
-               const bar = document.createElement('div');
-               bar.className = 'flex-1 bg-accent-purple/30 rounded-t-sm relative group';
-               bar.style.height = `${height}%`;
-               bar.innerHTML = `
-                   <div class="absolute inset-0 bg-accent-purple rounded-t-sm opacity-0 group-hover:opacity-100 transition"></div>
-               `;
-               chart.appendChild(bar);
-           });
-           
-           const priorities = { high: 0, medium: 0, low: 0 };
-           state.tasks.filter(t => t.status !== 'completed').forEach(t => priorities[t.priority]++);
-           const totalPending = priorities.high + priorities.medium + priorities.low;
-           
-           const priorityStats = document.getElementById('priority-stats');
-           priorityStats.innerHTML = '';
-           ['high', 'medium', 'low'].forEach(p => {
-               const count = priorities[p];
-               const pct = totalPending > 0 ? (count / totalPending) * 100 : 0;
-               const color = p === 'high' ? 'bg-red-500' : p === 'medium' ? 'bg-yellow-500' : 'bg-blue-500';
-               
-               priorityStats.innerHTML += `
-                   <div class="flex items-center gap-2">
-                       <span class="text-xs w-12 capitalize text-gray-400">${p}</span>
-                       <div class="flex-1 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                           <div class="${color} h-full rounded-full" style="width: ${pct}%"></div>
-                       </div>
-                       <span class="text-xs w-6 text-right text-gray-500">${count}</span>
-                   </div>
-               `;
-           });
-       }
-
-       function updateStats() {
-           const now = new Date();
-           const pending = state.tasks.filter(t => t.status !== 'completed' && t.status !== 'ongoing').length;
-           const ongoing = state.tasks.filter(t => t.status === 'ongoing').length;
-           const done = state.tasks.filter(t => t.status === 'completed').length;
-           const upcoming = state.tasks.filter(t => {
-               if (t.status !== 'pending') return false;
-               const diff = t.date - now;
-               return diff > 0 && diff <= 60 * 60 * 1000;
-           }).length;
-           
-           document.getElementById('stat-pending').innerText = pending;
-           document.getElementById('stat-ongoing-count').innerText = ongoing;
-           document.getElementById('stat-done').innerText = done;
-           document.getElementById('stat-upcoming').innerText = upcoming;
-       }
-
-       // Notifications
-       function checkNotifications() {
-           const now = new Date();
-           
-           // Check for upcoming tasks (within 15 minutes)
-           state.tasks.forEach(task => {
-               if (task.status !== 'pending' || state.notifiedTasks.has(task.id)) return;
-               
-               const diff = task.date - now;
-               if (diff > 0 && diff <= 15 * 60 * 1000) {
-                   showNotification(`⏰ "${task.title}" starts in ${Math.ceil(diff / 60000)} minutes!`, 'warning');
-                   state.notifiedTasks.add(task.id);
-                   
-                   // Show upcoming alert
-                   const upcomingAlert = document.getElementById('upcoming-alert');
-                   upcomingAlert.classList.remove('hidden');
-                   document.getElementById('upcoming-task-name').innerText = task.title;
-                   updateUpcomingTimer(task);
-               }
-           });
-           
-           // Update upcoming timer display
-           const upcoming = getUpcomingTask();
-           if (upcoming) {
-               const diff = upcoming.date - now;
-               const mins = Math.floor(diff / 60000);
-               const secs = Math.floor((diff % 60000) / 1000);
-               document.getElementById('upcoming-time').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
-           } else {
-               document.getElementById('upcoming-alert').classList.add('hidden');
-           }
-       }
-
-       function updateUpcomingTimer(task) {
-           const interval = setInterval(() => {
-               const now = new Date();
-               const diff = task.date - now;
-               
-               if (diff <= 0 || task.status !== 'pending') {
-                   clearInterval(interval);
-                   document.getElementById('upcoming-alert').classList.add('hidden');
-                   return;
-               }
-               
-               const mins = Math.floor(diff / 60000);
-               const secs = Math.floor((diff % 60000) / 1000);
-               document.getElementById('upcoming-time').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
-           }, 1000);
-       }
-
-       function showTimerAlert(task, diff) {
-           state.timerAlertShown = true;
-           const alert = document.getElementById('timer-alert');
-           alert.classList.remove('hidden');
-           document.getElementById('timer-task-name').innerText = task.title;
-           
-           // Auto hide after 30 seconds
-           setTimeout(() => {
-               alert.classList.add('hidden');
-               state.timerAlertShown = false;
-           }, 30000);
-           
-           // Update countdown
-           const interval = setInterval(() => {
-               const remaining = Math.abs(diff);
-               const secs = Math.floor(remaining / 1000);
-               document.getElementById('timer-remaining').innerText = `${secs}s overdue`;
-               
-               if (secs > 60) {
-                   clearInterval(interval);
-                   document.getElementById('timer-remaining').innerText = 'Time up!';
-               }
-           }, 1000);
-       }
-
-       function showNotification(message, type = 'info') {
-           const container = document.getElementById('notification-container');
-           const notif = document.createElement('div');
-           
-           const colors = type === 'warning' ? 'bg-accent-orange/90 text-gray-900' : 
-                         type === 'urgent' ? 'bg-accent-red/90 text-white' :
-                         'bg-accent-purple/90 text-white';
-           
-           notif.className = `notification-toast ${colors} px-4 py-3 rounded-xl shadow-xl text-sm font-medium pointer-events-auto flex items-center gap-3`;
-           notif.innerHTML = `
-               <i class="fas ${type === 'warning' ? 'fa-bell' : type === 'urgent' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-               <span class="flex-1">${message}</span>
-               <button onclick="this.parentElement.remove()" class="text-xs opacity-70 hover:opacity-100">
-                   <i class="fas fa-times"></i>
-               </button>
-           `;
-           
-           container.appendChild(notif);
-           
-           setTimeout(() => {
-               notif.style.opacity = '0';
-               notif.style.transform = 'translateX(100%)';
-               setTimeout(() => notif.remove(), 300);
-           }, 5000);
-       }
-
-       // Details View
-       function viewTaskDetails(id) {
-           const task = state.tasks.find(t => t.id === id);
-           if (!task) return;
-           
-           state.currentViewingTask = task;
-           const modal = document.getElementById('details-modal');
-           const content = document.getElementById('details-content');
-           
-           const timeStr = task.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-           const dateStr = task.date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-           
-           let refsHtml = '';
-           if (task.refs && task.refs.length > 0) {
-               refsHtml = `
-                   <div class="mb-4">
-                       <h3 class="text-xs font-medium text-gray-400 mb-2 uppercase">References</h3>
-                       <div class="space-y-2">
-                           ${task.refs.map(ref => `
-                               <a href="${ref}" target="_blank" class="flex items-center gap-2 p-2.5 rounded-lg bg-gray-800 text-accent-blue active:scale-95 transition text-xs">
-                                   <i class="fas fa-external-link-alt text-xs"></i>
-                                   <span class="truncate flex-1">${ref}</span>
-                               </a>
-                           `).join('')}
-                       </div>
-                   </div>
-               `;
-           }
-           
-           let notesHtml = '';
-           if (task.notes) {
-               notesHtml = `
-                   <div class="mb-4">
-                       <h3 class="text-xs font-medium text-gray-400 mb-2 uppercase">Notes</h3>
-                       <div class="p-3 rounded-lg bg-gray-800/50 border border-gray-700">
-                           <p class="text-xs text-gray-300 leading-relaxed">${task.notes}</p>
-                       </div>
-                   </div>
-               `;
-           }
-           
-           let actionsHtml = '';
-           if (task.status !== 'completed') {
-               if (task.status === 'ongoing') {
-                   actionsHtml = `
-                       <button onclick="pauseOngoing(); closeDetailsModal();" class="w-full py-3 rounded-lg bg-yellow-500/20 text-yellow-400 font-semibold text-sm mb-2 active:scale-95 transition">
-                           Pause Task
-                       </button>
-                   `;
-               } else {
-                   actionsHtml = `
-                       <button onclick="setOngoing(${task.id}); closeDetailsModal();" class="w-full py-3 rounded-lg bg-accent-cyan/20 text-accent-cyan font-semibold text-sm mb-2 active:scale-95 transition">
-                           Start Working
-                       </button>
-                   `;
-               }
-               actionsHtml += `
-                   <button onclick="completeTask(${task.id}); closeDetailsModal();" class="w-full py-3 rounded-lg bg-accent-success text-gray-900 font-semibold text-sm active:scale-95 transition">
-                       Mark Complete
-                   </button>
-               `;
-           }
-           
-           content.innerHTML = `
-               <div class="mb-4">
-                   <div class="flex items-center gap-2 mb-2">
-                       <span class="text-xs px-1.5 py-0.5 rounded bg-${task.priority === 'high' ? 'red' : task.priority === 'medium' ? 'yellow' : 'blue'}-500/20 text-${task.priority === 'high' ? 'red' : task.priority === 'medium' ? 'yellow' : 'blue'}-400 uppercase font-bold text-[10px]">${task.priority}</span>
-                       <span class="text-xs text-gray-500">${task.duration} min</span>
-                   </div>
-                   <h1 class="text-lg font-bold text-white mb-1">${task.title}</h1>
-                   <p class="text-xs text-gray-400"><i class="far fa-calendar mr-1"></i>${dateStr} at ${timeStr}</p>
-               </div>
-               
-               ${refsHtml}
-               ${notesHtml}
-               
-               <div class="mt-6 space-y-2">
-                   ${actionsHtml}
-               </div>
-           `;
-           
-           modal.classList.remove('hidden');
-       }
-
-       function viewOngoingDetails() {
-           if (state.ongoingTaskId) {
-               viewTaskDetails(state.ongoingTaskId);
-           }
-       }
-
-       function closeDetailsModal() {
-           document.getElementById('details-modal').classList.add('hidden');
-           state.currentViewingTask = null;
-       }
-
-       // UI Functions
-       function switchTab(tab) {
-           document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-           document.getElementById(`tab-${tab}`).classList.remove('hidden');
-           
-           document.querySelectorAll('.nav-btn').forEach(btn => {
-               btn.classList.remove('text-accent-purple');
-               btn.classList.add('text-gray-500');
-           });
-           document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
-           document.querySelector(`[data-tab="${tab}"]`).classList.add('text-accent-purple');
-           
-           const indicator = document.getElementById('nav-indicator');
-           const positions = { tasks: '2%', day: '22%', calendar: '42%', stats: '62%', settings: '82%' };
-           indicator.style.left = positions[tab];
-           
-           if (tab === 'stats') renderStats();
-           if (tab === 'day') renderDayView();
-       }
-
-       function showDayView() {
-           switchTab('day');
-       }
-
-       function setFilter(filter) {
-           state.filter = filter;
-           document.querySelectorAll('.filter-btn').forEach(btn => {
-               if (btn.dataset.filter === filter) {
-                   btn.classList.remove('bg-gray-800', 'text-gray-400');
-                   btn.classList.add('bg-accent-purple', 'text-white');
-               } else {
-                   btn.classList.add('bg-gray-800', 'text-gray-400');
-                   btn.classList.remove('bg-accent-purple', 'text-white');
-               }
-           });
-           renderTasks();
-       }
-
-       function setDuration(min) {
-           document.getElementById('input-duration').value = min;
-           document.querySelectorAll('.duration-btn').forEach(btn => {
-               if (parseInt(btn.dataset.dur) === min) {
-                   btn.classList.add('border-accent-purple', 'text-accent-purple');
-                   btn.classList.remove('border-transparent');
-               } else {
-                   btn.classList.remove('border-accent-purple', 'text-accent-purple');
-                   btn.classList.add('border-transparent');
-               }
-           });
-       }
-
-       function addRefInput() {
-           const container = document.getElementById('refs-container');
-           const input = document.createElement('input');
-           input.type = 'url';
-           input.placeholder = 'https://...';
-           input.className = 'ref-input w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple mt-1';
-           container.appendChild(input);
-       }
-
-       // Modals
-       function openAddModal(preselectedDate = null) {
-           const modal = document.getElementById('add-modal');
-           modal.classList.remove('hidden');
-           setTimeout(() => modal.querySelector('.modal-sheet').classList.add('open'), 10);
-           
-           if (preselectedDate) {
-               const yyyy = preselectedDate.getFullYear();
-               const mm = String(preselectedDate.getMonth() + 1).padStart(2, '0');
-               const dd = String(preselectedDate.getDate()).padStart(2, '0');
-               document.getElementById('input-date').value = `${yyyy}-${mm}-${dd}`;
-           }
-       }
-
-       function closeAddModal() {
-           const modal = document.getElementById('add-modal');
-           modal.querySelector('.modal-sheet').classList.remove('open');
-           setTimeout(() => modal.classList.add('hidden'), 300);
-       }
-
-       function showCalendar() {
-           document.getElementById('calendar-modal').classList.remove('hidden');
-           renderCalendar();
-       }
-
-       function closeCalendar() {
-           document.getElementById('calendar-modal').classList.add('hidden');
-       }
-
-       function renderCalendar() {
-           const grid = document.getElementById('calendar-grid');
-           const monthYear = document.getElementById('calendar-month-year');
-           grid.innerHTML = '';
-           
-           const year = state.currentDate.getFullYear();
-           const month = state.currentDate.getMonth();
-           monthYear.innerText = state.currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-           
-           const firstDay = new Date(year, month, 1).getDay();
-           const daysInMonth = new Date(year, month + 1, 0).getDate();
-           const today = new Date();
-           
-           for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
-           
-           for (let i = 1; i <= daysInMonth; i++) {
-               const date = new Date(year, month, i);
-               const isToday = date.toDateString() === today.toDateString();
-               const tasksForDay = state.tasks.filter(t => 
-                   t.date.getDate() === i && t.date.getMonth() === month && t.date.getFullYear() === year && t.status !== 'completed'
-               );
-               
-               const btn = document.createElement('button');
-               btn.className = `calendar-day ${isToday ? 'bg-accent-purple text-white' : 'text-gray-300'}`;
-               btn.innerHTML = `
-                   <span class="text-xs font-semibold">${i}</span>
-                   ${tasksForDay.length > 0 ? `<span class="w-1 h-1 rounded-full bg-accent-cyan mt-0.5"></span>` : ''}
-               `;
-               btn.onclick = () => { openAddModal(date); closeCalendar(); };
-               grid.appendChild(btn);
-           }
-       }
-
-       function changeMonth(delta) {
-           state.currentDate.setMonth(state.currentDate.getMonth() + delta);
-           renderCalendar();
-       }
-
-       // Settings
-       function exportData() {
-           const data = JSON.stringify(state.tasks, null, 2);
-           const blob = new Blob([data], { type: 'application/json' });
-           const url = URL.createObjectURL(blob);
-           const a = document.createElement('a');
-           a.href = url;
-           a.download = `chronotask-backup-${new Date().toISOString().split('T')[0]}.json`;
-           a.click();
-           showToast('Data exported!');
-       }
-
-       function clearAllData() {
-           if (confirm('Are you sure? This will delete all tasks permanently.')) {
-               state.tasks = [];
-               state.ongoingTaskId = null;
-               saveData();
-               renderAll();
-               showToast('All data cleared');
-           }
-       }
-
-       // Clocks
-       function startClocks() {
-           setInterval(() => {
-               updateOngoingTimer();
-               const now = new Date();
-               document.getElementById('current-date').innerText = now.toLocaleDateString('en-US', { 
-                   weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
-               });
-               
-               // Daily progress with percentage
-               const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-               const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-               const pct = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-               document.getElementById('daily-progress').style.width = `${pct}%`;
-               document.getElementById('day-progress-text').innerText = `${Math.round(pct)}%`;
-               
-               // Change color based on time of day
-               const progressBar = document.getElementById('daily-progress');
-               if (pct > 75) {
-                   progressBar.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
-               } else if (pct > 50) {
-                   progressBar.style.background = 'linear-gradient(90deg, #f97316, #eab308)';
-               } else {
-                   progressBar.style.background = 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)';
-               }
-           }, 1000);
-       }
-
-       // Toast
-       function showToast(message, type = 'success') {
-           const container = document.getElementById('notification-container');
-           const toast = document.createElement('div');
-           const colors = type === 'warning' ? 'bg-yellow-500/90 text-yellow-950' : 
-                         type === 'success' ? 'bg-accent-success/90 text-gray-900' : 
-                         'bg-gray-800/90 text-white border border-gray-700';
-           
-           toast.className = `${colors} px-3 py-2 rounded-lg shadow-xl text-xs font-medium transform transition-all duration-300 translate-y-[-10px] opacity-0 pointer-events-auto notification-toast`;
-           toast.innerHTML = message;
-           
-           container.appendChild(toast);
-           requestAnimationFrame(() => {
-               toast.classList.remove('translate-y-[-10px]', 'opacity-0');
-           });
-           
-           setTimeout(() => {
-               toast.classList.add('translate-y-[-10px]', 'opacity-0');
-               setTimeout(() => toast.remove(), 300);
-           }, 2500);
-       }
-   </script>
+    <!-- Enhanced Progress Bar with Time Display -->
+    <div class="fixed top-0 left-0 w-full z-[9999] progress-container">
+        <div class="h-2 bg-gray-900 relative">
+            <div id="daily-progress" class="h-full progress-gradient w-0 transition-all duration-1000 relative">
+                <div class="absolute right-0 top-0 bottom-0 w-2 bg-white/50 animate-pulse"></div>
+            </div>
+        </div>
+        <div class="absolute top-2 right-3 text-[10px] font-mono text-accent-purple time-display bg-gray-900/80 px-2 py-0.5 rounded-full border border-accent-purple/30">
+            <span id="day-progress-text">0%</span> of day complete
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="fixed top-6 left-2 right-2 z-[10002] space-y-2 pointer-events-none"></div>
+
+    <!-- Main Container -->
+    <div class="h-full flex flex-col safe-top pt-2">
+        
+        <!-- Header -->
+        <header class="px-4 py-2 flex items-center justify-between glass sticky top-2 z-50">
+            <div>
+                <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+                    ChronoTask
+                </h1>
+                <p class="text-xs text-gray-500 font-mono mt-0.5" id="current-date">Loading...</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="showDayView()" class="w-9 h-9 rounded-xl bg-gray-800 flex items-center justify-center active:scale-95 transition">
+                    <i class="fas fa-clock text-accent-cyan text-sm"></i>
+                </button>
+                <button onclick="showCalendar()" class="w-9 h-9 rounded-xl bg-gray-800 flex items-center justify-center active:scale-95 transition">
+                    <i class="fas fa-calendar-alt text-gray-400 text-sm"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto" id="main-content">
+            
+            <!-- TASKS TAB -->
+            <div id="tab-tasks" class="tab-content px-4 pt-3">
+                <!-- Ongoing Task Section -->
+                <div id="ongoing-section" class="mb-4 hidden">
+                    <div class="ongoing-pulse rounded-2xl bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-accent-cyan/50 p-4 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-accent-cyan/5"></div>
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-accent-cyan/20 rounded-full blur-3xl"></div>
+                        
+                        <div class="relative">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
+                                    <span class="text-xs font-bold text-accent-cyan uppercase tracking-wider">Currently Working On</span>
+                                </div>
+                                <button onclick="pauseOngoing()" class="w-7 h-7 rounded-full bg-gray-800/80 flex items-center justify-center text-gray-400 active:scale-95">
+                                    <i class="fas fa-pause text-xs"></i>
+                                </button>
+                            </div>
+                            
+                            <h2 class="text-lg font-bold text-white mb-2 leading-tight" id="ongoing-title">Task Name</h2>
+                            
+                            <div id="ongoing-preview" class="mb-3 space-y-1">
+                                <div id="ongoing-refs-preview" class="hidden flex items-center gap-2 text-xs text-gray-400">
+                                    <i class="fas fa-link text-accent-cyan"></i>
+                                    <span id="ongoing-refs-count">0 references</span>
+                                </div>
+                                <div id="ongoing-notes-preview" class="hidden text-xs text-gray-400 line-clamp-2 italic">
+                                    "<span id="ongoing-notes-text"></span>"
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1">
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Time Remaining</span>
+                                        <span id="ongoing-time" class="font-mono text-accent-cyan font-bold">00:00:00</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div id="ongoing-progress" class="h-full bg-gradient-to-r from-accent-cyan to-blue-500 transition-all duration-1000" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="viewOngoingDetails()" class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center active:scale-95 transition">
+                                        <i class="fas fa-ellipsis-v text-xs"></i>
+                                    </button>
+                                    <button onclick="completeOngoing()" class="w-10 h-10 rounded-full bg-accent-success text-gray-900 flex items-center justify-center shadow-lg shadow-green-500/30 active:scale-95 transition">
+                                        <i class="fas fa-check text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Alert Section -->
+                <div id="upcoming-alert" class="mb-4 hidden">
+                    <div class="rounded-xl bg-gradient-to-r from-accent-orange/20 to-red-500/20 border border-accent-orange/50 p-3 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-accent-orange/20 flex items-center justify-center urgent-pulse">
+                            <i class="fas fa-bell text-accent-orange"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-bold text-accent-orange">Upcoming: <span id="upcoming-task-name">Task Name</span></h3>
+                            <p class="text-xs text-gray-400">Starts in <span id="upcoming-time" class="font-mono text-white">5:00</span></p>
+                        </div>
+                        <button onclick="startUpcomingTask()" class="px-3 py-1.5 rounded-lg bg-accent-orange text-gray-900 text-xs font-bold active:scale-95">
+                            START NOW
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timer Running Out Alert -->
+                <div id="timer-alert" class="mb-4 hidden">
+                    <div class="rounded-xl bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-500/50 p-3 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center urgent-pulse">
+                            <i class="fas fa-hourglass-end text-red-400"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-bold text-red-400">Time Running Out!</h3>
+                            <p class="text-xs text-gray-400"><span id="timer-task-name">Task</span> ends in <span id="timer-remaining" class="font-mono text-white font-bold">2:00</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="grid grid-cols-4 gap-2 mb-4">
+                    <div class="stat-card rounded-xl p-2 text-center">
+                        <div class="text-lg font-bold text-white" id="stat-pending">0</div>
+                        <div class="text-[10px] text-gray-500">Pending</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-2 text-center">
+                        <div class="text-lg font-bold text-accent-purple" id="stat-ongoing-count">0</div>
+                        <div class="text-[10px] text-gray-500">Ongoing</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-2 text-center">
+                        <div class="text-lg font-bold text-accent-success" id="stat-done">0</div>
+                        <div class="text-[10px] text-gray-500">Done</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-2 text-center">
+                        <div class="text-lg font-bold text-accent-orange" id="stat-upcoming">0</div>
+                        <div class="text-[10px] text-gray-500">Next 1h</div>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-3">
+                    <button onclick="setFilter('all')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-accent-purple text-white whitespace-nowrap transition" data-filter="all">
+                        All
+                    </button>
+                    <button onclick="setFilter('ongoing')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="ongoing">
+                        Ongoing
+                    </button>
+                    <button onclick="setFilter('today')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="today">
+                        Today
+                    </button>
+                    <button onclick="setFilter('upcoming')" class="filter-btn px-3 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="upcoming">
+                        Upcoming
+                    </button>
+                </div>
+
+                <!-- Task List -->
+                <div class="space-y-2 pb-4" id="task-list"></div>
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-12 text-gray-600">
+                    <div class="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-3">
+                        <i class="fas fa-clipboard-check text-2xl text-gray-600"></i>
+                    </div>
+                    <p class="text-sm">No tasks found</p>
+                    <button onclick="openAddModal()" class="mt-3 text-accent-purple text-sm font-medium">Create one</button>
+                </div>
+            </div>
+
+            <!-- DAY VIEW TAB -->
+            <div id="tab-day" class="tab-content hidden px-4 pt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold">Day Map</h2>
+                    <div class="text-xs text-gray-500 font-mono" id="day-view-date">Today</div>
+                </div>
+                
+                <!-- Timeline -->
+                <div class="relative bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden">
+                    <!-- Current time indicator -->
+                    <div id="current-time-line" class="absolute left-0 right-0 border-t-2 border-accent-red z-20 pointer-events-none" style="top: 0;">
+                        <div class="absolute -top-1.5 left-0 w-3 h-3 rounded-full bg-accent-red"></div>
+                        <span class="absolute -top-3 left-4 text-[10px] text-accent-red font-mono bg-gray-900 px-1">NOW</span>
+                    </div>
+                    
+                    <!-- Hour labels and slots -->
+                    <div id="day-timeline" class="relative">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <button onclick="switchTab('tasks')" class="text-sm text-gray-500 hover:text-white transition">
+                        <i class="fas fa-arrow-left mr-1"></i> Back to list
+                    </button>
+                </div>
+                
+                <div class="h-20"></div>
+            </div>
+
+            <!-- STATS TAB -->
+            <div id="tab-stats" class="tab-content hidden px-4 pt-3">
+                <h2 class="text-xl font-bold mb-4">Analytics</h2>
+                
+                <div class="stat-card rounded-2xl p-4 mb-3">
+                    <h3 class="text-sm font-medium text-gray-400 mb-3">Weekly Completion</h3>
+                    <div class="flex items-end justify-between h-24 gap-1" id="weekly-chart"></div>
+                    <div class="flex justify-between mt-2 text-xs text-gray-500">
+                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                </div>
+
+                <div class="stat-card rounded-2xl p-4 mb-3 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-400">Productivity Score</h3>
+                        <p class="text-2xl font-bold text-accent-purple mt-1" id="productivity-score">85%</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Based on completion rate</p>
+                    </div>
+                    <div class="w-16 h-16 rounded-full border-4 border-accent-purple/30 flex items-center justify-center relative">
+                        <div class="absolute inset-0 rounded-full border-4 border-accent-purple border-t-transparent rotate-45"></div>
+                        <i class="fas fa-chart-line text-xl text-accent-purple"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card rounded-2xl p-4">
+                    <h3 class="text-sm font-medium text-gray-400 mb-3">Priority Distribution</h3>
+                    <div class="space-y-2" id="priority-stats"></div>
+                </div>
+
+                <div class="h-20"></div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="tab-settings" class="tab-content hidden px-4 pt-3">
+                <h2 class="text-xl font-bold mb-4">Settings</h2>
+                
+                <div class="space-y-3">
+                    <div class="stat-card rounded-xl p-3 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-accent-purple/20 flex items-center justify-center text-accent-purple">
+                                <i class="fas fa-bell text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-sm">Notifications</h3>
+                                <p class="text-xs text-gray-500">Task reminders & alerts</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-block w-10 h-5 align-middle select-none">
+                            <input type="checkbox" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-0 border-accent-purple"/>
+                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-accent-purple cursor-pointer"></label>
+                        </label>
+                    </div>
+
+                    <div class="stat-card rounded-xl p-3 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-accent-blue/20 flex items-center justify-center text-accent-blue">
+                                <i class="fas fa-volume-up text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-sm">Sound Effects</h3>
+                                <p class="text-xs text-gray-500">Completion sounds</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-block w-10 h-5 align-middle select-none">
+                            <input type="checkbox" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-0 border-accent-purple"/>
+                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-accent-purple cursor-pointer"></label>
+                        </label>
+                    </div>
+
+                    <div class="stat-card rounded-xl p-4">
+                        <h3 class="font-medium text-sm mb-3">Data Management</h3>
+                        <div class="space-y-2">
+                            <button onclick="exportData()" class="w-full py-3 rounded-lg bg-gray-800 text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition">
+                                <i class="fas fa-download"></i> Export Tasks
+                            </button>
+                            <button onclick="clearAllData()" class="w-full py-3 rounded-lg bg-red-500/10 text-red-400 text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="text-center text-xs text-gray-600 mt-6 pb-4">
+                        <p>ChronoTask Pro v2.0</p>
+                        <p class="mt-1">Built for productivity</p>
+                    </div>
+                </div>
+
+                <div class="h-20"></div>
+            </div>
+        </main>
+
+        <!-- Fixed Bottom Navigation - 3 items only -->
+        <nav id="bottom-nav" class="glass border-t border-gray-800 px-6 pt-2 pb-3 flex items-center justify-around fixed bottom-0 left-0 right-0 z-[9999]">
+            <div class="nav-indicator" id="nav-indicator" style="width: 25%; left: 12.5%;"></div>
+            
+            <button onclick="switchTab('tasks')" class="nav-btn flex flex-col items-center gap-1 py-1 text-accent-purple w-16" data-tab="tasks">
+                <i class="fas fa-tasks text-base"></i>
+                <span class="text-[9px]">Tasks</span>
+            </button>
+            
+            <button onclick="switchTab('stats')" class="nav-btn flex flex-col items-center gap-1 py-1 text-gray-500 w-16" data-tab="stats">
+                <i class="fas fa-chart-pie text-base"></i>
+                <span class="text-[9px]">Stats</span>
+            </button>
+            
+            <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 py-1 text-gray-500 w-16" data-tab="settings">
+                <i class="fas fa-cog text-base"></i>
+                <span class="text-[9px]">Settings</span>
+            </button>
+        </nav>
+
+        <!-- Floating Action Button -->
+        <button onclick="openAddModal()" class="fab fixed bottom-20 left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full bg-gradient-to-r from-accent-purple to-accent-blue text-white flex items-center justify-center text-lg z-[9999] active:scale-90 transition shadow-lg">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-modal" class="fixed inset-0 z-[10000] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAddModal()"></div>
+        <div class="modal-sheet absolute bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl border-t border-gray-700 max-h-[85vh] overflow-y-auto">
+            <div class="sticky top-0 bg-gray-900 pt-2 pb-3 px-4 border-b border-gray-800 z-10">
+                <div class="w-10 h-1 bg-gray-700 rounded-full mx-auto mb-3"></div>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-bold">New Task</h2>
+                    <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
+                        <i class="fas fa-times text-gray-400 text-sm"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form id="add-task-form" onsubmit="handleAddTask(event)" class="p-4 space-y-3">
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Task Name</label>
+                    <input type="text" id="input-title" required placeholder="What needs to be done?" 
+                        class="w-full bg-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Date</label>
+                        <input type="date" id="input-date" required
+                            class="w-full bg-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Time</label>
+                        <input type="time" id="input-time" required
+                            class="w-full bg-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Duration</label>
+                    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                        <button type="button" onclick="setDuration(15)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-transparent" data-dur="15">15m</button>
+                        <button type="button" onclick="setDuration(30)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-transparent" data-dur="30">30m</button>
+                        <button type="button" onclick="setDuration(60)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-accent-purple text-accent-purple" data-dur="60">1h</button>
+                        <button type="button" onclick="setDuration(120)" class="duration-btn px-3 py-2 rounded-lg bg-gray-800 text-xs whitespace-nowrap border border-transparent" data-dur="120">2h</button>
+                    </div>
+                    <input type="hidden" id="input-duration" value="60">
+                </div>
+
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Priority</label>
+                    <div class="flex gap-2">
+                        <label class="flex-1">
+                            <input type="radio" name="priority" value="low" class="peer hidden">
+                            <div class="py-2 rounded-lg bg-gray-800 text-center text-xs text-gray-400 peer-checked:bg-blue-500/20 peer-checked:text-blue-400 peer-checked:border-blue-500 border border-transparent transition">Low</div>
+                        </label>
+                        <label class="flex-1">
+                            <input type="radio" name="priority" value="medium" class="peer hidden" checked>
+                            <div class="py-2 rounded-lg bg-gray-800 text-center text-xs text-gray-400 peer-checked:bg-yellow-500/20 peer-checked:text-yellow-400 peer-checked:border-yellow-500 border border-transparent transition">Medium</div>
+                        </label>
+                        <label class="flex-1">
+                            <input type="radio" name="priority" value="high" class="peer hidden">
+                            <div class="py-2 rounded-lg bg-gray-800 text-center text-xs text-gray-400 peer-checked:bg-red-500/20 peer-checked:text-red-400 peer-checked:border-red-500 border border-transparent transition">High</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-2 rounded-lg bg-gray-800/50">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-accent-cyan/20 flex items-center justify-center text-accent-cyan">
+                            <i class="fas fa-play text-xs"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-xs">Start Immediately</h3>
+                            <p class="text-xs text-gray-500">Set as ongoing task</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-block w-10 h-5 align-middle select-none">
+                        <input type="checkbox" id="input-start-now" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0 border-gray-600"/>
+                        <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-700 cursor-pointer transition-colors duration-300"></label>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">References (URLs)</label>
+                    <div id="refs-container" class="space-y-1">
+                        <input type="url" placeholder="https://..." class="ref-input w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                    </div>
+                    <button type="button" onclick="addRefInput()" class="mt-1 text-xs text-accent-purple font-medium flex items-center gap-1">
+                        <i class="fas fa-plus"></i> Add link
+                    </button>
+                </div>
+
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-1 block">Notes</label>
+                    <textarea id="input-notes" rows="2" placeholder="Add any details..." 
+                        class="w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-accent-purple to-accent-blue text-white font-semibold text-sm shadow-lg shadow-purple-500/25 active:scale-95 transition mt-2">
+                    Create Task
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div id="details-modal" class="fixed inset-0 z-[10000] hidden">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" onclick="closeDetailsModal()"></div>
+        <div class="absolute inset-x-0 top-0 bottom-0 bg-gray-900 overflow-y-auto">
+            <div class="sticky top-0 bg-gray-900/95 backdrop-blur border-b border-gray-800 px-4 py-3 flex items-center justify-between z-10">
+                <button onclick="closeDetailsModal()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
+                    <i class="fas fa-arrow-left text-sm"></i>
+                </button>
+                <h2 class="text-sm font-bold">Task Details</h2>
+                <button onclick="deleteCurrentTask()" class="w-8 h-8 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center">
+                    <i class="fas fa-trash text-sm"></i>
+                </button>
+            </div>
+            
+            <div class="p-4" id="details-content"></div>
+        </div>
+    </div>
+
+    <!-- Calendar Modal -->
+    <div id="calendar-modal" class="fixed inset-0 z-[10000] hidden">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl">
+            <div class="h-full flex flex-col p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold">Calendar</h2>
+                    <button onclick="closeCalendar()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex justify-between items-center mb-3">
+                    <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center active:scale-95">
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </button>
+                    <h3 class="text-sm font-semibold" id="calendar-month-year">Month Year</h3>
+                    <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center active:scale-95">
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 mb-2 font-medium">
+                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1 flex-1 content-start"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        const state = {
+            tasks: [],
+            filter: 'all',
+            currentDate: new Date(),
+            nextId: 1,
+            currentViewingTask: null,
+            ongoingTaskId: null,
+            notifiedTasks: new Set(),
+            timerAlertTaskId: null
+        };
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            if (state.tasks.length === 0) {
+                const now = new Date();
+                addTask({
+                    title: "Review Project Alpha",
+                    date: new Date(now.getTime() + 2 * 60 * 60 * 1000),
+                    priority: "high",
+                    duration: 45,
+                    status: "pending",
+                    refs: ["https://docs.example.com"],
+                    notes: "Check the API documentation first"
+                });
+                addTask({
+                    title: "Team Meeting",
+                    date: new Date(now.getTime() + 30 * 60 * 1000),
+                    priority: "medium",
+                    duration: 30,
+                    status: "ongoing",
+                    refs: [],
+                    notes: "Prepare slides"
+                });
+            }
+            renderAll();
+            startClocks();
+            
+            document.getElementById('input-date').valueAsDate = new Date();
+            document.getElementById('input-time').value = new Date().toTimeString().slice(0, 5);
+        });
+
+        function addTask(taskData) {
+            const task = {
+                id: state.nextId++,
+                ...taskData,
+                notified: false,
+                createdAt: new Date()
+            };
+            state.tasks.push(task);
+            if (task.status === 'ongoing') {
+                state.ongoingTaskId = task.id;
+            }
+            saveData();
+            return task;
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('chronotask_data');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state.tasks = parsed.tasks.map(t => ({
+                    ...t,
+                    date: new Date(t.date),
+                    createdAt: new Date(t.createdAt)
+                }));
+                state.nextId = parsed.nextId || 1;
+                state.ongoingTaskId = parsed.ongoingTaskId || null;
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('chronotask_data', JSON.stringify({
+                tasks: state.tasks,
+                nextId: state.nextId,
+                ongoingTaskId: state.ongoingTaskId
+            }));
+        }
+
+        // Task Management
+        function handleAddTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('input-title').value;
+            const dateVal = document.getElementById('input-date').value;
+            const timeVal = document.getElementById('input-time').value;
+            const priority = document.querySelector('input[name="priority"]:checked').value;
+            const duration = parseInt(document.getElementById('input-duration').value);
+            const startNow = document.getElementById('input-start-now').checked;
+            const notes = document.getElementById('input-notes').value;
+            
+            const refs = Array.from(document.querySelectorAll('.ref-input'))
+                .map(input => input.value)
+                .filter(v => v.trim() !== '');
+
+            const dateObj = startNow ? new Date() : new Date(`${dateVal}T${timeVal}`);
+            
+            if (startNow && state.ongoingTaskId) {
+                const current = state.tasks.find(t => t.id === state.ongoingTaskId);
+                if (current) current.status = 'pending';
+            }
+
+            addTask({
+                title,
+                date: dateObj,
+                priority,
+                duration,
+                status: startNow ? 'ongoing' : 'pending',
+                refs,
+                notes
+            });
+            
+            closeAddModal();
+            renderAll();
+            showToast(startNow ? 'Task started!' : 'Task created');
+            
+            document.getElementById('add-task-form').reset();
+            document.getElementById('input-date').valueAsDate = new Date();
+            document.getElementById('input-time').value = new Date().toTimeString().slice(0, 5);
+            document.getElementById('refs-container').innerHTML = '<input type="url" placeholder="https://..." class="ref-input w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">';
+            setDuration(60);
+        }
+
+        function setOngoing(id) {
+            if (state.ongoingTaskId) {
+                const current = state.tasks.find(t => t.id === state.ongoingTaskId);
+                if (current) current.status = 'pending';
+            }
+            
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.status = 'ongoing';
+                task.date = new Date();
+                state.ongoingTaskId = id;
+                saveData();
+                renderAll();
+                showToast('Task is now ongoing', 'success');
+            }
+        }
+
+        function pauseOngoing() {
+            if (state.ongoingTaskId) {
+                const task = state.tasks.find(t => t.id === state.ongoingTaskId);
+                if (task) {
+                    task.status = 'pending';
+                    state.ongoingTaskId = null;
+                    saveData();
+                    renderAll();
+                    showToast('Task paused');
+                }
+            }
+        }
+
+        function completeOngoing() {
+            if (state.ongoingTaskId) {
+                completeTask(state.ongoingTaskId);
+            }
+        }
+
+        function completeTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.status = 'completed';
+                task.completedAt = new Date();
+                if (state.ongoingTaskId === id) {
+                    state.ongoingTaskId = null;
+                }
+                // Hide timer alert if completing the task that triggered it
+                if (state.timerAlertTaskId === id) {
+                    hideTimerAlert();
+                }
+                saveData();
+                renderAll();
+                showToast('Task completed! 🎉', 'success');
+            }
+        }
+
+        function deleteTask(id) {
+            if (confirm('Delete this task?')) {
+                state.tasks = state.tasks.filter(t => t.id !== id);
+                if (state.ongoingTaskId === id) state.ongoingTaskId = null;
+                if (state.timerAlertTaskId === id) hideTimerAlert();
+                saveData();
+                renderAll();
+                closeDetailsModal();
+            }
+        }
+
+        function deleteCurrentTask() {
+            if (state.currentViewingTask) {
+                deleteTask(state.currentViewingTask.id);
+            }
+        }
+
+        function startUpcomingTask() {
+            const upcoming = getUpcomingTask();
+            if (upcoming) {
+                setOngoing(upcoming.id);
+                document.getElementById('upcoming-alert').classList.add('hidden');
+            }
+        }
+
+        // Getters
+        function getOngoingTask() {
+            return state.tasks.find(t => t.id === state.ongoingTaskId && t.status === 'ongoing');
+        }
+
+        function getUpcomingTask() {
+            const now = new Date();
+            return state.tasks.find(t => {
+                if (t.status !== 'pending') return false;
+                const diff = t.date - now;
+                return diff > 0 && diff <= 60 * 60 * 1000;
+            });
+        }
+
+        // Rendering
+        function renderAll() {
+            renderTasks();
+            renderOngoing();
+            renderDayView();
+            renderStats();
+            updateStats();
+            checkNotifications();
+        }
+
+        function renderOngoing() {
+            const section = document.getElementById('ongoing-section');
+            if (!state.ongoingTaskId) {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            const task = state.tasks.find(t => t.id === state.ongoingTaskId);
+            if (!task || task.status !== 'ongoing') {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            section.classList.remove('hidden');
+            document.getElementById('ongoing-title').innerText = task.title;
+            
+            const refsPreview = document.getElementById('ongoing-refs-preview');
+            if (task.refs && task.refs.length > 0) {
+                refsPreview.classList.remove('hidden');
+                document.getElementById('ongoing-refs-count').innerText = `${task.refs.length} reference${task.refs.length > 1 ? 's' : ''}`;
+            } else {
+                refsPreview.classList.add('hidden');
+            }
+            
+            const notesPreview = document.getElementById('ongoing-notes-preview');
+            if (task.notes) {
+                notesPreview.classList.remove('hidden');
+                document.getElementById('ongoing-notes-text').innerText = task.notes;
+            } else {
+                notesPreview.classList.add('hidden');
+            }
+        }
+
+        function updateOngoingTimer() {
+            if (!state.ongoingTaskId) return;
+            
+            const task = state.tasks.find(t => t.id === state.ongoingTaskId);
+            if (!task || task.status !== 'ongoing') return;
+            
+            const now = new Date();
+            const endTime = new Date(task.date.getTime() + task.duration * 60000);
+            const diff = endTime - now;
+            
+            if (diff <= 0) {
+                document.getElementById('ongoing-time').innerText = "00:00:00";
+                document.getElementById('ongoing-progress').style.width = "0%";
+                
+                // Timer running out alert
+                if (state.timerAlertTaskId !== task.id && diff > -60000) {
+                    showTimerAlert(task);
+                }
+                return;
+            }
+            
+            const hrs = Math.floor(diff / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+            
+            const timeStr = hrs > 0 
+                ? `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+                : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            document.getElementById('ongoing-time').innerText = timeStr;
+            
+            const total = task.duration * 60000;
+            const elapsed = now - task.date;
+            const progress = Math.max(0, 100 - (elapsed / total) * 100);
+            document.getElementById('ongoing-progress').style.width = `${progress}%`;
+            
+            // Warning when less than 5 minutes
+            if (diff <= 5 * 60000 && diff > 0) {
+                document.getElementById('ongoing-time').classList.add('text-accent-red');
+                document.getElementById('ongoing-time').classList.remove('text-accent-cyan');
+            } else {
+                document.getElementById('ongoing-time').classList.remove('text-accent-red');
+                document.getElementById('ongoing-time').classList.add('text-accent-cyan');
+            }
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('task-list');
+            const empty = document.getElementById('empty-state');
+            list.innerHTML = '';
+            
+            const now = new Date();
+            let filtered = state.tasks.filter(t => {
+                if (state.filter === 'all') return t.status !== 'completed';
+                if (state.filter === 'ongoing') return t.status === 'ongoing';
+                if (state.filter === 'today') {
+                    return t.status !== 'completed' && t.date.toDateString() === now.toDateString();
+                }
+                if (state.filter === 'upcoming') {
+                    return t.status !== 'completed' && t.date > now;
+                }
+                return t.status !== 'completed';
+            });
+
+            filtered = filtered.filter(t => t.id !== state.ongoingTaskId);
+
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+                empty.classList.add('flex');
+            } else {
+                empty.classList.add('hidden');
+                empty.classList.remove('flex');
+            }
+
+            filtered.forEach(task => {
+                const el = document.createElement('div');
+                el.className = 'task-card bg-gray-800/50 rounded-xl p-3 border border-gray-700/50';
+                
+                let priorityColor = task.priority === 'high' ? 'text-red-400 bg-red-500/10' : 
+                                  task.priority === 'medium' ? 'text-yellow-400 bg-yellow-500/10' : 
+                                  'text-blue-400 bg-blue-500/10';
+                
+                const timeStr = task.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const isOngoing = task.status === 'ongoing';
+                
+                // Calculate due by
+                const endTime = new Date(task.date.getTime() + task.duration * 60000);
+                const endTimeStr = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const dateStr = task.date.toDateString() === now.toDateString() ? 'Today' : 
+                               task.date.toDateString() === new Date(now.getTime() + 86400000).toDateString() ? 'Tomorrow' :
+                               task.date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                
+                el.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <button onclick="toggleComplete(${task.id})" class="mt-0.5 w-5 h-5 rounded-full border-2 ${task.status === 'completed' ? 'bg-accent-success border-accent-success' : 'border-gray-600'} flex items-center justify-center flex-shrink-0">
+                            ${task.status === 'completed' ? '<i class="fas fa-check text-[10px] text-gray-900"></i>' : ''}
+                        </button>
+                        <div class="flex-1 min-w-0" onclick="viewTaskDetails(${task.id})">
+                            <h3 class="font-semibold text-sm text-white truncate ${task.status === 'completed' ? 'line-through text-gray-500' : ''}">${task.title}</h3>
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                <span class="text-[10px] ${priorityColor} px-1.5 py-0.5 rounded font-medium uppercase">${task.priority}</span>
+                                <span class="text-[10px] text-gray-500">${timeStr}</span>
+                                <span class="text-[10px] text-gray-500">${task.duration}m</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] text-accent-purple font-medium">Due by ${dateStr}, ${endTimeStr}</span>
+                                ${task.refs?.length ? '<span class="text-[10px] text-accent-cyan"><i class="fas fa-link"></i></span>' : ''}
+                                ${task.notes ? '<span class="text-[10px] text-gray-400"><i class="fas fa-sticky-note"></i></span>' : ''}
+                            </div>
+                        </div>
+                        ${!isOngoing ? `
+                        <button onclick="setOngoing(${task.id})" class="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 active:scale-95">
+                            <i class="fas fa-play text-[10px]"></i>
+                        </button>
+                        ` : '<div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse mt-2"></div>'}
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function renderDayView() {
+            const timeline = document.getElementById('day-timeline');
+            const now = new Date();
+            document.getElementById('day-view-date').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            
+            timeline.innerHTML = '';
+            
+            // Create 24 hours
+            for (let hour = 0; hour < 24; hour++) {
+                const hourDiv = document.createElement('div');
+                hourDiv.className = 'timeline-hour flex';
+                hourDiv.style.height = '60px';
+                
+                const timeLabel = document.createElement('div');
+                timeLabel.className = 'w-14 flex items-center justify-center text-xs text-gray-500 font-mono border-r border-gray-800';
+                timeLabel.innerText = `${hour.toString().padStart(2, '0')}:00`;
+                
+                const slot = document.createElement('div');
+                slot.className = 'flex-1 relative';
+                slot.dataset.hour = hour;
+                
+                hourDiv.appendChild(timeLabel);
+                hourDiv.appendChild(slot);
+                timeline.appendChild(hourDiv);
+            }
+            
+            // Place tasks
+            const todayTasks = state.tasks.filter(t => 
+                t.date.toDateString() === now.toDateString() && t.status !== 'completed'
+            );
+            
+            todayTasks.forEach(task => {
+                const startHour = task.date.getHours();
+                const startMin = task.date.getMinutes();
+                const durationHours = task.duration / 60;
+                const top = startMin;
+                const height = Math.max(30, (task.duration / 60) * 60);
+                
+                const taskEl = document.createElement('div');
+                taskEl.className = `timeline-task text-xs ${task.status === 'ongoing' ? 'bg-accent-cyan/30 border border-accent-cyan' : 'bg-accent-purple/20 border border-accent-purple/50'}`;
+                taskEl.style.top = `${top}px`;
+                taskEl.style.height = `${height}px`;
+                
+                const endTime = new Date(task.date.getTime() + task.duration * 60000);
+                
+                taskEl.innerHTML = `
+                    <div class="font-semibold text-white truncate">${task.title}</div>
+                    <div class="text-[10px] text-gray-400">
+                        ${task.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                        ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                `;
+                
+                taskEl.onclick = () => viewTaskDetails(task.id);
+                
+                const slot = timeline.children[startHour].querySelector('[data-hour="' + startHour + '"]');
+                if (slot) slot.appendChild(taskEl);
+            });
+            
+            // Position current time line
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
+            const line = document.getElementById('current-time-line');
+            line.style.top = `${(currentHour * 60) + currentMin}px`;
+        }
+
+        function renderStats() {
+            const completed = state.tasks.filter(t => t.status === 'completed');
+            const total = state.tasks.length;
+            const score = total > 0 ? Math.round((completed.length / total) * 100) : 0;
+            document.getElementById('productivity-score').innerText = score + '%';
+            
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const chart = document.getElementById('weekly-chart');
+            chart.innerHTML = '';
+            
+            days.forEach((day, i) => {
+                const count = Math.floor(Math.random() * 5) + (i === new Date().getDay() - 1 ? 2 : 0);
+                const height = Math.min(100, count * 20);
+                const bar = document.createElement('div');
+                bar.className = 'flex-1 bg-accent-purple/30 rounded-t-sm relative group';
+                bar.style.height = `${height}%`;
+                bar.innerHTML = `
+                    <div class="absolute inset-0 bg-accent-purple rounded-t-sm opacity-0 group-hover:opacity-100 transition"></div>
+                `;
+                chart.appendChild(bar);
+            });
+            
+            const priorities = { high: 0, medium: 0, low: 0 };
+            state.tasks.filter(t => t.status !== 'completed').forEach(t => priorities[t.priority]++);
+            const totalPending = priorities.high + priorities.medium + priorities.low;
+            
+            const priorityStats = document.getElementById('priority-stats');
+            priorityStats.innerHTML = '';
+            ['high', 'medium', 'low'].forEach(p => {
+                const count = priorities[p];
+                const pct = totalPending > 0 ? (count / totalPending) * 100 : 0;
+                const color = p === 'high' ? 'bg-red-500' : p === 'medium' ? 'bg-yellow-500' : 'bg-blue-500';
+                
+                priorityStats.innerHTML += `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs w-12 capitalize text-gray-400">${p}</span>
+                        <div class="flex-1 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                            <div class="${color} h-full rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="text-xs w-6 text-right text-gray-500">${count}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function updateStats() {
+            const now = new Date();
+            const pending = state.tasks.filter(t => t.status !== 'completed' && t.status !== 'ongoing').length;
+            const ongoing = state.tasks.filter(t => t.status === 'ongoing').length;
+            const done = state.tasks.filter(t => t.status === 'completed').length;
+            const upcoming = state.tasks.filter(t => {
+                if (t.status !== 'pending') return false;
+                const diff = t.date - now;
+                return diff > 0 && diff <= 60 * 60 * 1000;
+            }).length;
+            
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-ongoing-count').innerText = ongoing;
+            document.getElementById('stat-done').innerText = done;
+            document.getElementById('stat-upcoming').innerText = upcoming;
+        }
+
+        // Notifications
+        function checkNotifications() {
+            const now = new Date();
+            
+            // Check for upcoming tasks (within 15 minutes)
+            state.tasks.forEach(task => {
+                if (task.status !== 'pending' || state.notifiedTasks.has(task.id)) return;
+                
+                const diff = task.date - now;
+                if (diff > 0 && diff <= 15 * 60 * 1000) {
+                    showNotification(`⏰ "${task.title}" starts in ${Math.ceil(diff / 60000)} minutes!`, 'warning');
+                    state.notifiedTasks.add(task.id);
+                    
+                    // Show upcoming alert
+                    const upcomingAlert = document.getElementById('upcoming-alert');
+                    upcomingAlert.classList.remove('hidden');
+                    document.getElementById('upcoming-task-name').innerText = task.title;
+                    updateUpcomingTimer(task);
+                }
+            });
+            
+            // Update upcoming timer display
+            const upcoming = getUpcomingTask();
+            if (upcoming) {
+                const diff = upcoming.date - now;
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                document.getElementById('upcoming-time').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById('upcoming-alert').classList.add('hidden');
+            }
+        }
+
+        function updateUpcomingTimer(task) {
+            const interval = setInterval(() => {
+                const now = new Date();
+                const diff = task.date - now;
+                
+                if (diff <= 0 || task.status !== 'pending') {
+                    clearInterval(interval);
+                    document.getElementById('upcoming-alert').classList.add('hidden');
+                    return;
+                }
+                
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                document.getElementById('upcoming-time').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function showTimerAlert(task) {
+            state.timerAlertTaskId = task.id;
+            const alert = document.getElementById('timer-alert');
+            alert.classList.remove('hidden');
+            document.getElementById('timer-task-name').innerText = task.title;
+            
+            // Update countdown
+            const updateTimer = () => {
+                if (state.timerAlertTaskId !== task.id) {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                const now = new Date();
+                const endTime = new Date(task.date.getTime() + task.duration * 60000);
+                const diff = endTime - now;
+                
+                if (diff <= -60000) { // Hide after 1 minute overdue
+                    hideTimerAlert();
+                    clearInterval(interval);
+                    return;
+                }
+                
+                const secs = Math.floor(Math.abs(diff) / 1000);
+                const text = diff < 0 ? `${secs}s overdue` : `${secs}s remaining`;
+                document.getElementById('timer-remaining').innerText = text;
+            };
+            
+            const interval = setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        function hideTimerAlert() {
+            state.timerAlertTaskId = null;
+            document.getElementById('timer-alert').classList.add('hidden');
+        }
+
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            
+            const colors = type === 'warning' ? 'bg-accent-orange/90 text-gray-900' : 
+                          type === 'urgent' ? 'bg-accent-red/90 text-white' :
+                          'bg-accent-purple/90 text-white';
+            
+            notif.className = `notification-toast ${colors} px-4 py-3 rounded-xl shadow-xl text-sm font-medium pointer-events-auto flex items-center gap-3`;
+            notif.innerHTML = `
+                <i class="fas ${type === 'warning' ? 'fa-bell' : type === 'urgent' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-xs opacity-70 hover:opacity-100">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transform = 'translateX(100%)';
+                setTimeout(() => notif.remove(), 300);
+            }, 5000);
+        }
+
+        // Details View
+        function viewTaskDetails(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (!task) return;
+            
+            state.currentViewingTask = task;
+            const modal = document.getElementById('details-modal');
+            const content = document.getElementById('details-content');
+            
+            const timeStr = task.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateStr = task.date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+            const endTime = new Date(task.date.getTime() + task.duration * 60000);
+            const endTimeStr = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            let refsHtml = '';
+            if (task.refs && task.refs.length > 0) {
+                refsHtml = `
+                    <div class="mb-4">
+                        <h3 class="text-xs font-medium text-gray-400 mb-2 uppercase">References</h3>
+                        <div class="space-y-2">
+                            ${task.refs.map(ref => `
+                                <a href="${ref}" target="_blank" class="flex items-center gap-2 p-2.5 rounded-lg bg-gray-800 text-accent-blue active:scale-95 transition text-xs">
+                                    <i class="fas fa-external-link-alt text-xs"></i>
+                                    <span class="truncate flex-1">${ref}</span>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let notesHtml = '';
+            if (task.notes) {
+                notesHtml = `
+                    <div class="mb-4">
+                        <h3 class="text-xs font-medium text-gray-400 mb-2 uppercase">Notes</h3>
+                        <div class="p-3 rounded-lg bg-gray-800/50 border border-gray-700">
+                            <p class="text-xs text-gray-300 leading-relaxed">${task.notes}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let actionsHtml = '';
+            if (task.status !== 'completed') {
+                if (task.status === 'ongoing') {
+                    actionsHtml = `
+                        <button onclick="pauseOngoing(); closeDetailsModal();" class="w-full py-3 rounded-lg bg-yellow-500/20 text-yellow-400 font-semibold text-sm mb-2 active:scale-95 transition">
+                            Pause Task
+                        </button>
+                    `;
+                } else {
+                    actionsHtml = `
+                        <button onclick="setOngoing(${task.id}); closeDetailsModal();" class="w-full py-3 rounded-lg bg-accent-cyan/20 text-accent-cyan font-semibold text-sm mb-2 active:scale-95 transition">
+                            Start Working
+                        </button>
+                    `;
+                }
+                actionsHtml += `
+                    <button onclick="completeTask(${task.id}); closeDetailsModal();" class="w-full py-3 rounded-lg bg-accent-success text-gray-900 font-semibold text-sm active:scale-95 transition">
+                        Mark Complete
+                    </button>
+                `;
+            }
+            
+            content.innerHTML = `
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs px-1.5 py-0.5 rounded bg-${task.priority === 'high' ? 'red' : task.priority === 'medium' ? 'yellow' : 'blue'}-500/20 text-${task.priority === 'high' ? 'red' : task.priority === 'medium' ? 'yellow' : 'blue'}-400 uppercase font-bold text-[10px]">${task.priority}</span>
+                        <span class="text-xs text-gray-500">${task.duration} min</span>
+                    </div>
+                    <h1 class="text-lg font-bold text-white mb-1">${task.title}</h1>
+                    <p class="text-xs text-gray-400 mb-1"><i class="far fa-calendar mr-1"></i>${dateStr} at ${timeStr}</p>
+                    <p class="text-xs text-accent-purple font-medium">Due by ${endTimeStr}</p>
+                </div>
+                
+                ${refsHtml}
+                ${notesHtml}
+                
+                <div class="mt-6 space-y-2">
+                    ${actionsHtml}
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function viewOngoingDetails() {
+            if (state.ongoingTaskId) {
+                viewTaskDetails(state.ongoingTaskId);
+            }
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+            state.currentViewingTask = null;
+        }
+
+        // UI Functions
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-accent-purple');
+                btn.classList.add('text-gray-500');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('text-accent-purple');
+            
+            const indicator = document.getElementById('nav-indicator');
+            const positions = { tasks: '12.5%', stats: '45%', settings: '77.5%' };
+            indicator.style.left = positions[tab];
+            
+            if (tab === 'stats') renderStats();
+            if (tab === 'day') renderDayView();
+        }
+
+        function showDayView() {
+            switchTab('day');
+        }
+
+        function setFilter(filter) {
+            state.filter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.remove('bg-gray-800', 'text-gray-400');
+                    btn.classList.add('bg-accent-purple', 'text-white');
+                } else {
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                    btn.classList.remove('bg-accent-purple', 'text-white');
+                }
+            });
+            renderTasks();
+        }
+
+        function setDuration(min) {
+            document.getElementById('input-duration').value = min;
+            document.querySelectorAll('.duration-btn').forEach(btn => {
+                if (parseInt(btn.dataset.dur) === min) {
+                    btn.classList.add('border-accent-purple', 'text-accent-purple');
+                    btn.classList.remove('border-transparent');
+                } else {
+                    btn.classList.remove('border-accent-purple', 'text-accent-purple');
+                    btn.classList.add('border-transparent');
+                }
+            });
+        }
+
+        function addRefInput() {
+            const container = document.getElementById('refs-container');
+            const input = document.createElement('input');
+            input.type = 'url';
+            input.placeholder = 'https://...';
+            input.className = 'ref-input w-full bg-gray-800 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple mt-1';
+            container.appendChild(input);
+        }
+
+        // Modals
+        function openAddModal(preselectedDate = null) {
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.querySelector('.modal-sheet').classList.add('open'), 10);
+            
+            if (preselectedDate) {
+                const yyyy = preselectedDate.getFullYear();
+                const mm = String(preselectedDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(preselectedDate.getDate()).padStart(2, '0');
+                document.getElementById('input-date').value = `${yyyy}-${mm}-${dd}`;
+            }
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.querySelector('.modal-sheet').classList.remove('open');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function showCalendar() {
+            document.getElementById('calendar-modal').classList.remove('hidden');
+            renderCalendar();
+        }
+
+        function closeCalendar() {
+            document.getElementById('calendar-modal').classList.add('hidden');
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthYear = document.getElementById('calendar-month-year');
+            grid.innerHTML = '';
+            
+            const year = state.currentDate.getFullYear();
+            const month = state.currentDate.getMonth();
+            monthYear.innerText = state.currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = new Date(year, month, i);
+                const isToday = date.toDateString() === today.toDateString();
+                const tasksForDay = state.tasks.filter(t => 
+                    t.date.getDate() === i && t.date.getMonth() === month && t.date.getFullYear() === year && t.status !== 'completed'
+                );
+                
+                const btn = document.createElement('button');
+                btn.className = `calendar-day ${isToday ? 'bg-accent-purple text-white' : 'text-gray-300'}`;
+                btn.innerHTML = `
+                    <span class="text-xs font-semibold">${i}</span>
+                    ${tasksForDay.length > 0 ? `<span class="w-1 h-1 rounded-full bg-accent-cyan mt-0.5"></span>` : ''}
+                `;
+                btn.onclick = () => { openAddModal(date); closeCalendar(); };
+                grid.appendChild(btn);
+            }
+        }
+
+        function changeMonth(delta) {
+            state.currentDate.setMonth(state.currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // Settings
+        function exportData() {
+            const data = JSON.stringify(state.tasks, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `chronotask-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            showToast('Data exported!');
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure? This will delete all tasks permanently.')) {
+                state.tasks = [];
+                state.ongoingTaskId = null;
+                state.timerAlertTaskId = null;
+                saveData();
+                renderAll();
+                showToast('All data cleared');
+            }
+        }
+
+        // Clocks
+        function startClocks() {
+            setInterval(() => {
+                updateOngoingTimer();
+                const now = new Date();
+                document.getElementById('current-date').innerText = now.toLocaleDateString('en-US', { 
+                    weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                });
+                
+                // Daily progress with percentage
+                const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                const pct = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                document.getElementById('daily-progress').style.width = `${pct}%`;
+                document.getElementById('day-progress-text').innerText = `${Math.round(pct)}%`;
+                
+                // Change color based on time of day
+                const progressBar = document.getElementById('daily-progress');
+                if (pct > 75) {
+                    progressBar.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+                } else if (pct > 50) {
+                    progressBar.style.background = 'linear-gradient(90deg, #f97316, #eab308)';
+                } else {
+                    progressBar.style.background = 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)';
+                }
+            }, 1000);
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('notification-container');
+            const toast = document.createElement('div');
+            const colors = type === 'warning' ? 'bg-yellow-500/90 text-yellow-950' : 
+                          type === 'success' ? 'bg-accent-success/90 text-gray-900' : 
+                          'bg-gray-800/90 text-white border border-gray-700';
+            
+            toast.className = `${colors} px-3 py-2 rounded-lg shadow-xl text-xs font-medium transform transition-all duration-300 translate-y-[-10px] opacity-0 pointer-events-auto notification-toast`;
+            toast.innerHTML = message;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+            });
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-10px]', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+    </script>
 </body>
 </html>
