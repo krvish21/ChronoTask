@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0B0F19">
+    <title>ChronoTask Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        gray: { 850: '#1f2937', 900: '#111827', 950: '#0B0F19' },
+                        accent: { blue: '#3b82f6', purple: '#8b5cf6', cyan: '#06b6d4', pink: '#ec4899', success: '#10b981', orange: '#f97316' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { overscroll-behavior-y: none; touch-action: pan-y; }
+        ::-webkit-scrollbar { width: 0; height: 0; }
+        
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        
+        .glass {
+            background: rgba(17, 24, 39, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .progress-gradient {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            animation: gradientMove 3s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .pulse-ring {
+            animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        .task-card { transition: all 0.2s ease; }
+        .task-card:active { transform: scale(0.98); }
+        
+        .modal-sheet {
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-sheet.open { transform: translateY(0); }
+        
+        .ongoing-pulse {
+            animation: ongoingPulse 2s ease-in-out infinite;
+        }
+        @keyframes ongoingPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6); }
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #8b5cf6;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #8b5cf6;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+        .calendar-day:active { transform: scale(0.9); background: rgba(59, 130, 246, 0.2); }
+        
+        .fab {
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+        }
+        
+        .nav-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 3px;
+            background: #8b5cf6;
+            border-radius: 3px 3px 0 0;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans h-screen overflow-hidden">
+    <!-- Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1 z-50">
+        <div id="daily-progress" class="h-full progress-gradient w-0 transition-all duration-1000"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="h-full flex flex-col safe-top safe-bottom">
+        
+        <!-- Header -->
+        <header class="px-5 py-4 flex items-center justify-between glass sticky top-0 z-40">
+            <div>
+                <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+                    ChronoTask
+                </h1>
+                <p class="text-xs text-gray-500 font-mono mt-0.5" id="current-date">Loading...</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="showCalendar()" class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center active:scale-95 transition">
+                    <i class="fas fa-calendar-alt text-gray-400"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto pb-24" id="main-content">
+            
+            <!-- TASKS TAB -->
+            <div id="tab-tasks" class="tab-content">
+                <!-- Ongoing Task Section -->
+                <div id="ongoing-section" class="px-4 mt-4 hidden">
+                    <div class="ongoing-pulse rounded-2xl bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 border border-accent-cyan/50 p-5 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-accent-cyan/5"></div>
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-accent-cyan/20 rounded-full blur-3xl"></div>
+                        
+                        <div class="relative">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
+                                    <span class="text-xs font-bold text-accent-cyan uppercase tracking-wider">Currently Working On</span>
+                                </div>
+                                <button onclick="pauseOngoing()" class="w-8 h-8 rounded-full bg-gray-800/80 flex items-center justify-center text-gray-400 active:scale-95">
+                                    <i class="fas fa-pause"></i>
+                                </button>
+                            </div>
+                            
+                            <h2 class="text-xl font-bold text-white mb-3 leading-tight" id="ongoing-title">Task Name</h2>
+                            
+                            <!-- References & Notes Preview -->
+                            <div id="ongoing-preview" class="mb-4 space-y-2">
+                                <div id="ongoing-refs-preview" class="hidden flex items-center gap-2 text-xs text-gray-400">
+                                    <i class="fas fa-link text-accent-cyan"></i>
+                                    <span id="ongoing-refs-count">0 references</span>
+                                </div>
+                                <div id="ongoing-notes-preview" class="hidden text-xs text-gray-400 line-clamp-2 italic">
+                                    "<span id="ongoing-notes-text"></span>"
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1">
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Time Remaining</span>
+                                        <span id="ongoing-time" class="font-mono text-accent-cyan font-bold text-lg">00:00:00</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div id="ongoing-progress" class="h-full bg-gradient-to-r from-accent-cyan to-blue-500 transition-all duration-1000" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="viewOngoingDetails()" class="w-12 h-12 rounded-full bg-gray-800 text-white flex items-center justify-center active:scale-95 transition">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <button onclick="completeOngoing()" class="w-12 h-12 rounded-full bg-accent-success text-gray-900 flex items-center justify-center shadow-lg shadow-green-500/30 active:scale-95 transition">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="px-4 mt-4 grid grid-cols-3 gap-3">
+                    <div class="stat-card rounded-xl p-3">
+                        <div class="text-2xl font-bold text-white" id="stat-pending">0</div>
+                        <div class="text-xs text-gray-500 mt-0.5">Pending</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-3">
+                        <div class="text-2xl font-bold text-accent-purple" id="stat-ongoing-count">0</div>
+                        <div class="text-xs text-gray-500 mt-0.5">Ongoing</div>
+                    </div>
+                    <div class="stat-card rounded-xl p-3">
+                        <div class="text-2xl font-bold text-accent-success" id="stat-done">0</div>
+                        <div class="text-xs text-gray-500 mt-0.5">Done</div>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="px-4 mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    <button onclick="setFilter('all')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-accent-purple text-white whitespace-nowrap transition" data-filter="all">
+                        All
+                    </button>
+                    <button onclick="setFilter('ongoing')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="ongoing">
+                        Ongoing
+                    </button>
+                    <button onclick="setFilter('today')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="today">
+                        Today
+                    </button>
+                    <button onclick="setFilter('upcoming')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-400 whitespace-nowrap transition" data-filter="upcoming">
+                        Upcoming
+                    </button>
+                </div>
+
+                <!-- Task List -->
+                <div class="px-4 mt-4 space-y-3 pb-4" id="task-list"></div>
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-16 text-gray-600">
+                    <div class="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mb-4">
+                        <i class="fas fa-clipboard-check text-3xl text-gray-600"></i>
+                    </div>
+                    <p class="text-sm">No tasks found</p>
+                </div>
+            </div>
+
+            <!-- STATS TAB -->
+            <div id="tab-stats" class="tab-content hidden px-4 pt-4">
+                <h2 class="text-2xl font-bold mb-6">Analytics</h2>
+                
+                <!-- Weekly Chart -->
+                <div class="stat-card rounded-2xl p-5 mb-4">
+                    <h3 class="text-sm font-medium text-gray-400 mb-4">Weekly Completion</h3>
+                    <div class="flex items-end justify-between h-32 gap-2" id="weekly-chart">
+                        <!-- Bars injected via JS -->
+                    </div>
+                    <div class="flex justify-between mt-2 text-xs text-gray-500">
+                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                </div>
+
+                <!-- Productivity Score -->
+                <div class="stat-card rounded-2xl p-5 mb-4 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-400">Productivity Score</h3>
+                        <p class="text-3xl font-bold text-accent-purple mt-1" id="productivity-score">85%</p>
+                        <p class="text-xs text-gray-500 mt-1">Based on completion rate</p>
+                    </div>
+                    <div class="w-20 h-20 rounded-full border-4 border-accent-purple/30 flex items-center justify-center relative">
+                        <div class="absolute inset-0 rounded-full border-4 border-accent-purple border-t-transparent rotate-45"></div>
+                        <i class="fas fa-chart-line text-2xl text-accent-purple"></i>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown -->
+                <div class="stat-card rounded-2xl p-5">
+                    <h3 class="text-sm font-medium text-gray-400 mb-4">Priority Distribution</h3>
+                    <div class="space-y-3" id="priority-stats">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="tab-settings" class="tab-content hidden px-4 pt-4">
+                <h2 class="text-2xl font-bold mb-6">Settings</h2>
+                
+                <div class="space-y-4">
+                    <!-- Notifications -->
+                    <div class="stat-card rounded-2xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-accent-purple/20 flex items-center justify-center text-accent-purple">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">Notifications</h3>
+                                <p class="text-xs text-gray-500">Task reminders & alerts</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-block w-12 h-6 align-middle select-none">
+                            <input type="checkbox" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-0 border-accent-purple"/>
+                            <label class="toggle-label block overflow-hidden h-6 rounded-full bg-accent-purple cursor-pointer"></label>
+                        </label>
+                    </div>
+
+                    <!-- Sound -->
+                    <div class="stat-card rounded-2xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-accent-blue/20 flex items-center justify-center text-accent-blue">
+                                <i class="fas fa-volume-up"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">Sound Effects</h3>
+                                <p class="text-xs text-gray-500">Completion sounds</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-block w-12 h-6 align-middle select-none">
+                            <input type="checkbox" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-0 border-accent-purple"/>
+                            <label class="toggle-label block overflow-hidden h-6 rounded-full bg-accent-purple cursor-pointer"></label>
+                        </label>
+                    </div>
+
+                    <!-- Dark Mode (Always on for this theme) -->
+                    <div class="stat-card rounded-2xl p-4 flex items-center justify-between opacity-50">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-400">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">Dark Mode</h3>
+                                <p class="text-xs text-gray-500">Always enabled</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-lock text-gray-500"></i>
+                    </div>
+
+                    <!-- Data -->
+                    <div class="stat-card rounded-2xl p-4">
+                        <h3 class="font-medium mb-3">Data Management</h3>
+                        <div class="space-y-2">
+                            <button onclick="exportData()" class="w-full py-3 rounded-xl bg-gray-800 text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition">
+                                <i class="fas fa-download"></i> Export Tasks
+                            </button>
+                            <button onclick="clearAllData()" class="w-full py-3 rounded-xl bg-red-500/10 text-red-400 text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- About -->
+                    <div class="text-center text-xs text-gray-600 mt-8">
+                        <p>ChronoTask Pro v2.0</p>
+                        <p class="mt-1">Built for productivity</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="glass border-t border-gray-800 px-6 py-2 flex items-center justify-around safe-bottom z-40 relative">
+            <div class="nav-indicator" id="nav-indicator" style="width: 20%; left: 5%;"></div>
+            
+            <button onclick="switchTab('tasks')" class="nav-btn flex flex-col items-center gap-1 py-2 text-accent-purple w-16" data-tab="tasks">
+                <i class="fas fa-tasks text-lg"></i>
+                <span class="text-[10px]">Tasks</span>
+            </button>
+            <button onclick="switchTab('stats')" class="nav-btn flex flex-col items-center gap-1 py-2 text-gray-500 w-16" data-tab="stats">
+                <i class="fas fa-chart-pie text-lg"></i>
+                <span class="text-[10px]">Stats</span>
+            </button>
+            <div class="w-14"></div>
+            <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 py-2 text-gray-500 w-16" data-tab="settings">
+                <i class="fas fa-cog text-lg"></i>
+                <span class="text-[10px]">Settings</span>
+            </button>
+        </nav>
+
+        <!-- Floating Action Button -->
+        <button onclick="openAddModal()" class="fab fixed bottom-20 left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full bg-gradient-to-r from-accent-purple to-accent-blue text-white flex items-center justify-center text-xl z-50 active:scale-90 transition">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAddModal()"></div>
+        <div class="modal-sheet absolute bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl border-t border-gray-700 max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-gray-900 pt-3 pb-4 px-5 border-b border-gray-800 z-10">
+                <div class="w-12 h-1 bg-gray-700 rounded-full mx-auto mb-4"></div>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">New Task</h2>
+                    <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
+                        <i class="fas fa-times text-gray-400"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form id="add-task-form" onsubmit="handleAddTask(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-2 block">Task Name</label>
+                    <input type="text" id="input-title" required placeholder="What needs to be done?" 
+                        class="w-full bg-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 uppercase mb-2 block">Date</label>
+                        <input type="date" id="input-date" required
+                            class="w-full bg-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 uppercase mb-2 block">Time</label>
+                        <input type="time" id="input-time" required
+                            class="w-full bg-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-2 block">Duration</label>
+                    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                        <button type="button" onclick="setDuration(15)" class="duration-btn px-4 py-2 rounded-lg bg-gray-800 text-sm whitespace-nowrap border border-transparent" data-dur="15">15m</button>
+                        <button type="button" onclick="setDuration(30)" class="duration-btn px-4 py-2 rounded-lg bg-gray-800 text-sm whitespace-nowrap border border-transparent" data-dur="30">30m</button>
+                        <button type="button" onclick="setDuration(60)" class="duration-btn px-4 py-2 rounded-lg bg-gray-800 text-sm whitespace-nowrap border border-accent-purple text-accent-purple" data-dur="60">1h</button>
+                        <button type="button" onclick="setDuration(120)" class="duration-btn px-4 py-2 rounded-lg bg-gray-800 text-sm whitespace-nowrap border border-transparent" data-dur="120">2h</button>
+                    </div>
+                    <input type="hidden" id="input-duration" value="60">
+                </div>
+
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-2 block">Priority</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1">
+                            <input type="radio" name="priority" value="low" class="peer hidden">
+                            <div class="py-3 rounded-xl bg-gray-800 text-center text-sm text-gray-400 peer-checked:bg-blue-500/20 peer-checked:text-blue-400 peer-checked:border-blue-500 border border-transparent transition">Low</div>
+                        </label>
+                        <label class="flex-1">
+                            <input type="radio" name="priority" value="medium" class="peer hidden" checked>
+                            <div class="py-3 rounded-xl bg-gray-800 text-center text-sm text-gray-400 peer-checked:bg-yellow-500/20 peer-checked:text-yellow-400 peer-checked:border-yellow-500 border border-transparent transition">Medium</div>
+                        </label>
+                        <label class="flex-1">
+                            <input type="radio" name="priority" value="high" class="peer hidden">
+                            <div class="py-3 rounded-xl bg-gray-800 text-center text-sm text-gray-400 peer-checked:bg-red-500/20 peer-checked:text-red-400 peer-checked:border-red-500 border border-transparent transition">High</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Start Immediately Toggle -->
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-800/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-accent-cyan/20 flex items-center justify-center text-accent-cyan">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-sm">Start Immediately</h3>
+                            <p class="text-xs text-gray-500">Set as ongoing task</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-block w-12 h-6 align-middle select-none">
+                        <input type="checkbox" id="input-start-now" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0 border-gray-600"/>
+                        <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-700 cursor-pointer transition-colors duration-300"></label>
+                    </label>
+                </div>
+
+                <!-- References -->
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-2 block">References (URLs)</label>
+                    <div id="refs-container" class="space-y-2">
+                        <input type="url" placeholder="https://..." class="ref-input w-full bg-gray-800 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">
+                    </div>
+                    <button type="button" onclick="addRefInput()" class="mt-2 text-xs text-accent-purple font-medium flex items-center gap-1">
+                        <i class="fas fa-plus"></i> Add another link
+                    </button>
+                </div>
+
+                <!-- Notes -->
+                <div>
+                    <label class="text-xs font-medium text-gray-500 uppercase mb-2 block">Notes</label>
+                    <textarea id="input-notes" rows="3" placeholder="Add any details..." 
+                        class="w-full bg-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-accent-purple to-accent-blue text-white font-semibold text-lg shadow-lg shadow-purple-500/25 active:scale-95 transition mt-6">
+                    Create Task
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div id="details-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" onclick="closeDetailsModal()"></div>
+        <div class="absolute inset-x-0 top-0 bottom-0 bg-gray-900 overflow-y-auto">
+            <div class="sticky top-0 bg-gray-900/95 backdrop-blur border-b border-gray-800 px-5 py-4 flex items-center justify-between z-10">
+                <button onclick="closeDetailsModal()" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="text-lg font-bold">Task Details</h2>
+                <button onclick="deleteCurrentTask()" class="w-10 h-10 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            
+            <div class="p-5" id="details-content">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Modal -->
+    <div id="calendar-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl">
+            <div class="h-full flex flex-col p-5">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">Calendar</h2>
+                    <button onclick="closeCalendar()" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center active:scale-95">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 class="text-lg font-semibold" id="calendar-month-year">Month Year</h3>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center active:scale-95">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 mb-2 font-medium">
+                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2 flex-1 content-start"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-16 left-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+        // State
+        const state = {
+            tasks: [],
+            filter: 'all',
+            currentDate: new Date(),
+            nextId: 1,
+            currentViewingTask: null,
+            ongoingTaskId: null
+        };
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            if (state.tasks.length === 0) {
+                // Seed data
+                const now = new Date();
+                addTask({
+                    title: "Review Project Alpha",
+                    date: new Date(now.getTime() + 2 * 60 * 60 * 1000),
+                    priority: "high",
+                    duration: 45,
+                    status: "pending",
+                    refs: ["https://docs.example.com"],
+                    notes: "Check the API documentation first"
+                });
+                addTask({
+                    title: "Team Meeting",
+                    date: new Date(now.getTime() + 30 * 60 * 1000),
+                    priority: "medium",
+                    duration: 30,
+                    status: "ongoing",
+                    refs: [],
+                    notes: "Prepare slides"
+                });
+            }
+            renderAll();
+            startClocks();
+            
+            document.getElementById('input-date').valueAsDate = new Date();
+            document.getElementById('input-time').value = new Date().toTimeString().slice(0, 5);
+        });
+
+        function addTask(taskData) {
+            const task = {
+                id: state.nextId++,
+                ...taskData,
+                notified: false,
+                createdAt: new Date()
+            };
+            state.tasks.push(task);
+            if (task.status === 'ongoing') {
+                state.ongoingTaskId = task.id;
+            }
+            saveData();
+            return task;
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('chronotask_data');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state.tasks = parsed.tasks.map(t => ({
+                    ...t,
+                    date: new Date(t.date),
+                    createdAt: new Date(t.createdAt)
+                }));
+                state.nextId = parsed.nextId || 1;
+                state.ongoingTaskId = parsed.ongoingTaskId || null;
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('chronotask_data', JSON.stringify({
+                tasks: state.tasks,
+                nextId: state.nextId,
+                ongoingTaskId: state.ongoingTaskId
+            }));
+        }
+
+        // Task Management
+        function handleAddTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('input-title').value;
+            const dateVal = document.getElementById('input-date').value;
+            const timeVal = document.getElementById('input-time').value;
+            const priority = document.querySelector('input[name="priority"]:checked').value;
+            const duration = parseInt(document.getElementById('input-duration').value);
+            const startNow = document.getElementById('input-start-now').checked;
+            const notes = document.getElementById('input-notes').value;
+            
+            const refs = Array.from(document.querySelectorAll('.ref-input'))
+                .map(input => input.value)
+                .filter(v => v.trim() !== '');
+
+            const dateObj = startNow ? new Date() : new Date(`${dateVal}T${timeVal}`);
+            
+            // If starting now, adjust duration logic
+            const taskData = {
+                title,
+                date: dateObj,
+                priority,
+                duration,
+                status: startNow ? 'ongoing' : 'pending',
+                refs,
+                notes
+            };
+
+            // If another task is ongoing, pause it
+            if (startNow && state.ongoingTaskId) {
+                const current = state.tasks.find(t => t.id === state.ongoingTaskId);
+                if (current) current.status = 'pending';
+            }
+
+            addTask(taskData);
+            
+            closeAddModal();
+            renderAll();
+            showToast(startNow ? 'Task started!' : 'Task created');
+            
+            // Reset form
+            document.getElementById('add-task-form').reset();
+            document.getElementById('input-date').valueAsDate = new Date();
+            document.getElementById('input-time').value = new Date().toTimeString().slice(0, 5);
+            document.getElementById('refs-container').innerHTML = '<input type="url" placeholder="https://..." class="ref-input w-full bg-gray-800 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple">';
+            setDuration(60);
+        }
+
+        function setOngoing(id) {
+            // Pause current ongoing
+            if (state.ongoingTaskId) {
+                const current = state.tasks.find(t => t.id === state.ongoingTaskId);
+                if (current) current.status = 'pending';
+            }
+            
+            // Set new ongoing
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.status = 'ongoing';
+                task.date = new Date(); // Reset start time to now
+                state.ongoingTaskId = id;
+                saveData();
+                renderAll();
+                showToast('Task is now ongoing', 'success');
+            }
+        }
+
+        function pauseOngoing() {
+            if (state.ongoingTaskId) {
+                const task = state.tasks.find(t => t.id === state.ongoingTaskId);
+                if (task) {
+                    task.status = 'pending';
+                    state.ongoingTaskId = null;
+                    saveData();
+                    renderAll();
+                    showToast('Task paused');
+                }
+            }
+        }
+
+        function completeOngoing() {
+            if (state.ongoingTaskId) {
+                completeTask(state.ongoingTaskId);
+            }
+        }
+
+        function completeTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.status = 'completed';
+                task.completedAt = new Date();
+                if (state.ongoingTaskId === id) state.ongoingTaskId = null;
+                saveData();
+                renderAll();
+                showToast('Task completed! 🎉', 'success');
+            }
+        }
+
+        function deleteTask(id) {
+            if (confirm('Delete this task?')) {
+                state.tasks = state.tasks.filter(t => t.id !== id);
+                if (state.ongoingTaskId === id) state.ongoingTaskId = null;
+                saveData();
+                renderAll();
+                closeDetailsModal();
+            }
+        }
+
+        function deleteCurrentTask() {
+            if (state.currentViewingTask) {
+                deleteTask(state.currentViewingTask.id);
+            }
+        }
+
+        // Rendering
+        function renderAll() {
+            renderTasks();
+            renderOngoing();
+            renderStats();
+            updateStats();
+        }
+
+        function renderOngoing() {
+            const section = document.getElementById('ongoing-section');
+            if (!state.ongoingTaskId) {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            const task = state.tasks.find(t => t.id === state.ongoingTaskId);
+            if (!task || task.status !== 'ongoing') {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            section.classList.remove('hidden');
+            document.getElementById('ongoing-title').innerText = task.title;
+            
+            // Show refs preview
+            const refsPreview = document.getElementById('ongoing-refs-preview');
+            if (task.refs && task.refs.length > 0) {
+                refsPreview.classList.remove('hidden');
+                document.getElementById('ongoing-refs-count').innerText = `${task.refs.length} reference${task.refs.length > 1 ? 's' : ''}`;
+            } else {
+                refsPreview.classList.add('hidden');
+            }
+            
+            // Show notes preview
+            const notesPreview = document.getElementById('ongoing-notes-preview');
+            if (task.notes) {
+                notesPreview.classList.remove('hidden');
+                document.getElementById('ongoing-notes-text').innerText = task.notes;
+            } else {
+                notesPreview.classList.add('hidden');
+            }
+        }
+
+        function updateOngoingTimer() {
+            if (!state.ongoingTaskId) return;
+            
+            const task = state.tasks.find(t => t.id === state.ongoingTaskId);
+            if (!task || task.status !== 'ongoing') return;
+            
+            const now = new Date();
+            const endTime = new Date(task.date.getTime() + task.duration * 60000);
+            const diff = endTime - now;
+            
+            if (diff <= 0) {
+                document.getElementById('ongoing-time').innerText = "00:00:00";
+                document.getElementById('ongoing-progress').style.width = "0%";
+                // Auto-complete or notify
+                return;
+            }
+            
+            const hrs = Math.floor(diff / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+            
+            const timeStr = hrs > 0 
+                ? `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+                : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            document.getElementById('ongoing-time').innerText = timeStr;
+            
+            const total = task.duration * 60000;
+            const elapsed = now - task.date;
+            const progress = Math.max(0, 100 - (elapsed / total) * 100);
+            document.getElementById('ongoing-progress').style.width = `${progress}%`;
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('task-list');
+            const empty = document.getElementById('empty-state');
+            list.innerHTML = '';
+            
+            const now = new Date();
+            let filtered = state.tasks.filter(t => {
+                if (state.filter === 'all') return t.status !== 'completed';
+                if (state.filter === 'ongoing') return t.status === 'ongoing';
+                if (state.filter === 'today') {
+                    return t.status !== 'completed' && t.date.toDateString() === now.toDateString();
+                }
+                if (state.filter === 'upcoming') {
+                    return t.status !== 'completed' && t.date > now;
+                }
+                return t.status !== 'completed';
+            });
+
+            // Don't show ongoing in list if it's the current ongoing
+            filtered = filtered.filter(t => t.id !== state.ongoingTaskId);
+
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+                empty.classList.add('flex');
+            } else {
+                empty.classList.add('hidden');
+                empty.classList.remove('flex');
+            }
+
+            filtered.forEach(task => {
+                const el = document.createElement('div');
+                el.className = 'task-card bg-gray-800/50 rounded-xl p-4 border border-gray-700/50';
+                
+                let priorityColor = task.priority === 'high' ? 'text-red-400 bg-red-500/10' : 
+                                  task.priority === 'medium' ? 'text-yellow-400 bg-yellow-500/10' : 
+                                  'text-blue-400 bg-blue-500/10';
+                
+                const timeStr = task.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const isOngoing = task.status === 'ongoing';
+                
+                el.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <button onclick="toggleComplete(${task.id})" class="mt-1 w-6 h-6 rounded-full border-2 ${task.status === 'completed' ? 'bg-accent-success border-accent-success' : 'border-gray-600'} flex items-center justify-center flex-shrink-0">
+                            ${task.status === 'completed' ? '<i class="fas fa-check text-xs text-gray-900"></i>' : ''}
+                        </button>
+                        <div class="flex-1 min-w-0" onclick="viewTaskDetails(${task.id})">
+                            <h3 class="font-semibold text-white truncate ${task.status === 'completed' ? 'line-through text-gray-500' : ''}">${task.title}</h3>
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                <span class="text-xs ${priorityColor} px-2 py-0.5 rounded font-medium uppercase">${task.priority}</span>
+                                <span class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${timeStr}</span>
+                                <span class="text-xs text-gray-500">• ${task.duration}m</span>
+                                ${task.refs?.length ? '<span class="text-xs text-accent-cyan"><i class="fas fa-link"></i></span>' : ''}
+                                ${task.notes ? '<span class="text-xs text-gray-400"><i class="fas fa-sticky-note"></i></span>' : ''}
+                            </div>
+                        </div>
+                        ${!isOngoing ? `
+                        <button onclick="setOngoing(${task.id})" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 active:scale-95">
+                            <i class="fas fa-play text-xs"></i>
+                        </button>
+                        ` : '<div class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>'}
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function renderStats() {
+            const completed = state.tasks.filter(t => t.status === 'completed');
+            const total = state.tasks.length;
+            const score = total > 0 ? Math.round((completed.length / total) * 100) : 0;
+            document.getElementById('productivity-score').innerText = score + '%';
+            
+            // Weekly chart (mock data based on actual completions)
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const chart = document.getElementById('weekly-chart');
+            chart.innerHTML = '';
+            
+            days.forEach((day, i) => {
+                const count = Math.floor(Math.random() * 5) + (i === new Date().getDay() - 1 ? 2 : 0);
+                const height = Math.min(100, count * 20);
+                const bar = document.createElement('div');
+                bar.className = 'flex-1 bg-accent-purple/30 rounded-t-lg relative group';
+                bar.style.height = `${height}%`;
+                bar.innerHTML = `
+                    <div class="absolute inset-0 bg-accent-purple rounded-t-lg opacity-0 group-hover:opacity-100 transition"></div>
+                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition">${count}</div>
+                `;
+                chart.appendChild(bar);
+            });
+            
+            // Priority distribution
+            const priorities = { high: 0, medium: 0, low: 0 };
+            state.tasks.filter(t => t.status !== 'completed').forEach(t => priorities[t.priority]++);
+            const totalPending = priorities.high + priorities.medium + priorities.low;
+            
+            const priorityStats = document.getElementById('priority-stats');
+            priorityStats.innerHTML = '';
+            ['high', 'medium', 'low'].forEach(p => {
+                const count = priorities[p];
+                const pct = totalPending > 0 ? (count / totalPending) * 100 : 0;
+                const color = p === 'high' ? 'bg-red-500' : p === 'medium' ? 'bg-yellow-500' : 'bg-blue-500';
+                
+                priorityStats.innerHTML += `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs w-16 capitalize text-gray-400">${p}</span>
+                        <div class="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
+                            <div class="${color} h-full rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="text-xs w-8 text-right text-gray-500">${count}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function updateStats() {
+            const pending = state.tasks.filter(t => t.status !== 'completed' && t.status !== 'ongoing').length;
+            const ongoing = state.tasks.filter(t => t.status === 'ongoing').length;
+            const done = state.tasks.filter(t => t.status === 'completed').length;
+            
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-ongoing-count').innerText = ongoing;
+            document.getElementById('stat-done').innerText = done;
+        }
+
+        // Details View
+        function viewTaskDetails(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (!task) return;
+            
+            state.currentViewingTask = task;
+            const modal = document.getElementById('details-modal');
+            const content = document.getElementById('details-content');
+            
+            const timeStr = task.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateStr = task.date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+            
+            let refsHtml = '';
+            if (task.refs && task.refs.length > 0) {
+                refsHtml = `
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-400 mb-3 uppercase">References</h3>
+                        <div class="space-y-2">
+                            ${task.refs.map(ref => `
+                                <a href="${ref}" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-gray-800 text-accent-blue active:scale-95 transition">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    <span class="text-sm truncate flex-1">${ref}</span>
+                                    <i class="fas fa-chevron-right text-xs text-gray-500"></i>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let notesHtml = '';
+            if (task.notes) {
+                notesHtml = `
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-400 mb-3 uppercase">Notes</h3>
+                        <div class="p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+                            <p class="text-sm text-gray-300 leading-relaxed">${task.notes}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let actionsHtml = '';
+            if (task.status !== 'completed') {
+                if (task.status === 'ongoing') {
+                    actionsHtml = `
+                        <button onclick="pauseOngoing(); closeDetailsModal();" class="w-full py-4 rounded-xl bg-yellow-500/20 text-yellow-400 font-semibold mb-3 active:scale-95 transition">
+                            Pause Task
+                        </button>
+                    `;
+                } else {
+                    actionsHtml = `
+                        <button onclick="setOngoing(${task.id}); closeDetailsModal();" class="w-full py-4 rounded-xl bg-accent-cyan/20 text-accent-cyan font-semibold mb-3 active:scale-95 transition">
+                            Start Working
+                        </button>
+                    `;
+                }
+                actionsHtml += `
+                    <button onclick="completeTask(${task.id}); closeDetailsModal();" class="w-full py-4 rounded-xl bg-accent-success text-gray-900 font-semibold active:scale-95 transition">
+                        Mark Complete
+                    </button>
+                `;
+            }
+            
+            content.innerHTML = `
+                <div class="mb-6">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs px-2 py-1 rounded bg-${task.priority === 'high' ? 'red' : task.priority === 'medium' ? 'yellow' : 'blue'}-500/20 text-${task.priority === 'high' ? 'red' : task.priority === 'medium' ? 'yellow' : 'blue'}-400 uppercase font-bold">${task.priority}</span>
+                        <span class="text-xs text-gray-500">${task.duration} minutes</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white mb-2">${task.title}</h1>
+                    <p class="text-gray-400"><i class="far fa-calendar mr-2"></i>${dateStr} at ${timeStr}</p>
+                </div>
+                
+                ${refsHtml}
+                ${notesHtml}
+                
+                <div class="mt-8 space-y-3">
+                    ${actionsHtml}
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function viewOngoingDetails() {
+            if (state.ongoingTaskId) {
+                viewTaskDetails(state.ongoingTaskId);
+            }
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+            state.currentViewingTask = null;
+        }
+
+        // UI Functions
+        function switchTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            
+            // Update nav
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-accent-purple');
+                btn.classList.add('text-gray-500');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-500');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('text-accent-purple');
+            
+            // Move indicator
+            const indicator = document.getElementById('nav-indicator');
+            const positions = { tasks: '5%', stats: '37%', settings: '75%' };
+            indicator.style.left = positions[tab];
+            
+            if (tab === 'stats') renderStats();
+        }
+
+        function setFilter(filter) {
+            state.filter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.remove('bg-gray-800', 'text-gray-400');
+                    btn.classList.add('bg-accent-purple', 'text-white');
+                } else {
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                    btn.classList.remove('bg-accent-purple', 'text-white');
+                }
+            });
+            renderTasks();
+        }
+
+        function setDuration(min) {
+            document.getElementById('input-duration').value = min;
+            document.querySelectorAll('.duration-btn').forEach(btn => {
+                if (parseInt(btn.dataset.dur) === min) {
+                    btn.classList.add('border-accent-purple', 'text-accent-purple');
+                    btn.classList.remove('border-transparent');
+                } else {
+                    btn.classList.remove('border-accent-purple', 'text-accent-purple');
+                    btn.classList.add('border-transparent');
+                }
+            });
+        }
+
+        function addRefInput() {
+            const container = document.getElementById('refs-container');
+            const input = document.createElement('input');
+            input.type = 'url';
+            input.placeholder = 'https://...';
+            input.className = 'ref-input w-full bg-gray-800 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-purple mt-2';
+            container.appendChild(input);
+        }
+
+        // Modals
+        function openAddModal(preselectedDate = null) {
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.querySelector('.modal-sheet').classList.add('open'), 10);
+            
+            if (preselectedDate) {
+                const yyyy = preselectedDate.getFullYear();
+                const mm = String(preselectedDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(preselectedDate.getDate()).padStart(2, '0');
+                document.getElementById('input-date').value = `${yyyy}-${mm}-${dd}`;
+            }
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.querySelector('.modal-sheet').classList.remove('open');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function showCalendar() {
+            document.getElementById('calendar-modal').classList.remove('hidden');
+            renderCalendar();
+        }
+
+        function closeCalendar() {
+            document.getElementById('calendar-modal').classList.add('hidden');
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthYear = document.getElementById('calendar-month-year');
+            grid.innerHTML = '';
+            
+            const year = state.currentDate.getFullYear();
+            const month = state.currentDate.getMonth();
+            monthYear.innerText = state.currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = new Date(year, month, i);
+                const isToday = date.toDateString() === today.toDateString();
+                const tasksForDay = state.tasks.filter(t => 
+                    t.date.getDate() === i && t.date.getMonth() === month && t.date.getFullYear() === year && t.status !== 'completed'
+                );
+                
+                const btn = document.createElement('button');
+                btn.className = `calendar-day ${isToday ? 'bg-accent-purple text-white' : 'text-gray-300'}`;
+                btn.innerHTML = `
+                    <span class="text-sm font-semibold">${i}</span>
+                    ${tasksForDay.length > 0 ? `<span class="w-1.5 h-1.5 rounded-full bg-accent-cyan mt-1"></span>` : ''}
+                `;
+                btn.onclick = () => { openAddModal(date); closeCalendar(); };
+                grid.appendChild(btn);
+            }
+        }
+
+        function changeMonth(delta) {
+            state.currentDate.setMonth(state.currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // Settings
+        function exportData() {
+            const data = JSON.stringify(state.tasks, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `chronotask-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            showToast('Data exported!');
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure? This will delete all tasks permanently.')) {
+                state.tasks = [];
+                state.ongoingTaskId = null;
+                saveData();
+                renderAll();
+                showToast('All data cleared');
+            }
+        }
+
+        // Clocks
+        function startClocks() {
+            setInterval(() => {
+                updateOngoingTimer();
+                const now = new Date();
+                document.getElementById('current-date').innerText = now.toLocaleDateString('en-US', { 
+                    weekday: 'long', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                });
+                
+                // Daily progress
+                const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                const pct = ((now - start) / (end - start)) * 100;
+                document.getElementById('daily-progress').style.width = `${pct}%`;
+            }, 1000);
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = type === 'warning' ? 'bg-yellow-500/90 text-yellow-950' : 
+                          type === 'success' ? 'bg-accent-success/90 text-gray-900' : 
+                          'bg-gray-800/90 text-white border border-gray-700';
+            
+            toast.className = `${colors} px-4 py-3 rounded-xl shadow-xl text-sm font-medium transform transition-all duration-300 translate-y-[-20px] opacity-0 pointer-events-auto`;
+            toast.innerHTML = message;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+            });
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-20px]', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
