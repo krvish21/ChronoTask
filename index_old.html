@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio - Windows 98</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Pixelify+Sans:wght@400;700&display=swap');
+
+        :root {
+            --teal: #008080;
+            --win-gray: #c0c0c0;
+            --win-dark: #808080;
+            --win-darker: #404040;
+            --win-light: #dfdfdf;
+            --win-white: #ffffff;
+            --win-blue: #000080;
+            --win-blue-light: #1084d0;
+            --title-active: #000080;
+            --title-inactive: #808080;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: default;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--teal);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Desktop */
+        .desktop {
+            width: 100%;
+            height: calc(100vh - 40px);
+            position: relative;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 15px;
+        }
+
+        /* Desktop Icons */
+        .desktop-icon {
+            width: 75px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 5px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .desktop-icon:hover {
+            border: 1px dotted white;
+        }
+
+        .desktop-icon.selected {
+            background: rgba(0, 0, 128, 0.3);
+            border: 1px dotted white;
+        }
+
+        .desktop-icon .icon-img {
+            width: 32px;
+            height: 32px;
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .desktop-icon .icon-text {
+            color: white;
+            font-size: 11px;
+            text-align: center;
+            text-shadow: 1px 1px 0 black;
+            word-break: break-word;
+        }
+
+        /* Windows */
+        .window {
+            position: absolute;
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            min-width: 300px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window.active {
+            z-index: 100;
+        }
+
+        .window.inactive {
+            z-index: 1;
+        }
+
+        .window.maximized {
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: calc(100vh - 40px) !important;
+        }
+
+        .title-bar {
+            background: linear-gradient(90deg, var(--title-active), var(--win-blue-light));
+            color: white;
+            padding: 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .window.inactive .title-bar {
+            background: linear-gradient(90deg, var(--title-inactive), var(--win-gray));
+        }
+
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .title-bar-buttons {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-btn {
+            width: 16px;
+            height: 14px;
+            background: var(--win-gray);
+            border: 1px outset var(--win-light);
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: black;
+        }
+
+        .title-btn:active {
+            border: 1px inset var(--win-light);
+        }
+
+        .menu-bar {
+            display: flex;
+            gap: 10px;
+            padding: 2px 5px;
+            border-bottom: 1px solid var(--win-dark);
+            font-size: 11px;
+        }
+
+        .menu-item {
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--win-blue);
+            color: white;
+        }
+
+        .window-content {
+            flex: 1;
+            padding: 10px;
+            overflow: auto;
+            background: white;
+            margin: 3px;
+            border: 2px inset var(--win-light);
+            font-size: 12px;
+        }
+
+        .window-content.about {
+            background: var(--win-gray);
+            border: none;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* About Window Specifics */
+        .about-header {
+            background: linear-gradient(180deg, #000080 0%, #1084d0 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .about-header h1 {
+            font-family: 'Pixelify Sans', cursive;
+            font-size: 32px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .about-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .about-body {
+            padding: 20px;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .about-section {
+            margin-bottom: 20px;
+            border: 2px inset var(--win-light);
+            background: white;
+            padding: 15px;
+        }
+
+        .about-section h2 {
+            font-size: 16px;
+            color: var(--win-blue);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--win-gray);
+            padding-bottom: 5px;
+        }
+
+        .about-section p, .about-section li {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .about-section ul {
+            margin-left: 20px;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            padding: 3px 10px;
+            margin: 3px;
+            font-size: 12px;
+        }
+
+        .project-card {
+            border: 2px outset var(--win-light);
+            padding: 10px;
+            margin-bottom: 10px;
+            background: var(--win-gray);
+        }
+
+        .project-card h3 {
+            font-size: 14px;
+            color: var(--win-blue);
+            margin-bottom: 5px;
+        }
+
+        .project-card p {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .project-tag {
+            background: var(--win-blue);
+            color: white;
+            padding: 1px 6px;
+            font-size: 10px;
+        }
+
+        /* Contact Form */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            border: 2px inset var(--win-light);
+            padding: 5px;
+            font-family: inherit;
+            font-size: 12px;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            padding: 5px 15px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .btn:active {
+            border: 2px inset var(--win-light);
+        }
+
+        .btn-primary {
+            background: var(--win-blue);
+            color: white;
+            border: 2px outset #4040ff;
+        }
+
+        /* Taskbar */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: var(--win-gray);
+            border-top: 2px outset var(--win-light);
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            z-index: 9999;
+        }
+
+        .start-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .start-btn:active, .start-btn.active {
+            border: 2px inset var(--win-light);
+            background: var(--win-dark);
+        }
+
+        .start-icon {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #ff0000 50%, #0000ff 50%);
+            border-radius: 1px;
+        }
+
+        .taskbar-divider {
+            width: 2px;
+            height: 32px;
+            background: var(--win-dark);
+            border-right: 1px solid var(--win-light);
+            margin: 0 5px;
+        }
+
+        .taskbar-items {
+            flex: 1;
+            display: flex;
+            gap: 3px;
+            overflow: hidden;
+        }
+
+        .taskbar-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            font-size: 12px;
+            cursor: pointer;
+            max-width: 160px;
+            min-width: 100px;
+        }
+
+        .taskbar-item.active {
+            border: 2px inset var(--win-light);
+            background: var(--win-dark);
+        }
+
+        .taskbar-item .task-icon {
+            font-size: 14px;
+        }
+
+        .taskbar-tray {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            border: 2px inset var(--win-light);
+            font-size: 12px;
+            background: var(--win-gray);
+        }
+
+        /* Start Menu */
+        .start-menu {
+            position: fixed;
+            bottom: 40px;
+            left: 2px;
+            width: 200px;
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            z-index: 10000;
+            display: none;
+        }
+
+        .start-menu.show {
+            display: block;
+        }
+
+        .start-menu-header {
+            background: linear-gradient(180deg, var(--win-blue), var(--win-blue-light));
+            color: white;
+            padding: 5px 10px;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Pixelify Sans', cursive;
+            letter-spacing: 2px;
+        }
+
+        .start-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .start-menu-item:hover {
+            background: var(--win-blue);
+            color: white;
+        }
+
+        .start-menu-item .menu-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .start-menu-divider {
+            height: 1px;
+            background: var(--win-dark);
+            border-bottom: 1px solid var(--win-light);
+            margin: 3px 0;
+        }
+
+        /* Boot Screen */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #c0c0c0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .boot-text {
+            font-size: 14px;
+            line-height: 1.8;
+            max-width: 600px;
+        }
+
+        .boot-logo {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 16px;
+            background: var(--win-gray);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+        }
+
+        ::-webkit-scrollbar-button {
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            height: 16px;
+        }
+
+        /* Resize handles */
+        .resize-handle {
+            position: absolute;
+            z-index: 10;
+        }
+
+        .resize-handle.se {
+            bottom: 0;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            cursor: se-resize;
+        }
+
+        /* Clock */
+        #clock {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Welcome Dialog */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 50000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dialog-box {
+            background: var(--win-gray);
+            border: 2px outset var(--win-light);
+            width: 400px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .dialog-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .dialog-content h2 {
+            margin-bottom: 15px;
+            color: var(--win-blue);
+        }
+
+        .dialog-content p {
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .desktop {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-content: flex-start;
+            }
+            
+            .window {
+                width: 95% !important;
+                left: 2.5% !important;
+                top: 5% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Boot Screen -->
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-logo">Windows 98</div>
+        <div class="boot-text" id="bootText"></div>
+    </div>
+
+    <!-- Desktop -->
+    <div class="desktop" id="desktop">
+        <div class="desktop-icon" data-window="about" style="top: 20px; left: 20px;">
+            <div class="icon-img">👤</div>
+            <div class="icon-text">About Me</div>
+        </div>
+        
+        <div class="desktop-icon" data-window="projects" style="top: 100px; left: 20px;">
+            <div class="icon-img">📁</div>
+            <div class="icon-text">Projects</div>
+        </div>
+        
+        <div class="desktop-icon" data-window="skills" style="top: 180px; left: 20px;">
+            <div class="icon-img">⚡</div>
+            <div class="icon-text">Skills</div>
+        </div>
+        
+        <div class="desktop-icon" data-window="contact" style="top: 260px; left: 20px;">
+            <div class="icon-img">✉️</div>
+            <div class="icon-text">Contact</div>
+        </div>
+        
+        <div class="desktop-icon" data-window="resume" style="top: 340px; left: 20px;">
+            <div class="icon-img">📄</div>
+            <div class="icon-text">Resume.txt</div>
+        </div>
+    </div>
+
+    <!-- Windows Container -->
+    <div id="windowsContainer"></div>
+
+    <!-- Start Menu -->
+    <div class="start-menu" id="startMenu">
+        <div class="start-menu-header">Windows 98</div>
+        <div class="start-menu-item" onclick="openWindow('about')">
+            <span class="menu-icon">👤</span>
+            <span>About Me</span>
+        </div>
+        <div class="start-menu-item" onclick="openWindow('projects')">
+            <span class="menu-icon">📁</span>
+            <span>Projects</span>
+        </div>
+        <div class="start-menu-item" onclick="openWindow('skills')">
+            <span class="menu-icon">⚡</span>
+            <span>Skills</span>
+        </div>
+        <div class="start-menu-item" onclick="openWindow('contact')">
+            <span class="menu-icon">✉️</span>
+            <span>Contact</span>
+        </div>
+        <div class="start-menu-divider"></div>
+        <div class="start-menu-item" onclick="location.reload()">
+            <span class="menu-icon">🔄</span>
+            <span>Restart</span>
+        </div>
+        <div class="start-menu-item" onclick="document.body.innerHTML='<div style=\'background:black;color:#0f0;height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;\'>It is now safe to turn off your computer.</div>'">
+            <span class="menu-icon">⏻</span>
+            <span>Shut Down</span>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-btn" id="startBtn" onclick="toggleStartMenu()">
+            <div class="start-icon"></div>
+            <span>Start</span>
+        </button>
+        <div class="taskbar-divider"></div>
+        <div class="taskbar-items" id="taskbarItems"></div>
+        <div class="taskbar-tray">
+            <span id="clock">12:00 PM</span>
+        </div>
+    </div>
+
+    <script>
+        // Boot Sequence
+        const bootLines = [
+            "Award Modular BIOS v4.51PG, An Energy Star Ally",
+            "Copyright (C) 1984-98, Award Software, Inc.",
+            "",
+            "PENTIUM-S CPU at 200MHz",
+            "Memory Test : 640K OK",
+            "",
+            "Award Plug and Play BIOS Extension v1.0A",
+            "Detecting HDD Primary Master ... MAXTOR 2GB",
+            "Detecting HDD Primary Slave  ... None",
+            "",
+            "Starting Windows 98...",
+            "",
+            "Microsoft(R) Windows 98",
+            "   (C)Copyright Microsoft Corp 1981-1998.",
+            "",
+            "C:\\> win",
+            "Loading...",
+            "",
+            "Welcome to my Portfolio OS v1.0"
+        ];
+
+        let lineIndex = 0;
+        const bootText = document.getElementById('bootText');
+        const bootScreen = document.getElementById('bootScreen');
+
+        function typeBootLine() {
+            if (lineIndex < bootLines.length) {
+                bootText.innerHTML += bootLines[lineIndex] + '<br>';
+                lineIndex++;
+                setTimeout(typeBootLine, Math.random() * 300 + 100);
+            } else {
+                setTimeout(() => {
+                    bootScreen.style.display = 'none';
+                    showWelcomeDialog();
+                }, 800);
+            }
+        }
+
+        function showWelcomeDialog() {
+            const dialog = document.createElement('div');
+            dialog.className = 'dialog-overlay';
+            dialog.innerHTML = `
+                <div class="dialog-box">
+                    <div class="title-bar">
+                        <span class="title-bar-text">Welcome</span>
+                        <div class="title-bar-buttons">
+                            <button class="title-btn" onclick="this.closest('.dialog-overlay').remove()">×</button>
+                        </div>
+                    </div>
+                    <div class="dialog-content">
+                        <h2>Welcome to My Portfolio!</h2>
+                        <p>This is a Windows 98 themed portfolio experience.<br><br>
+                        Double-click icons on the desktop or use the Start menu to explore.<br>
+                        Windows are draggable and resizable.</p>
+                    </div>
+                    <div class="dialog-buttons">
+                        <button class="btn btn-primary" onclick="this.closest('.dialog-overlay').remove()">OK</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(dialog);
+        }
+
+        // Start boot sequence
+        setTimeout(typeBootLine, 500);
+
+        // Window Management
+        let windowCount = 0;
+        let activeWindow = null;
+        let zIndexCounter = 100;
+        const windows = {};
+
+        const windowContents = {
+            about: {
+                title: 'About Me - Notepad',
+                icon: '📄',
+                width: 500,
+                height: 400,
+                content: `
+                    <div class="about-header">
+                        <h1>John Developer</h1>
+                        <p>Full Stack Developer & UI Designer</p>
+                    </div>
+                    <div class="about-body">
+                        <div class="about-section">
+                            <h2>🎯 Profile</h2>
+                            <p>Passionate developer with 5+ years of experience building web applications. I specialize in creating interactive, user-friendly experiences with clean, maintainable code.</p>
+                            <p>Currently based in San Francisco, working remotely with teams worldwide.</p>
+                        </div>
+                        <div class="about-section">
+                            <h2>🎓 Education</h2>
+                            <ul>
+                                <li><strong>B.S. Computer Science</strong> - Stanford University (2019)</li>
+                                <li><strong>Minor in Design</strong> - Stanford d.school</li>
+                            </ul>
+                        </div>
+                        <div class="about-section">
+                            <h2>💼 Experience</h2>
+                            <ul>
+                                <li><strong>Senior Developer</strong> at TechCorp (2021-Present)</li>
+                                <li><strong>Full Stack Engineer</strong> at StartupXYZ (2019-2021)</li>
+                                <li><strong>Intern</strong> at Google (Summer 2018)</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            projects: {
+                title: 'Projects - Explorer',
+                icon: '📁',
+                width: 600,
+                height: 450,
+                content: `
+                    <div style="padding: 10px;">
+                        <div class="project-card">
+                            <h3>🛒 E-Commerce Platform</h3>
+                            <p>A full-stack e-commerce solution with real-time inventory, payment processing, and admin dashboard. Built for a client with 50K+ daily users.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">React</span>
+                                <span class="project-tag">Node.js</span>
+                                <span class="project-tag">PostgreSQL</span>
+                                <span class="project-tag">Redis</span>
+                            </div>
+                        </div>
+                        <div class="project-card">
+                            <h3>📊 Analytics Dashboard</h3>
+                            <p>Real-time data visualization dashboard for enterprise clients. Features customizable widgets, export capabilities, and role-based access.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">Vue.js</span>
+                                <span class="project-tag">D3.js</span>
+                                <span class="project-tag">Python</span>
+                                <span class="project-tag">AWS</span>
+                            </div>
+                        </div>
+                        <div class="project-card">
+                            <h3>🎮 Retro Game Engine</h3>
+                            <p>A browser-based game engine inspired by classic 16-bit consoles. Includes sprite editor, tilemap system, and audio synthesizer.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">TypeScript</span>
+                                <span class="project-tag">WebGL</span>
+                                <span class="project-tag">Web Audio API</span>
+                            </div>
+                        </div>
+                        <div class="project-card">
+                            <h3>🤖 AI Chat Interface</h3>
+                            <p>Conversational AI interface with context memory, multi-modal support, and custom personality tuning. Open source with 2K+ GitHub stars.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">Next.js</span>
+                                <span class="project-tag">OpenAI API</span>
+                                <span class="project-tag">Prisma</span>
+                                <span class="project-tag">Tailwind</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            skills: {
+                title: 'Skills - System Properties',
+                icon: '⚙️',
+                width: 450,
+                height: 400,
+                content: `
+                    <div style="padding: 15px;">
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="margin-bottom: 10px; color: #000080;">System Components</h3>
+                            <div style="border: 2px inset #c0c0c0; padding: 10px; background: white;">
+                                <p><strong>Processor:</strong> Brain.js v3.0 (Overclocked)</p>
+                                <p><strong>Memory:</strong> 128GB Stack Overflow Cache</p>
+                                <p><strong>Display:</strong> 4K Creativity Monitor</p>
+                                <p><strong>Input:</strong> Mechanical Keyboard + Coffee</p>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 10px; color: #000080;">Technical Skills</h3>
+                        <div style="margin-bottom: 15px;">
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">TypeScript</span>
+                            <span class="skill-tag">React</span>
+                            <span class="skill-tag">Vue.js</span>
+                            <span class="skill-tag">Node.js</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">Go</span>
+                            <span class="skill-tag">Rust</span>
+                            <span class="skill-tag">SQL</span>
+                            <span class="skill-tag">MongoDB</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">Kubernetes</span>
+                            <span class="skill-tag">AWS</span>
+                            <span class="skill-tag">GraphQL</span>
+                            <span class="skill-tag">WebGL</span>
+                            <span class="skill-tag">WebAssembly</span>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 10px; color: #000080;">Design Skills</h3>
+                        <div>
+                            <span class="skill-tag">Figma</span>
+                            <span class="skill-tag">UI/UX</span>
+                            <span class="skill-tag">CSS3</span>
+                            <span class="skill-tag">Animation</span>
+                            <span class="skill-tag">Responsive Design</span>
+                            <span class="skill-tag">Accessibility</span>
+                        </div>
+                    </div>
+                `
+            },
+            contact: {
+                title: 'Contact - Compose Message',
+                icon: '✉️',
+                width: 450,
+                height: 420,
+                content: `
+                    <div style="padding: 15px;">
+                        <div class="form-group">
+                            <label>To:</label>
+                            <input type="text" value="john.developer@email.com" readonly style="background: #e0e0e0;">
+                        </div>
+                        <div class="form-group">
+                            <label>From:</label>
+                            <input type="text" placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Subject:</label>
+                            <input type="text" placeholder="Project Inquiry / Hello / Collaboration">
+                        </div>
+                        <div class="form-group">
+                            <label>Message:</label>
+                            <textarea placeholder="Type your message here..."></textarea>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="alert('Message sent! (Demo only)')">Send</button>
+                            <button class="btn" onclick="alert('Draft saved! (Demo only)')">Save Draft</button>
+                        </div>
+                        <div style="margin-top: 20px; padding: 10px; border: 2px inset #c0c0c0; background: white;">
+                            <p style="font-size: 11px; margin-bottom: 5px;"><strong>Alternative Contact Methods:</strong></p>
+                            <p style="font-size: 11px;">📧 john.developer@email.com</p>
+                            <p style="font-size: 11px;">💼 linkedin.com/in/johndeveloper</p>
+                            <p style="font-size: 11px;">🐙 github.com/johndeveloper</p>
+                            <p style="font-size: 11px;">🐦 @johndeveloper</p>
+                        </div>
+                    </div>
+                `
+            },
+            resume: {
+                title: 'Resume.txt - Notepad',
+                icon: '📄',
+                width: 550,
+                height: 500,
+                content: `
+                    <div style="font-family: 'Courier New', monospace; padding: 10px; white-space: pre-wrap; font-size: 13px; line-height: 1.5;">
+═══════════════════════════════════════════════════════════════
+                    JOHN DEVELOPER - RESUME
+═══════════════════════════════════════════════════════════════
+
+SUMMARY
+───────────────────────────────────────────────────────────────
+Creative technologist with expertise in full-stack development,
+system architecture, and interactive design. Passionate about
+building performant, accessible, and delightful user experiences.
+
+TECHNICAL PROFICIENCY
+───────────────────────────────────────────────────────────────
+Languages:     JavaScript, TypeScript, Python, Go, Rust, SQL
+Frontend:     React, Vue, Next.js, Tailwind, WebGL, Canvas API
+Backend:      Node.js, Django, FastAPI, GraphQL, REST APIs
+Database:     PostgreSQL, MongoDB, Redis, Elasticsearch
+DevOps:       Docker, Kubernetes, AWS, GCP, CI/CD, Terraform
+Tools:        Git, Figma, VS Code, Vim, Linux, macOS
+
+PROFESSIONAL EXPERIENCE
+───────────────────────────────────────────────────────────────
+TechCorp | Senior Full Stack Developer | 2021 - Present
+• Led migration from monolith to microservices (40% perf gain)
+• Built design system used across 12 product teams
+• Mentored 4 junior developers to senior level
+
+StartupXYZ | Full Stack Engineer | 2019 - 2021
+• Architected real-time collaboration platform
+• Reduced API latency by 60% through caching strategy
+• Implemented automated testing (95% coverage)
+
+Google | Software Engineering Intern | Summer 2018
+• Developed Chrome extension with 500K+ users
+• Contributed to open-source Chromium project
+
+EDUCATION
+───────────────────────────────────────────────────────────────
+Stanford University | B.S. Computer Science | 2015 - 2019
+• GPA: 3.9/4.0
+• Teaching Assistant for CS106A (Programming Methodology)
+• Research Assistant in HCI Lab
+
+CERTIFICATIONS
+───────────────────────────────────────────────────────────────
+• AWS Solutions Architect Professional
+• Google Cloud Professional Data Engineer
+• MongoDB Certified Developer
+
+═══════════════════════════════════════════════════════════════
+                    Last Updated: May 2026
+═══════════════════════════════════════════════════════════════
+                    </div>
+                `
+            }
+        };
+
+        function openWindow(type) {
+            if (windows[type]) {
+                focusWindow(type);
+                return;
+            }
+
+            const config = windowContents[type];
+            const id = `window-${type}-${Date.now()}`;
+            const windowEl = document.createElement('div');
+            
+            const left = 100 + (windowCount * 30) % 200;
+            const top = 50 + (windowCount * 30) % 150;
+            
+            windowEl.className = 'window active';
+            windowEl.id = id;
+            windowEl.style.width = config.width + 'px';
+            windowEl.style.height = config.height + 'px';
+            windowEl.style.left = left + 'px';
+            windowEl.style.top = top + 'px';
+            windowEl.style.zIndex = ++zIndexCounter;
+            
+            windowEl.innerHTML = `
+                <div class="title-bar" onmousedown="startDrag(event, '${id}')">
+                    <span class="title-bar-text">
+                        <span>${config.icon}</span>
+                        <span>${config.title}</span>
+                    </span>
+                    <div class="title-bar-buttons">
+                        <button class="title-btn" onclick="minimizeWindow('${type}')">_</button>
+                        <button class="title-btn" onclick="maximizeWindow('${type}')">□</button>
+                        <button class="title-btn" onclick="closeWindow('${type}')">×</button>
+                    </div>
+                </div>
+                <div class="menu-bar">
+                    <span class="menu-item">File</span>
+                    <span class="menu-item">Edit</span>
+                    <span class="menu-item">View</span>
+                    <span class="menu-item">Help</span>
+                </div>
+                <div class="window-content ${type === 'about' ? 'about' : ''}">
+                    ${config.content}
+                </div>
+                <div class="resize-handle se" onmousedown="startResize(event, '${id}')"></div>
+            `;
+            
+            windowEl.addEventListener('mousedown', () => focusWindow(type));
+            
+            document.getElementById('windowsContainer').appendChild(windowEl);
+            windows[type] = { element: windowEl, id: id, minimized: false };
+            windowCount++;
+            
+            updateTaskbar();
+            focusWindow(type);
+        }
+
+        function closeWindow(type) {
+            if (windows[type]) {
+                windows[type].element.remove();
+                delete windows[type];
+                updateTaskbar();
+            }
+        }
+
+        function minimizeWindow(type) {
+            if (windows[type]) {
+                windows[type].element.style.display = 'none';
+                windows[type].minimized = true;
+                updateTaskbar();
+            }
+        }
+
+        function maximizeWindow(type) {
+            if (windows[type]) {
+                windows[type].element.classList.toggle('maximized');
+            }
+        }
+
+        function focusWindow(type) {
+            if (!windows[type] || windows[type].minimized) {
+                if (windows[type] && windows[type].minimized) {
+                    windows[type].element.style.display = 'flex';
+                    windows[type].minimized = false;
+                    updateTaskbar();
+                }
+                return;
+            }
+            
+            Object.values(windows).forEach(w => {
+                w.element.classList.remove('active');
+                w.element.classList.add('inactive');
+            });
+            
+            windows[type].element.classList.remove('inactive');
+            windows[type].element.classList.add('active');
+            windows[type].element.style.zIndex = ++zIndexCounter;
+            activeWindow = type;
+            updateTaskbar();
+        }
+
+        function updateTaskbar() {
+            const container = document.getElementById('taskbarItems');
+            container.innerHTML = '';
+            
+            Object.entries(windows).forEach(([type, win]) => {
+                const config = windowContents[type];
+                const item = document.createElement('div');
+                item.className = `taskbar-item ${!win.minimized && win.element.classList.contains('active') ? 'active' : ''}`;
+                item.innerHTML = `<span class="task-icon">${config.icon}</span><span>${config.title.split(' - ')[0]}</span>`;
+                item.onclick = () => {
+                    if (win.minimized || !win.element.classList.contains('active')) {
+                        focusWindow(type);
+                    } else {
+                        minimizeWindow(type);
+                    }
+                };
+                container.appendChild(item);
+            });
+        }
+
+        // Drag functionality
+        let dragWindow = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function startDrag(e, windowId) {
+            const win = Object.values(windows).find(w => w.id === windowId);
+            if (!win || win.element.classList.contains('maximized')) return;
+            
+            dragWindow = win.element;
+            const rect = dragWindow.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+            
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+            e.preventDefault();
+        }
+
+        function onDrag(e) {
+            if (!dragWindow) return;
+            dragWindow.style.left = (e.clientX - dragOffsetX) + 'px';
+            dragWindow.style.top = (e.clientY - dragOffsetY) + 'px';
+        }
+
+        function stopDrag() {
+            dragWindow = null;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // Resize functionality
+        let resizeWindow = null;
+        let resizeStartX = 0;
+        let resizeStartY = 0;
+        let resizeStartWidth = 0;
+        let resizeStartHeight = 0;
+
+        function startResize(e, windowId) {
+            const win = Object.values(windows).find(w => w.id === windowId);
+            if (!win) return;
+            
+            resizeWindow = win.element;
+            resizeStartX = e.clientX;
+            resizeStartY = e.clientY;
+            resizeStartWidth = resizeWindow.offsetWidth;
+            resizeStartHeight = resizeWindow.offsetHeight;
+            
+            document.addEventListener('mousemove', onResize);
+            document.addEventListener('mouseup', stopResize);
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function onResize(e) {
+            if (!resizeWindow) return;
+            const newWidth = resizeStartWidth + (e.clientX - resizeStartX);
+            const newHeight = resizeStartHeight + (e.clientY - resizeStartY);
+            resizeWindow.style.width = Math.max(300, newWidth) + 'px';
+            resizeWindow.style.height = Math.max(200, newHeight) + 'px';
+        }
+
+        function stopResize() {
+            resizeWindow = null;
+            document.removeEventListener('mousemove', onResize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+
+        // Start Menu
+        function toggleStartMenu() {
+            const menu = document.getElementById('startMenu');
+            const btn = document.getElementById('startBtn');
+            menu.classList.toggle('show');
+            btn.classList.toggle('active');
+        }
+
+        // Close start menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('startMenu');
+            const btn = document.getElementById('startBtn');
+            if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.remove('show');
+                btn.classList.remove('active');
+            }
+        });
+
+        // Desktop icon interactions
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+            icon.addEventListener('dblclick', () => {
+                const windowType = icon.getAttribute('data-window');
+                openWindow(windowType);
+            });
+            
+            icon.addEventListener('click', () => {
+                document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+                icon.classList.add('selected');
+            });
+        });
+
+        // Deselect icons when clicking desktop
+        document.getElementById('desktop').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('desktop')) {
+                document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+            }
+        });
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            document.getElementById('clock').textContent = `${displayHours}:${minutes} ${ampm}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('startMenu').classList.remove('show');
+                document.getElementById('startBtn').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
