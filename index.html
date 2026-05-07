@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Android</title>
+    <title>WhatsApp</title>
     <style>
         * {
             margin: 0;
@@ -27,42 +27,27 @@
             --wa-divider: rgba(134, 150, 160, 0.15);
         }
 
-        body {
-            background: #000;
-            height: 100vh;
+        html, body {
+            background: var(--wa-bg);
+            height: 100%;
+            width: 100%;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        .phone-frame {
+        .app {
             width: 100%;
-            max-width: 400px;
-            height: 100vh;
-            max-height: 850px;
-            background: var(--wa-bg);
+            height: 100%;
             position: relative;
             overflow: hidden;
-        }
-
-        @media (min-width: 420px) {
-            .phone-frame {
-                height: 90vh;
-                border-radius: 24px;
-                border: 8px solid #1a1a1a;
-            }
+            display: flex;
+            flex-direction: column;
         }
 
         /* Android Status Bar */
         .status-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
             height: 24px;
             background: var(--wa-green);
-            z-index: 1000;
+            flex-shrink: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -71,6 +56,7 @@
             font-weight: 500;
             color: white;
             letter-spacing: 0.3px;
+            z-index: 1000;
         }
 
         .status-bar .time {
@@ -89,19 +75,16 @@
             fill: white;
         }
 
-        /* App Bar - Android Material */
+        /* App Bar */
         .app-bar {
-            position: absolute;
-            top: 24px;
-            left: 0;
-            right: 0;
             height: 56px;
             background: var(--wa-green);
-            z-index: 999;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             padding: 0 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 999;
             transition: all 0.3s;
         }
 
@@ -205,7 +188,7 @@
         /* Menu Dropdown */
         .dropdown-menu {
             position: absolute;
-            top: 56px;
+            top: 80px;
             right: 8px;
             background: var(--wa-surface);
             border-radius: 4px;
@@ -246,6 +229,15 @@
             color: var(--wa-text-secondary);
         }
 
+        /* Main Content Area */
+        .chat-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
         /* Wallpaper */
         .wallpaper {
             position: absolute;
@@ -258,15 +250,11 @@
 
         /* Chat Container */
         .chat-container {
-            position: absolute;
-            top: 80px;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            flex: 1;
             overflow-y: auto;
             z-index: 2;
             scroll-behavior: smooth;
-            padding-bottom: 80px;
+            padding-bottom: 8px;
         }
 
         .chat-container::-webkit-scrollbar {
@@ -441,13 +429,8 @@
             max-width: 240px;
         }
 
-        .image-message img, .image-placeholder {
-            width: 100%;
-            border-radius: 11px;
-            display: block;
-        }
-
         .image-placeholder {
+            width: 100%;
             height: 160px;
             display: flex;
             align-items: center;
@@ -455,6 +438,7 @@
             color: white;
             font-size: 48px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 11px;
         }
 
         .image-caption {
@@ -542,18 +526,15 @@
             to { opacity: 1; }
         }
 
-        /* Chat Bar - Android */
+        /* Chat Bar */
         .chat-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
+            flex-shrink: 0;
             display: flex;
             align-items: flex-end;
             gap: 6px;
             padding: 6px 8px 8px;
             background: var(--wa-bg);
+            z-index: 100;
         }
 
         .input-wrapper {
@@ -637,6 +618,136 @@
             margin-left: 2px;
         }
 
+        /* Jump Button */
+        .jump-btn {
+            position: absolute;
+            bottom: 80px;
+            right: 16px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--wa-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--wa-text);
+            cursor: pointer;
+            z-index: 50;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+            border: 1px solid var(--wa-divider);
+        }
+
+        .jump-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        /* Emoji Bar */
+        .emoji-bar {
+            position: absolute;
+            background: var(--wa-surface);
+            border-radius: 20px;
+            padding: 6px 10px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 150;
+            border: 1px solid var(--wa-divider);
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .emoji-option {
+            font-size: 22px;
+            cursor: pointer;
+            padding: 2px;
+            transition: transform 0.2s;
+        }
+
+        .emoji-option:hover {
+            transform: scale(1.2);
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: absolute;
+            background: var(--wa-surface);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 180px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            z-index: 200;
+            display: none;
+            border: 1px solid var(--wa-divider);
+        }
+
+        .context-menu-item {
+            padding: 12px 16px;
+            color: var(--wa-text);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .context-menu-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .context-menu-item.danger {
+            color: #ff6b6b;
+        }
+
+        /* Link Preview */
+        .link-preview {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin: 4px -4px 4px;
+            overflow: hidden;
+        }
+
+        .link-preview-img {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .link-preview-text {
+            padding: 8px;
+        }
+
+        .link-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--wa-text);
+            margin-bottom: 2px;
+        }
+
+        .link-url {
+            font-size: 12px;
+            color: var(--wa-text-secondary);
+        }
+
+        .mention {
+            color: var(--wa-light-green);
+            font-weight: 500;
+        }
+
         /* Settings Page */
         .settings-page {
             position: absolute;
@@ -669,6 +780,7 @@
             color: white;
             z-index: 10;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex-shrink: 0;
         }
 
         .settings-title {
@@ -861,151 +973,17 @@
             margin-top: 2px;
         }
 
-        /* Jump Button */
-        .jump-btn {
-            position: absolute;
-            bottom: 80px;
-            right: 16px;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: var(--wa-surface);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--wa-text);
-            cursor: pointer;
-            z-index: 50;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s;
-            pointer-events: none;
-            border: 1px solid var(--wa-divider);
-        }
-
-        .jump-btn.visible {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-        }
-
-        /* Emoji Bar */
-        .emoji-bar {
-            position: absolute;
-            background: var(--wa-surface);
-            border-radius: 20px;
-            padding: 6px 10px;
-            display: flex;
-            gap: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 150;
-            border: 1px solid var(--wa-divider);
-            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .emoji-option {
-            font-size: 22px;
-            cursor: pointer;
-            padding: 2px;
-            transition: transform 0.2s;
-        }
-
-        .emoji-option:hover {
-            transform: scale(1.2);
-        }
-
-        /* Context Menu */
-        .context-menu {
-            position: absolute;
-            background: var(--wa-surface);
-            border-radius: 8px;
-            padding: 8px 0;
-            min-width: 180px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            z-index: 200;
-            display: none;
-            border: 1px solid var(--wa-divider);
-        }
-
-        .context-menu-item {
-            padding: 12px 16px;
-            color: var(--wa-text);
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .context-menu-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .context-menu-item.danger {
-            color: #ff6b6b;
-        }
-
-        /* Link Preview */
-        .link-preview {
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            margin: 4px -4px 4px;
-            overflow: hidden;
-        }
-
-        .link-preview-img {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-        }
-
-        .link-preview-text {
-            padding: 8px;
-        }
-
-        .link-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--wa-text);
-            margin-bottom: 2px;
-        }
-
-        .link-url {
-            font-size: 12px;
-            color: var(--wa-text-secondary);
-        }
-
-        .mention {
-            color: var(--wa-light-green);
-            font-weight: 500;
-        }
-
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 0;
         }
 
-        /* Selection */
         ::selection {
             background: rgba(0,168,132,0.3);
         }
     </style>
 </head>
 <body>
-    <div class="phone-frame" id="phoneFrame">
-        <div class="wallpaper"></div>
-
+    <div class="app" id="app">
         <!-- Android Status Bar -->
         <div class="status-bar">
             <span class="time" id="clock">9:41</span>
@@ -1080,169 +1058,173 @@
             </div>
         </div>
 
-        <!-- Chat Container -->
-        <div class="chat-container" id="chatContainer">
-            <div class="date-separator">
-                <div class="date-pill">Today</div>
-            </div>
-
-            <div class="message-group">
-                <div class="message incoming">
-                    <div class="message-text">Hey! Are we still on for dinner tonight? 🍕</div>
-                    <div class="message-meta">9:30 AM</div>
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="wallpaper"></div>
+            
+            <div class="chat-container" id="chatContainer">
+                <div class="date-separator">
+                    <div class="date-pill">Today</div>
                 </div>
-            </div>
 
-            <div class="message-group">
-                <div class="message outgoing">
-                    <div class="message-text">Yes definitely! What time works for you?</div>
-                    <div class="message-meta">
-                        9:32 AM
-                        <div class="checkmarks">
-                            <div class="check blue">
-                                <svg viewBox="0 0 14 10" fill="none">
-                                    <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                            <div class="check blue">
-                                <svg viewBox="0 0 14 10" fill="none">
-                                    <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                        </div>
+                <div class="message-group">
+                    <div class="message incoming">
+                        <div class="message-text">Hey! Are we still on for dinner tonight? 🍕</div>
+                        <div class="message-meta">9:30 AM</div>
                     </div>
                 </div>
-            </div>
 
-            <div class="message-group">
-                <div class="message incoming">
-                    <div class="voice-message">
-                        <div class="voice-play">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
-                            </svg>
-                        </div>
-                        <div class="voice-wave">
-                            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                        </div>
-                        <span class="voice-time">0:42</span>
-                    </div>
-                    <div class="message-meta" style="margin-top: 4px;">9:35 AM</div>
-                </div>
-                <div class="reaction-container">
-                    <div class="reaction">❤️</div>
-                </div>
-            </div>
-
-            <div class="message-group">
-                <div class="message outgoing">
-                    <div class="reply-preview">
-                        <div class="reply-name" id="replyName1">Alex Rivera</div>
-                        <div class="reply-text">Voice message (0:42)</div>
-                    </div>
-                    <div class="message-text">Haha that sounds perfect! I'll book the table for 8pm</div>
-                    <div class="message-meta">
-                        9:36 AM
-                        <div class="checkmarks">
-                            <div class="check blue">
-                                <svg viewBox="0 0 14 10" fill="none">
-                                    <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                            <div class="check blue">
-                                <svg viewBox="0 0 14 10" fill="none">
-                                    <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                <div class="message-group">
+                    <div class="message outgoing">
+                        <div class="message-text">Yes definitely! What time works for you?</div>
+                        <div class="message-meta">
+                            9:32 AM
+                            <div class="checkmarks">
+                                <div class="check blue">
+                                    <svg viewBox="0 0 14 10" fill="none">
+                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="check blue">
+                                    <svg viewBox="0 0 14 10" fill="none">
+                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="message-group">
-                <div class="message outgoing image-message">
-                    <div class="image-placeholder">🍕</div>
-                    <div class="image-caption">The place we're going to!</div>
-                    <div class="message-meta" style="position: relative; margin-top: 0; padding-right: 4px;">
-                        9:38 AM
-                        <div class="checkmarks">
-                            <div class="check blue">
-                                <svg viewBox="0 0 14 10" fill="none">
-                                    <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <div class="message-group" id="voiceGroup">
+                    <div class="message incoming">
+                        <div class="voice-message">
+                            <div class="voice-play">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
                                 </svg>
                             </div>
-                            <div class="check blue">
-                                <svg viewBox="0 0 14 10" fill="none">
-                                    <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                            <div class="voice-wave">
+                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                            </div>
+                            <span class="voice-time">0:42</span>
+                        </div>
+                        <div class="message-meta" style="margin-top: 4px;">9:35 AM</div>
+                    </div>
+                    <div class="reaction-container">
+                        <div class="reaction">❤️</div>
+                    </div>
+                </div>
+
+                <div class="message-group">
+                    <div class="message outgoing">
+                        <div class="reply-preview">
+                            <div class="reply-name" id="replyName1">Alex Rivera</div>
+                            <div class="reply-text">Voice message (0:42)</div>
+                        </div>
+                        <div class="message-text">Haha that sounds perfect! I'll book the table for 8pm</div>
+                        <div class="message-meta">
+                            9:36 AM
+                            <div class="checkmarks">
+                                <div class="check blue">
+                                    <svg viewBox="0 0 14 10" fill="none">
+                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="check blue">
+                                    <svg viewBox="0 0 14 10" fill="none">
+                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="message-group">
-                <div class="message incoming">
-                    <div class="message-text">Check out their menu: <span class="mention">@alex</span></div>
-                    <div class="link-preview">
-                        <div class="link-preview-img">🍝</div>
-                        <div class="link-preview-text">
-                            <div class="link-title">Trattoria Bella - Menu & Reservations</div>
-                            <div class="link-url">trattoriabella.com</div>
+                <div class="message-group" id="imageGroup">
+                    <div class="message outgoing image-message">
+                        <div class="image-placeholder">🍕</div>
+                        <div class="image-caption">The place we're going to!</div>
+                        <div class="message-meta" style="position: relative; margin-top: 0; padding-right: 4px;">
+                            9:38 AM
+                            <div class="checkmarks">
+                                <div class="check blue">
+                                    <svg viewBox="0 0 14 10" fill="none">
+                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="check blue">
+                                    <svg viewBox="0 0 14 10" fill="none">
+                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="message-meta">9:40 AM</div>
                 </div>
+
+                <div class="message-group" id="linkGroup">
+                    <div class="message incoming">
+                        <div class="message-text">Check out their menu: <span class="mention">@alex</span></div>
+                        <div class="link-preview">
+                            <div class="link-preview-img">🍝</div>
+                            <div class="link-preview-text">
+                                <div class="link-title">Trattoria Bella - Menu & Reservations</div>
+                                <div class="link-url">trattoriabella.com</div>
+                            </div>
+                        </div>
+                        <div class="message-meta">9:40 AM</div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="typing-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+
+                <div style="height: 20px;"></div>
             </div>
 
-            <div class="typing-indicator" id="typingIndicator" style="display: none;">
-                <div class="typing-dots">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </div>
-            </div>
-
-            <div style="height: 80px;"></div>
-        </div>
-
-        <!-- Jump Button -->
-        <div class="jump-btn" id="jumpBtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
-            </svg>
-        </div>
-
-        <!-- Chat Bar -->
-        <div class="chat-bar" id="chatBar">
-            <div class="input-actions-left">
-                <div class="input-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                        <line x1="9" y1="9" x2="9.01" y2="9"/>
-                        <line x1="15" y1="9" x2="15.01" y2="9"/>
-                    </svg>
-                </div>
-                <div class="input-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                    </svg>
-                </div>
-            </div>
-            <div class="input-wrapper" id="inputWrapper">
-                <div class="input-text" id="inputText" contenteditable="true"></div>
-            </div>
-            <button class="send-btn" id="sendBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"/>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            <!-- Jump Button -->
+            <div class="jump-btn" id="jumpBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
                 </svg>
-            </button>
+            </div>
+
+            <!-- Chat Bar -->
+            <div class="chat-bar" id="chatBar">
+                <div class="input-actions-left">
+                    <div class="input-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" y1="9" x2="9.01" y2="9"/>
+                            <line x1="15" y1="9" x2="15.01" y2="9"/>
+                        </svg>
+                    </div>
+                    <div class="input-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="input-wrapper" id="inputWrapper">
+                    <div class="input-text" id="inputText" contenteditable="true"></div>
+                </div>
+                <button class="send-btn" id="sendBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- Context Menu -->
@@ -1421,6 +1403,9 @@
         const previewName = document.getElementById('previewName');
         const previewStatus = document.getElementById('previewStatus');
         const replyName1 = document.getElementById('replyName1');
+        const voiceGroup = document.getElementById('voiceGroup');
+        const imageGroup = document.getElementById('imageGroup');
+        const linkGroup = document.getElementById('linkGroup');
 
         let currentGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
         let currentBubbleColor = '#005c4b';
@@ -1512,17 +1497,18 @@
 
         // Save settings
         saveBtn.addEventListener('click', () => {
-            // Update chat header
             chatName.textContent = settingName.value || 'Contact Name';
             chatStatus.textContent = settingStatus.value || 'online';
             avatarInitials.textContent = settingInitials.value || '??';
             chatAvatar.style.background = currentGradient;
             replyName1.textContent = settingName.value || 'Contact Name';
 
-            // Update bubble colors
             document.documentElement.style.setProperty('--wa-bubble-out', currentBubbleColor);
 
-            // Close settings
+            voiceGroup.style.display = document.getElementById('voiceToggle').classList.contains('active') ? 'flex' : 'none';
+            imageGroup.style.display = document.getElementById('imageToggle').classList.contains('active') ? 'flex' : 'none';
+            linkGroup.style.display = document.getElementById('linkToggle').classList.contains('active') ? 'flex' : 'none';
+
             settingsPage.classList.remove('show');
         });
 
@@ -1624,11 +1610,11 @@
 
         function showEmojiBar(e, msg) {
             const rect = msg.getBoundingClientRect();
-            const frameRect = document.getElementById('phoneFrame').getBoundingClientRect();
+            const appRect = document.getElementById('app').getBoundingClientRect();
             
             emojiBar.style.display = 'flex';
-            emojiBar.style.left = `${rect.left - frameRect.left + rect.width/2 - emojiBar.offsetWidth/2}px`;
-            emojiBar.style.top = `${rect.top - frameRect.top - 50}px`;
+            emojiBar.style.left = `${rect.left - appRect.left + rect.width/2 - emojiBar.offsetWidth/2}px`;
+            emojiBar.style.top = `${rect.top - appRect.top - 50}px`;
             
             setTimeout(() => {
                 emojiBar.style.display = 'none';
@@ -1645,10 +1631,10 @@
         document.addEventListener('contextmenu', (e) => {
             if (e.target.closest('.message')) {
                 e.preventDefault();
-                const frameRect = document.getElementById('phoneFrame').getBoundingClientRect();
+                const appRect = document.getElementById('app').getBoundingClientRect();
                 contextMenu.style.display = 'block';
-                contextMenu.style.left = `${e.clientX - frameRect.left}px`;
-                contextMenu.style.top = `${e.clientY - frameRect.top}px`;
+                contextMenu.style.left = `${e.clientX - appRect.left}px`;
+                contextMenu.style.top = `${e.clientY - appRect.top}px`;
             }
         });
 
