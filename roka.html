@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Union of Vishwajeet & Manasvika | Roka Ceremony</title>
+    
+    <!-- Google Fonts: Luxury Serif and Minimalist Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@200;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Third Party Libraries via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --wine-maroon: #4A121A;
+            --antique-gold: #D4AF37;
+            --gold-glow: #F3E5AB;
+            --ivory-silk: #FFFDF9;
+            --moonlight-cream: #F7F4EB;
+            --muted-ruby: #8B2635;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #050203;
+            color: var(--ivory-silk);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050203;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--antique-gold);
+            border-radius: 3px;
+        }
+
+        /* Ambient Audio Controls */
+        #audio-control {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: rgba(74, 18, 26, 0.4);
+            border: 1px solid var(--antique-gold);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            color: var(--gold-glow);
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #audio-control:hover {
+            background: var(--wine-maroon);
+            box-shadow: 0 0 15px var(--antique-gold);
+            transform: scale(1.05);
+        }
+
+        /* Background WebGL Canvas Layer */
+        #webgl-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Core Cinematic Layout Overlay */
+        .scroller-sections {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        section {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Typography Styles */
+        .serif-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 400;
+            letter-spacing: 4px;
+            color: var(--ivory-silk);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .cursive-sub {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--antique-gold);
+        }
+
+        /* --- SECTION 1: CINEMATIC INTRO (OVERLAY OVER DARKNESS) --- */
+        #intro-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050203;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        .gate-content {
+            opacity: 0;
+            transform: translateY(30px);
+            text-align: center;
+        }
+
+        .gate-initials {
+            font-size: 5rem;
+            font-family: 'Cinzel', serif;
+            color: var(--antique-gold);
+            margin-bottom: 1.5rem;
+            letter-spacing: 10px;
+            cursor: pointer;
+        }
+
+        .unlock-btn {
+            margin-top: 2rem;
+            padding: 15px 40px;
+            background: transparent;
+            border: 1px solid var(--antique-gold);
+            color: var(--ivory-silk);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: 0.5s ease;
+        }
+
+        .unlock-btn:hover {
+            color: var(--wine-maroon);
+            background: var(--antique-gold);
+            box-shadow: 0 0 25px var(--antique-gold);
+        }
+
+        /* --- SECTION 2: THE UNIVERSES COLLIDE --- */
+        .universe-title { font-size: 3rem; margin-bottom: 2rem; }
+        .universe-para { max-width: 600px; font-weight: 200; line-height: 1.8; letter-spacing: 1px; font-size: 1.1rem; }
+
+        /* --- SECTION 3: PUNJABI MEETS BENGALI (FUSION CREATIVE) --- */
+        .fusion-container {
+            display: flex;
+            width: 80%;
+            max-width: 1100px;
+            justify-content: space-between;
+            margin-top: 3rem;
+            gap: 2rem;
+        }
+        @media(max-width: 768px) { .fusion-container { flex-direction: column; } }
+
+        .culture-card {
+            flex: 1;
+            background: rgba(74, 18, 26, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 3rem 2rem;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.4s ease, border 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .culture-card:hover {
+            transform: translateY(-10px);
+            border: 1px solid var(--antique-gold);
+        }
+        /* Subtle patterns via CSS backgrounds mimicking alpana/phulkari cross-lines subtly */
+        .culture-card.punjabi::before {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            opacity: 0.03; background-image: radial-gradient(var(--antique-gold) 1px, transparent 0); background-size: 24px 24px;
+        }
+        .culture-card.bengali::before {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            opacity: 0.03; background: repeating-linear-gradient(45deg, var(--antique-gold), var(--antique-gold) 1px, transparent 1px, transparent 10px);
+        }
+
+        .culture-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--antique-gold);
+            margin-bottom: 1rem;
+        }
+
+        /* Interactive Element: Mini Game Sliders */
+        .slider-container {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .slider-label { font-size: 0.8rem; letter-spacing: 1px; color: var(--gold-glow); display:block; margin-bottom: 8px;}
+        .cultural-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.1);
+            height: 4px;
+            outline: none;
+            border-radius: 2px;
+        }
+        .cultural-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--antique-gold);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--antique-gold);
+        }
+
+        /* --- SECTION 4: THE DETAILS & ARCHES --- */
+        .details-box {
+            border-top: 1px solid var(--antique-gold);
+            border-bottom: 1px solid var(--antique-gold);
+            padding: 3rem;
+            max-width: 700px;
+            background: rgba(5,2,3,0.6);
+            backdrop-filter: blur(10px);
+        }
+        .date-txt { font-size: 3.5rem; color: var(--antique-gold); margin: 1rem 0; font-family: 'Cinzel', serif; letter-spacing: 6px; }
+        
+        /* --- SECTION 5: INTERACTIVE BLESSINGS & CELEBRATION --- */
+        .blessing-input-zone {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            width: 100%;
+        }
+        .blessing-input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.4);
+            padding: 12px 20px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            outline: none;
+            border-radius: 4px;
+        }
+        .blessing-input:focus {
+            border-color: var(--antique-gold);
+            box-shadow: 0 0 10px rgba(212,175,55,0.3);
+        }
+        .bless-btn {
+            background: var(--wine-maroon);
+            border: 1px solid var(--antique-gold);
+            color: var(--antique-gold);
+            padding: 0 25px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            transition: 0.3s;
+            border-radius: 4px;
+        }
+        .bless-btn:hover {
+            background: var(--antique-gold);
+            color: var(--wine-maroon);
+        }
+        
+        /* Interactive Flower Canvas Cover Element */
+        .petal-canvas-cover {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            cursor: pointer;
+            z-index: 5;
+        }
+        .reveal-hint {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--antique-gold);
+            animation: pulse 2s infinite;
+            pointer-events: none;
+        }
+
+        /* --- SECTION 6: THE FINALE GRAND SAVE THE DATE --- */
+        .grand-frame {
+            border: 2px solid var(--antique-gold);
+            padding: 4rem 3rem;
+            max-width: 800px;
+            width: 90%;
+            background: rgba(74, 18, 26, 0.15);
+            backdrop-filter: blur(8px);
+            position: relative;
+            box-shadow: inset 0 0 40px rgba(212,175,55,0.1);
+        }
+        .couple-names {
+            font-size: 3.5rem;
+            margin: 1.5rem 0;
+            letter-spacing: 4px;
+            background: linear-gradient(45deg, #FFF, var(--gold-glow), #FFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Player Ambient Context (Synthesized Audio Context below for real-time fallback without external assets) -->
+    <button id="audio-control" onclick="toggleAudio()">
+        <span id="audio-icon">🔊</span> <span id="audio-status">PLAY SOUNDTRACK</span>
+    </button>
+
+    <!-- WebGL Ambient 3D Layer -->
+    <div id="webgl-container"></div>
+
+    <!-- Opening Experience Layer Gate -->
+    <div id="intro-gate">
+        <div class="gate-content" id="gate-content">
+            <div class="serif-title cursive-sub" style="font-size: 1.5rem; letter-spacing: 4px;">The Roka Ceremony Announcement</div>
+            <div class="gate-initials" id="interactive-initials" onclick="triggerSecretCelebration()">V ❤️ M</div>
+            <p class="cursive-sub" style="font-size: 1.2rem; margin-bottom: 10px; color: var(--ivory-silk);">Two traditions. Two souls. One timeless celebration.</p>
+            <button class="unlock-btn" onclick="unlockExperience()">ENTER THE EXPERIENCE</button>
+        </div>
+    </div>
+
+    <!-- Main Immersive Scrolling Journey Container -->
+    <div class="scroller-sections">
+        
+        <!-- SECTION 1: THE REVEAL HERO -->
+        <section id="hero-sec">
+            <p class="serif-title" style="letter-spacing: 8px; font-size: 1.2rem;">MANASVIKA & VISHWAJEET</p>
+            <h1 class="serif-title" style="font-size: 4rem; margin: 1.5rem 0; color: var(--antique-gold);">THE UNION</h1>
+            <p class="cursive-sub" style="font-size: 1.5rem;">invite you to share in the beginning of their forever</p>
+            <div style="margin-top: 3rem; transform: scale(1.5); opacity:0.6;">✨</div>
+        </section>
+
+        <!-- SECTION 2: UNIVERSES COLLIDING -->
+        <section id="universe-sec">
+            <h2 class="serif-title universe-title">When Horizons Converge</h2>
+            <p class="universe-para">
+                From the grand vibrant fields and ancient royal courts of Punjab, to the artistic heart, poetic rhythm, and pristine heritage houses of Bengal. Two timelines weave together into a tapestry of unparalleled elegance.
+            </p>
+        </section>
+
+        <!-- SECTION 3: CULTURAL FUSION INTERACTIVE EXPERIENCES -->
+        <section id="fusion-sec">
+            <h2 class="serif-title" style="font-size: 2.5rem;">The Harmony of Traditions</h2>
+            <p class="cursive-sub" style="margin-top: 0.5rem;">Explore & tune the cultural frequencies</p>
+            
+            <div class="fusion-container">
+                <div class="culture-card punjabi">
+                    <h3 class="culture-title">The Royal Punjab</h3>
+                    <p style="font-size: 0.9rem; font-weight: 200; line-height: 1.6;">The warmth of Phulkari matrices, the resonance of deep cinematic dhol notes, and majestic heritage elegance.</p>
+                    <div class="slider-container">
+                        <label class="slider-label">Dhol & Brass Energy</label>
+                        <input type="range" class="cultural-slider" min="0" max="100" value="60" oninput="updateCultureMeter()">
+                    </div>
+                </div>
+                
+                <div class="culture-card bengali">
+                    <h3 class="culture-title">The Regal Bengal</h3>
+                    <p style="font-size: 0.9rem; font-weight: 200; line-height: 1.6;">The fine poetry of Alpanas, structural symmetry of historic architecture, and the emotional echo of the Sitar.</p>
+                    <div class="slider-container">
+                        <label class="slider-label">Sitar & Alpana Intricacy</label>
+                        <input type="range" class="cultural-slider" min="0" max="100" value="70" oninput="updateCultureMeter()">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem;">
+                <p class="serif-title" style="font-size: 0.9rem; letter-spacing: 3px; color: var(--antique-gold);">COMPATIBILITY EQUILIBRIUM</p>
+                <div id="compatibility-meter" style="font-size: 2rem; margin-top: 0.5rem; font-family:'Cinzel', serif; font-weight:bold; color:var(--ivory-silk);">100%</div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: THE REVEAL & INTERACTIVE SCRATCH PETALS -->
+        <section id="details-sec">
+            <!-- Canvas overlay layer allowing scratch/drag away mechanism -->
+            <canvas class="petal-canvas-cover" id="scratch-canvas"></canvas>
+            <div class="reveal-hint">Swipe/Drag across to brush away the velvet petals & reveal info</div>
+
+            <div class="details-box">
+                <h3 class="serif-title" style="font-size: 1.5rem; letter-spacing: 5px;">THE ROKA CEREMONY</h3>
+                <div class="date-txt">19.06.2027</div>
+                <p class="cursive-sub" style="font-size: 1.3rem; margin-bottom: 1.5rem;">Saturday Afternoon</p>
+                <p style="letter-spacing: 2px; font-size: 0.9rem; font-weight: 400; color: var(--gold-glow);">THE PALACE COURT | NEW DELHI</p>
+            </div>
+        </section>
+
+        <!-- SECTION 5: INTERACTIVE BLESSINGS CLOUD -->
+        <section id="blessings-sec">
+            <h2 class="serif-title" style="font-size: 2.5rem;">Shower Your Blessings</h2>
+            <p class="cursive-sub">Your words materialize instantly as floating golden arrays</p>
+            
+            <div class="blessing-input-zone">
+                <input type="text" id="blessing-text" class="blessing-input" placeholder="Type a word of love (e.g., Joy, Always, Eternal)..." maxlength="20">
+                <button class="bless-btn" onclick="addCustomBlessing()">CAST</button>
+            </div>
+        </section>
+
+        <!-- SECTION 6: THE GRAND FINALE -->
+        <section id="finale-sec">
+            <div class="grand-frame">
+                <p class="serif-title" style="letter-spacing: 6px; font-size: 0.9rem; color: var(--antique-gold);">SAVE THE DATE</p>
+                <h2 class="couple-names" id="finale-names" onclick="triggerSecretCelebration()">Vishwajeet <span style="font-family:'Playfair Display'; font-style:italic; font-size:2.5rem; -webkit-text-fill-color: var(--antique-gold);">&</span> Manasvika</h2>
+                <div class="serif-title" style="font-size: 2rem; letter-spacing: 4px; margin-bottom: 1rem;">19 JUNE 2027</div>
+                <p class="cursive-sub" style="color: var(--ivory-silk); font-size: 1.1rem; max-width: 500px; margin: 0 auto; line-height: 1.6;">
+                    A celebration of love, laughter, and two beautiful cultures.
+                </p>
+            </div>
+            <p style="margin-top: 4rem; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.5;">SCROLL TO REPLAY THE JOURNEY</p>
+        </section>
+    </div>
+
+    <script>
+        /* --- GLOBAL APPLICATION STATE --- */
+        let audioCtx = null;
+        let ambientOscillator = null;
+        let gainNode = null;
+        let isAudioPlaying = false;
+
+        /* --- THREE.JS CINEMATIC ENGINE INITIALIZATION --- */
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050203, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 30;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // Lighting System
+        const ambientLight = new THREE.AmbientLight(0x4A121A, 1.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xD4AF37, 2.5);
+        directionalLight.position.set(5, 10, 7);
+        scene.add(directionalLight);
+
+        const pointLight = new THREE.PointLight(0x8B2635, 3, 50);
+        pointLight.position.set(0, 0, 10);
+        scene.add(pointLight);
+
+        /* --- GENERATING LUXURY WEBGL GEOMETRY & PARTICLES --- */
+        // Layer 1: Luxury Gold Dust Particles
+        const particleCount = 450;
+        const particleGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const randomScales = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 60;
+            positions[i + 1] = (Math.random() - 0.5) * 60;
+            positions[i + 2] = (Math.random() - 0.5) * 50;
+            randomScales[i / 3] = Math.random();
+        }
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        // Create elegant round circular particle texture via Canvas data URL
+        const createParticleTexture = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 16; canvas.height = 16;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+            grad.addColorStop(0, 'rgba(255,243,210,1)');
+            grad.addColorStop(1, 'rgba(212,175,55,0)');
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, 16, 16);
+            return new THREE.CanvasTexture(canvas);
+        };
+
+        const particleMaterial = new THREE.PointsMaterial({
+            size: 0.4,
+            map: createParticleTexture(),
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const particleMesh = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particleMesh);
+
+        // Layer 2: Geometric Architectural Fluid Torus Rings representing connection
+        const ringGeo = new THREE.TorusGeometry(8, 0.08, 16, 100);
+        const ringMat = new THREE.MeshStandardMaterial({
+            color: 0xD4AF37,
+            roughness: 0.1,
+            metalness: 0.9,
+            transparent: true,
+            opacity: 0.4
+        });
+        const centralRing = new THREE.Mesh(ringGeo, ringMat);
+        centralRing.position.set(0, 0, -5);
+        scene.add(centralRing);
+
+        // Interactive Dynamically Injected Text Arrays inside Three.js Space
+        let floatingWordsObjects = [];
+        const create3DTextSimulation = (text) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'rgba(0,0,0,0)'; ctx.fillRect(0,0,256,64);
+            ctx.font = '24px Cinzel, serif';
+            ctx.fillStyle = '#D4AF37';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, 128, 40);
+            
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide });
+            const geo = new THREE.PlaneGeometry(6, 1.5);
+            const mesh = new THREE.Mesh(geo, mat);
+            
+            mesh.position.set((Math.random() - 0.5) * 20, (Math.random() - 0.5) * 10, 5 + Math.random() * 10);
+            scene.add(mesh);
+            floatingWordsObjects.push(mesh);
+        };
+
+        // Populate baseline blessing statements
+        const primaryBlessings = ["LOVE", "HARMONY", "ANANDAM", "VIVAH", "PROMISE"];
+        primaryBlessings.forEach(b => create3DTextSimulation(b));
+
+
+        /* --- INTERACTIVE SYSTEM: SCRATCH LUXURY PETALS --- */
+        const canvas = document.getElementById('scratch-canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        function resizeScratchCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            // Re-render deep wine velvet background to be scratched off
+            ctx.fillStyle = '#4A121A';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw subtle patterns on the overlay structure
+            ctx.font = '14px Cinzel';
+            ctx.fillStyle = 'rgba(212,175,55,0.15)';
+            for(let i=0; i<canvas.width; i+=150) {
+                for(let j=0; j<canvas.height; j+=100) {
+                    ctx.fillText("✨ V & M ✨", i, j);
+                }
+            }
+            ctx.globalCompositeOperation = 'destination-out';
+        }
+        
+        window.addEventListener('resize', () => {
+            resizeScratchCanvas();
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        function scratch(e) {
+            if(!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 45, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('touchstart', () => isDrawing = true);
+        canvas.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('touchmove', scratch);
+
+
+        /* --- CORE GSAP TIME RESILIENT CINEMATIC CHOREOGRAPHY --- */
+        // Opening Reveal Execution
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeScratchCanvas();
+            gsap.to("#gate-content", { opacity: 1, y: 0, duration: 1.5, ease: "power3.out", delay: 0.5 });
+        });
+
+        function unlockExperience() {
+            // Initiate Music Web Audio Context instantly on user click confirmation
+            initAmbientAudio();
+
+            gsap.timeline()
+                .to("#intro-gate", { opacity: 0, duration: 1.2, ease: "power2.inOut" })
+                .set("#intro-gate", { display: "none" })
+                .from("#hero-sec *", { opacity: 0, y: 40, stagger: 0.3, duration: 1.2, ease: "power4.out" });
+        }
+
+        // ScrollTrigger Driven Cinematic Camera Rig Movement & Interactions
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Control Three.js elements across viewport scroll choreography
+        gsap.to(camera.position, {
+            z: 12,
+            scrollTrigger: {
+                trigger: "#universe-sec",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1
+            }
+        });
+
+        gsap.to(particleMesh.rotation, {
+            y: Math.PI,
+            x: Math.PI * 0.5,
+            scrollTrigger: {
+                trigger: ".scroller-sections",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
+        });
+
+        gsap.to(centralRing.rotation, {
+            x: Math.PI * 2,
+            y: Math.PI,
+            scrollTrigger: {
+                trigger: "#fusion-sec",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        // Content Staggers across diverse operational environments
+        gsap.utils.toArray('section').forEach(section => {
+            const texts = section.querySelectorAll('.serif-title, .cursive-sub, .universe-para, .fusion-container, .details-box, .grand-frame');
+            if(texts.length > 0 && section.id !== 'hero-sec') {
+                gsap.from(texts, {
+                    opacity: 0,
+                    y: 50,
+                    stagger: 0.2,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 75%",
+                        toggleActions: "play none none reverse"
+                    }
+                });
+            }
+        });
+
+
+        /* --- INTERACTIVE UTILITY FUNCTIONS --- */
+        // Cultural Equilibrium Engine Updates
+        function updateCultureMeter() {
+            const sliders = document.querySelectorAll('.cultural-slider');
+            const val1 = parseInt(sliders[0].value);
+            const val2 = parseInt(sliders[1].value);
+            
+            // Algorithmic calculation creating harmonious total variance
+            const equilibrium = Math.min(100, Math.round((val1 + val2) / 1.3));
+            document.getElementById('compatibility-meter').innerText = `${equilibrium}% MATCH`;
+            
+            // Dynamically alter lighting state parameters based on selection balance
+            pointLight.color.setHex(val1 > val2 ? 0x4A121A : 0xD4AF37);
+        }
+
+        // Real-time custom blessing insertion sequence
+        function addCustomBlessing() {
+            const input = document.getElementById('blessing-text');
+            const word = input.value.trim().toUpperCase();
+            if(word.length > 0) {
+                create3DTextSimulation(word);
+                input.value = '';
+                
+                // Trigger quick luxury flash confirmation
+                gsap.to("body", { backgroundColor: '#1f070b', duration: 0.1, yoyo: true, repeat: 1 });
+            }
+        }
+
+        // Secret Easter Egg Trigger Sequence: Clicking Names activates hyper-drive gold particle spray
+        function triggerSecretCelebration() {
+            // Instantly burst light & accelerate particle configuration speeds
+            pointLight.intensity = 15;
+            gsap.to(pointLight, { intensity: 3, duration: 2 });
+
+            // Generate physical local explosion movement pattern matrices
+            gsap.timeline()
+                .to(particleMesh.scale, { x: 2.5, y: 2.5, z: 2.5, duration: 0.5, ease: "bounce.out" })
+                .to(particleMesh.scale, { x: 1, y: 1, z: 1, duration: 1.5, ease: "power2.out" });
+
+            // Play procedural synth celebratory bell chime
+            if (audioCtx) {
+                let noteOsc = audioCtx.createOscillator();
+                let noteGain = audioCtx.createGain();
+                noteOsc.type = 'sine';
+                noteOsc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch melodic bell
+                noteGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                noteGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+                noteOsc.connect(noteGain);
+                noteGain.connect(audioCtx.destination);
+                noteOsc.start();
+                noteOsc.stop(audioCtx.currentTime + 1);
+            }
+        }
+
+
+        /* --- REAL-TIME PROCEDURAL AUDIO SYNTHESIS (NO EXTERNAL ASSETS REQUIRED) --- */
+        function initAmbientAudio() {
+            try {
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+                
+                // Continuous low-frequency cinematic royal ambient pad drone
+                ambientOscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                
+                ambientOscillator.type = 'triangle';
+                ambientOscillator.frequency.setValueAtTime(110, audioCtx.currentTime); // Low A note (Sitar / Drone depth foundation)
+                
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                ambientOscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                ambientOscillator.start();
+                isAudioPlaying = true;
+                document.getElementById('audio-status').innerText = "SOUNDTRACK ACTIVE";
+            } catch(e) {
+                console.log("Web Audio Engine fallback execution initialized.");
+            }
+        }
+
+        function toggleAudio() {
+            if(!audioCtx) {
+                initAmbientAudio();
+                return;
+            }
+            if(isAudioPlaying) {
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+                document.getElementById('audio-status').innerText = "MUTED";
+                document.getElementById('audio-icon').innerText = "🔇";
+                isAudioPlaying = false;
+            } else {
+                gainNode.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.5);
+                document.getElementById('audio-status').innerText = "SOUNDTRACK ACTIVE";
+                document.getElementById('audio-icon').innerText = "🔊";
+                isAudioPlaying = true;
+            }
+        }
+
+
+        /* --- ENGINE LOOP ANIMATION EXECUTION --- */
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const elapsedTime = clock.getElapsedTime();
+            
+            // Gentle continuous rotation arrays
+            particleMesh.rotation.y += 0.001;
+            particleMesh.rotation.x += 0.0005;
+            
+            // Move dynamic custom text clouds gently towards user field of vision
+            floatingWordsObjects.forEach((wordObj, index) => {
+                wordObj.position.z -= 0.02;
+                wordObj.position.y += Math.sin(elapsedTime + index) * 0.003;
+                // Loop positions safely back to infinity bounds
+                if(wordObj.position.z < -10) {
+                    wordObj.position.z = 20;
+                    wordObj.position.x = (Math.random() - 0.5) * 20;
+                }
+            });
+
+            // Fluid camera interactivity based on cursor displacement track
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Mouse Interactivity tracking to apply soft depth parallax skewing
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) - 0.5;
+            mouseY = (e.clientY / window.innerHeight) - 0.5;
+            
+            gsap.to(camera.rotation, {
+                y: mouseX * 0.15,
+                x: -mouseY * 0.15,
+                duration: 1,
+                ease: "power1.out"
+            });
+        });
+    </script>
+</body>
+</html>
