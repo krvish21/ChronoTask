@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Roka Ceremony | Manasvika & Vishwajeet</title>
     
-    <!-- Premium Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome for Premium UI Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -46,7 +44,6 @@
             height: 100%;
         }
 
-        /* Silk Overlay Texture */
         .silk-texture {
             position: fixed;
             top: 0;
@@ -60,7 +57,6 @@
             opacity: 0.6;
         }
 
-        /* Three.js Background Canvas Container */
         #canvas-container {
             position: fixed;
             top: 0;
@@ -71,7 +67,6 @@
             pointer-events: none;
         }
 
-        /* Ambient Global Lighting Effects */
         .ambient-glow {
             position: fixed;
             width: 600px;
@@ -83,7 +78,7 @@
             z-index: 2;
         }
 
-        /* Cinematic Loader Intro Sequence */
+        /* HARDENING THE LOADER AND EMBEDDED MANDALA DESIGN */
         #loader-sequence {
             position: fixed;
             top: 0;
@@ -96,18 +91,27 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
-        .loader-mandala {
-            width: 120px;
-            height: 120px;
-            border: 2px dashed var(--gold-primary);
-            border-radius: 50%;
-            animation: spin 25s linear infinite;
+        .loader-mandala-container {
+            width: 140px;
+            height: 140px;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: spinMandala 30s linear infinite;
         }
 
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loader-mandala-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes spinMandala {
+            100% { transform: rotate(360deg); }
+        }
 
         .loader-text-container {
             margin-top: 40px;
@@ -133,7 +137,7 @@
         }
 
         .enter-btn {
-            margin-top: 30px;
+            margin-top: 40px;
             padding: 15px 40px;
             background: transparent;
             border: 1px solid var(--gold-primary);
@@ -153,7 +157,6 @@
             box-shadow: 0 0 25px rgba(212,175,55,0.4);
         }
 
-        /* Controls */
         .premium-controls {
             position: fixed;
             bottom: 30px;
@@ -178,7 +181,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Master Section Layouts */
         main {
             position: relative;
             z-index: 5;
@@ -246,7 +248,6 @@
             font-style: italic;
         }
 
-        /* Initials setup */
         .hero-initials-container {
             display: flex;
             align-items: center;
@@ -272,7 +273,6 @@
             transition: transform 0.3s;
         }
 
-        /* Timeline */
         .timeline-container {
             margin-top: 50px;
             display: flex;
@@ -299,7 +299,6 @@
             background: rgba(20,5,10,0.6);
         }
 
-        /* Fusion Grid */
         .fusion-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -314,7 +313,6 @@
             border-radius: 4px;
         }
 
-        /* FIXED SCRATCH CARD LAYOUT */
         .scratch-wrapper {
             position: relative;
             width: 100%;
@@ -340,7 +338,7 @@
             align-items: center;
             padding: 20px;
             z-index: 1;
-            pointer-events: none; /* Allows scratching through to canvas underneath */
+            pointer-events: none; 
         }
 
         #scratch-canvas {
@@ -350,11 +348,10 @@
             width: 100%;
             height: 100%;
             z-index: 2;
-            touch-action: none; /* Crucial for mobile smooth tracking */
+            touch-action: none; 
             cursor: pointer;
         }
 
-        /* Compatibility Meter */
         .meter-container {
             margin-top: 30px;
             cursor: pointer;
@@ -376,7 +373,6 @@
             transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
         }
 
-        /* Countdown */
         .countdown-container {
             display: flex;
             justify-content: center;
@@ -399,7 +395,6 @@
             color: var(--gold-primary);
         }
 
-        /* Blessings */
         .blessings-input-zone {
             display: flex;
             flex-direction: column;
@@ -431,7 +426,6 @@
             border-radius: 4px;
         }
 
-        /* Easter Egg */
         #easter-egg-overlay {
             position: fixed;
             top: 0;
@@ -460,12 +454,19 @@
     <div id="canvas-container"></div>
     <div class="ambient-glow"></div>
 
-    <!-- Background Soundscape Loop Asset -->
     <audio id="ambient-audio" loop src="https://assets.mixkit.co/active_storage/sfx/123/123-84.wav"></audio>
 
-    <!-- Loader Screen -->
     <div id="loader-sequence">
-        <div class="loader-mandala"></div>
+        <div class="loader-mandala-container">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#D4AF37" stroke-width="1" stroke-dasharray="3,3" />
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#7A1B2E" stroke-width="0.75" />
+                <path d="M50 5 L95 50 L50 95 L5 50 Z" fill="none" stroke="#D4AF37" stroke-width="0.5" />
+                <circle cx="50" cy="50" r="28" fill="none" stroke="#D4AF37" stroke-width="1" stroke-dasharray="1,2" />
+                <circle cx="50" cy="50" r="18" fill="none" stroke="#7A1B2E" stroke-width="1" />
+                <circle cx="50" cy="50" r="6" fill="#D4AF37" />
+            </svg>
+        </div>
         <div class="loader-text-container">
             <h2 class="loader-title">Two Hearts. Two Cultures.</h2>
             <p class="loader-sub">One Beautiful Beginning</p>
@@ -473,7 +474,6 @@
         <button class="enter-btn" id="enter-experience-trigger">Enter Experience</button>
     </div>
 
-    <!-- UI Interaction Overlays -->
     <div class="premium-controls">
         <div class="control-circle" id="audio-toggle-node" title="Toggle Soundscape">
             <i class="fa-solid fa-volume-xmark"></i>
@@ -483,9 +483,7 @@
         </div>
     </div>
 
-    <!-- Content Matrix Frame -->
     <main>
-        <!-- HERO -->
         <section id="hero">
             <div class="glass-card" style="background:transparent; border:none; backdrop-filter:none; box-shadow:none;">
                 <p class="cinematic-sub">The Royal Union Announcement</p>
@@ -500,7 +498,6 @@
             </div>
         </section>
 
-        <!-- STORY -->
         <section id="story">
             <div class="glass-card">
                 <div class="card-frame"></div>
@@ -515,13 +512,12 @@
                     <div class="timeline-item">
                         <span class="timeline-badge">The Union</span>
                         <h3 class="timeline-title">Families Meet</h3>
-                        <p class="timeline-desc">Where grand Punjabi warmth harmonized beautifully with intellectual Bengali warmth, weaving a beautiful tapestry of mutual love.</p>
+                        <p class="timeline-desc">Where grand Punjabi laughter harmonized beautifully with intellectual Bengali warmth, weaving a beautiful tapestry of mutual love.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- CULTURAL FUSION -->
         <section id="fusion">
             <div class="glass-card">
                 <div class="card-frame"></div>
@@ -549,7 +545,6 @@
             </div>
         </section>
 
-        <!-- FIXED REVELATION CARDS -->
         <section id="revelation">
             <div class="glass-card">
                 <div class="card-frame"></div>
@@ -560,7 +555,7 @@
                 <div class="scratch-wrapper">
                     <div class="scratch-reveal-content">
                         <p class="cinematic-sub" style="margin-bottom: 5px;">The Auspicious Date</p>
-                        <h3 class="grand-heading" style="font-size: 2.2rem; margin-bottom: 5px; -webkit-text-fill-color: var(--ivory);">19th June 2027</h3>
+                        <h3 class="grand-heading" style="font-size: 2.2rem; margin-bottom: 5px; -webkit-text-fill-color: var(--ivory); color: var(--ivory);">19th June 2027</h3>
                         <p class="romantic-prose" style="font-size: 1.2rem; color: var(--gold-primary);">Roka Ceremony Celebration</p>
                     </div>
                     <canvas id="scratch-canvas"></canvas>
@@ -568,7 +563,6 @@
             </div>
         </section>
 
-        <!-- DETAILS & TIMERS -->
         <section id="details">
             <div class="glass-card">
                 <div class="card-frame"></div>
@@ -585,7 +579,6 @@
             </div>
         </section>
 
-        <!-- BLESSINGS WALL -->
         <section id="blessings">
             <div class="glass-card">
                 <div class="card-frame"></div>
@@ -603,14 +596,12 @@
         </section>
     </main>
 
-    <!-- EASTER EGG FRAME -->
     <div id="easter-egg-overlay">
         <h1 class="grand-heading" style="font-size:3.5rem;">Rab Ne Bana Di Jodi</h1>
         <p class="romantic-prose" style="color: var(--gold-primary);">Vishwajeet ❤️ Manasvika</p>
         <p class="cinematic-sub" style="margin-top: 30px; font-size:0.7rem;">Click anywhere to return</p>
     </div>
 
-    <!-- CDN ENGINE DEPENDENCIES -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -629,7 +620,7 @@
                     document.getElementById("loader-sequence").style.display = "none";
                     initThreeJsUniverse();
                     initGsapScrollAnimations();
-                    setupScratchCard(); // Executed instantly when visibility parameters align
+                    setupScratchCard(); 
                 }
             });
         });
@@ -662,7 +653,6 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambientLight);
 
-            // Gold Particles Array
             const starGeometry = new THREE.BufferGeometry();
             const positions = new Float32Array(200 * 3);
             for(let i=0; i<200*3; i++) { positions[i] = (Math.random() - 0.5) * 60; }
@@ -671,7 +661,6 @@
             starParticles = new THREE.Points(starGeometry, starMat);
             scene.add(starParticles);
 
-            // Crimson Flowers Generator Array
             const petalGeometry = new THREE.ConeGeometry(0.3, 0.6, 4);
             const petalMat = new THREE.MeshBasicMaterial({ color: 0x7A1B2E });
             for(let i=0; i<30; i++) {
@@ -706,32 +695,33 @@
             });
         }
 
-        // 5. BULLETPROOF SCRATCH CARD COMPONENT ENGINE (CRITICAL FIX)
+        // 5. SCRATCH CARD ENGINE (WITH FAILSAFE INITIALIZATION)
         function setupScratchCard() {
             const canvas = document.getElementById('scratch-canvas');
             const wrapper = canvas.parentElement;
             const ctx = canvas.getContext('2d');
             
-            // Set rendering canvas coordinates directly from wrapper parent metrics
-            canvas.width = wrapper.clientWidth;
-            canvas.height = wrapper.clientHeight;
+            // Enforce explicit execution layout rendering width/height metrics
+            canvas.width = wrapper.clientWidth || 450;
+            canvas.height = wrapper.clientHeight || 220;
 
-            // Paint elegant gold canvas shroud mask overlay safely 
+            // Generate opaque protective gold shield layer over text canvas layout
+            ctx.globalCompositeOperation = 'source-over';
             ctx.fillStyle = '#C59B27';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Add instructional label layer cleanly onto overlay sheet
+            // Text Banner Overlay Instruction Hint Card
             ctx.font = 'bold 12px Montserrat';
             ctx.fillStyle = '#1A050A';
             ctx.textAlign = 'center';
-            ctx.fillText('SCRATCH WITH FINGER OR MOUSE', canvas.width / 2, canvas.height / 2 + 5);
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SCRATCH WITH FINGER OR MOUSE', canvas.width / 2, canvas.height / 2);
 
             let painting = false;
 
             function scratch(e) {
                 if (!painting) return;
                 
-                // Track relative positioning coordinates cleanly over layout window bounds
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -741,22 +731,21 @@
 
                 ctx.globalCompositeOperation = 'destination-out';
                 ctx.beginPath();
-                ctx.arc(x, y, 30, 0, Math.PI * 2);
+                ctx.arc(x, y, 28, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Dual Event Handlers Registry Matrix mapping Desktop + Mobile Touch Interfaces
             canvas.addEventListener('mousedown', () => painting = true);
             canvas.addEventListener('touchstart', () => painting = true);
             
             canvas.addEventListener('mousemove', scratch);
-            canvas.addEventListener('touchmove', (e) => { scratch(e); e.preventDefault(); });
+            canvas.addEventListener('touchmove', (e) => { scratch(e); e.preventDefault(); }, { passive: false });
             
             window.addEventListener('mouseup', () => painting = false);
             window.addEventListener('touchend', () => painting = false);
         }
 
-        // 6. FUNCTIONAL LOGIC COUPLING MATRIX (METER, COUNTDOWN, BLESSINGS, EASTER EGG)
+        // 6. LOGIC ATTACHMENTS
         document.getElementById("interact-petal-trigger").addEventListener("click", () => {
             flowerPetals.forEach(p => p.position.y += Math.random() * 10);
         });
@@ -766,7 +755,7 @@
             document.getElementById("meter-score-label").innerText = "Destiny Connection Locked: 100% Perfect Synergy Match!";
         });
 
-        // Countdown Calculations Setup
+        // Countdown Logic Engine
         setInterval(() => {
             const diff = new Date("June 19, 2027 18:00:00").getTime() - new Date().getTime();
             if(diff <= 0) return;
@@ -787,7 +776,7 @@
             }
         });
 
-        // Heart Interactive Overlay
+        // Heart Easter Egg
         document.getElementById("heart-egg").addEventListener("click", () => {
             document.getElementById("easter-egg-overlay").style.display = "flex";
         });
