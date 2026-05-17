@@ -2,1702 +2,1283 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Roka Ceremony | Manasvika & Vishwajeet</title>
+    
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        :root {
+            --bg-maroon: #2D0B12;
+            --bg-dark-maroon: #1A050A;
+            --crimson: #7A1B2E;
+            --gold-primary: #D4AF37;
+            --gold-gradient: linear-gradient(135deg, #B38728 0%, #FBF5B7 50%, #DAA520 100%);
+            --ivory: #FDFBF7;
+            --emerald: #094F39;
+            --glass-base: rgba(45, 11, 18, 0.45);
+            --glass-border: rgba(212, 175, 55, 0.3);
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-display: 'Cinzel Decorative', serif;
+            --font-sans: 'Montserrat', sans-serif;
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
-        :root {
-            --wa-green: #008069;
-            --wa-dark-green: #075e54;
-            --wa-light-green: #00a884;
-            --wa-bg: #111b21;
-            --wa-surface: #1f2c34;
-            --wa-bubble-out: #005c4b;
-            --wa-bubble-in: #1f2c34;
-            --wa-text: #e9edef;
-            --wa-text-secondary: #8696a0;
-            --wa-meta: #99beb7;
-            --wa-divider: rgba(134, 150, 160, 0.15);
-        }
-
-        html, body {
-            background: var(--wa-bg);
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .app {
+        body, html {
+            background-color: var(--bg-dark-maroon);
+            color: var(--ivory);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
             width: 100%;
             height: 100%;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Android Status Bar */
-        .status-bar {
-            height: 24px;
-            background: var(--wa-green);
-            flex-shrink: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 12px;
-            font-size: 12px;
-            font-weight: 500;
-            color: white;
-            letter-spacing: 0.3px;
-            z-index: 1000;
-        }
-
-        .status-bar .time {
-            font-variant-numeric: tabular-nums;
-        }
-
-        .status-icons {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .status-icons svg {
-            width: 14px;
-            height: 14px;
-            fill: white;
-        }
-
-        /* App Bar */
-        .app-bar {
-            height: 56px;
-            background: var(--wa-green);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            padding: 0 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            z-index: 999;
-            transition: all 0.3s;
-        }
-
-        .app-bar.scrolled {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            border-radius: 50%;
-        }
-
-        .back-btn:active {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .back-btn svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            font-weight: 500;
-            margin: 0 12px;
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .chat-info {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .chat-name {
-            color: white;
-            font-size: 17px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.3;
-        }
-
-        .chat-status {
-            color: rgba(255,255,255,0.85);
-            font-size: 13px;
-            font-weight: 400;
-            line-height: 1.3;
-        }
-
-        .nav-actions {
-            display: flex;
-        }
-
-        .nav-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-        }
-
-        .nav-btn:active {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .nav-btn svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        /* Menu Dropdown */
-        .dropdown-menu {
-            position: absolute;
-            top: 80px;
-            right: 8px;
-            background: var(--wa-surface);
-            border-radius: 4px;
-            min-width: 180px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            z-index: 1001;
-            display: none;
-            overflow: hidden;
-        }
-
-        .dropdown-menu.show {
-            display: block;
-            animation: dropdownIn 0.15s ease-out;
-        }
-
-        @keyframes dropdownIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .dropdown-item {
-            padding: 14px 16px;
-            color: var(--wa-text);
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .dropdown-item svg {
-            width: 20px;
-            height: 20px;
-            color: var(--wa-text-secondary);
-        }
-
-        /* Main Content Area */
-        .chat-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Wallpaper */
-        .wallpaper {
-            position: absolute;
-            inset: 0;
-            background: 
-                repeating-linear-gradient(45deg, #0b141a 0px, #0b141a 2px, #111b21 2px, #111b21 4px);
-            opacity: 0.5;
-            z-index: 1;
-        }
-
-        /* Chat Container */
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            z-index: 2;
             scroll-behavior: smooth;
-            padding-bottom: 8px;
         }
 
-        .chat-container::-webkit-scrollbar {
-            width: 0;
+        /* Lenis/Smooth Scroll adjustments */
+        html.lenis {
+            height: auto;
         }
 
-        .date-separator {
-            display: flex;
-            justify-content: center;
-            margin: 16px 0;
-            position: relative;
-            z-index: 3;
-        }
-
-        .date-pill {
-            background: rgba(32, 44, 51, 0.9);
-            color: rgba(233, 237, 239, 0.7);
-            font-size: 12px;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-weight: 500;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .message-group {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            margin-bottom: 12px;
-            padding: 0 5%;
-            animation: messageIn 0.3s ease-out;
-        }
-
-        @keyframes messageIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message {
-            max-width: 85%;
-            padding: 6px 8px 4px 10px;
-            border-radius: 12px;
-            position: relative;
-            font-size: 14.2px;
-            line-height: 19px;
-            color: var(--wa-text);
-            word-wrap: break-word;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-            z-index: 3;
-        }
-
-        .message.incoming {
-            align-self: flex-start;
-            background: var(--wa-bubble-in);
-            border-top-left-radius: 2px;
-        }
-
-        .message.outgoing {
-            align-self: flex-end;
-            background: var(--wa-bubble-out);
-            border-top-right-radius: 2px;
-        }
-
-        .message-text {
-            margin-bottom: 4px;
-            padding-right: 60px;
-        }
-
-        .message-meta {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 3px;
-            font-size: 11px;
-            color: var(--wa-meta);
-            float: right;
-            margin-top: -16px;
-            margin-left: 8px;
-        }
-
-        .checkmarks {
-            display: flex;
-            margin-left: 2px;
-        }
-
-        .check {
-            width: 14px;
-            height: 10px;
-            position: relative;
-            margin-left: -6px;
-        }
-
-        .check svg {
-            position: absolute;
-            width: 14px;
-            height: 10px;
-        }
-
-        .check.blue svg path {
-            stroke: var(--wa-check);
-        }
-
-        /* Voice Message */
-        .voice-message {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 200px;
-        }
-
-        .voice-play {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: var(--wa-light-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            flex-shrink: 0;
-            cursor: pointer;
-        }
-
-        .voice-wave {
-            flex: 1;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .wave-bar {
-            width: 3px;
-            background: var(--wa-light-green);
-            border-radius: 2px;
-            opacity: 0.7;
-            animation: wave 1s ease-in-out infinite;
-        }
-
-        .wave-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
-        .wave-bar:nth-child(2) { height: 70%; animation-delay: 0.1s; }
-        .wave-bar:nth-child(3) { height: 50%; animation-delay: 0.2s; }
-        .wave-bar:nth-child(4) { height: 90%; animation-delay: 0.3s; }
-        .wave-bar:nth-child(5) { height: 60%; animation-delay: 0.4s; }
-        .wave-bar:nth-child(6) { height: 80%; animation-delay: 0.5s; }
-        .wave-bar:nth-child(7) { height: 45%; animation-delay: 0.6s; }
-        .wave-bar:nth-child(8) { height: 65%; animation-delay: 0.7s; }
-        .wave-bar:nth-child(9) { height: 55%; animation-delay: 0.8s; }
-        .wave-bar:nth-child(10) { height: 75%; animation-delay: 0.9s; }
-        .wave-bar:nth-child(11) { height: 40%; animation-delay: 1s; }
-        .wave-bar:nth-child(12) { height: 60%; animation-delay: 1.1s; }
-        .wave-bar:nth-child(13) { height: 85%; animation-delay: 1.2s; }
-        .wave-bar:nth-child(14) { height: 50%; animation-delay: 1.3s; }
-        .wave-bar:nth-child(15) { height: 70%; animation-delay: 1.4s; }
-
-        @keyframes wave {
-            0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
-            50% { transform: scaleY(1); opacity: 1; }
-        }
-
-        .voice-time {
-            font-size: 12px;
-            color: var(--wa-meta);
-            margin-left: 4px;
-        }
-
-        /* Image Message */
-        .image-message {
-            padding: 3px;
-            border-radius: 14px;
-            overflow: hidden;
-            max-width: 240px;
-        }
-
-        .image-placeholder {
-            width: 100%;
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 11px;
-        }
-
-        .image-caption {
-            padding: 4px 8px 2px;
-            font-size: 14px;
-        }
-
-        /* Reply */
-        .reply-preview {
-            background: rgba(0,0,0,0.15);
-            border-left: 3px solid var(--wa-light-green);
-            padding: 4px 8px;
-            margin-bottom: 4px;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-
-        .reply-name {
-            color: var(--wa-light-green);
-            font-weight: 500;
-            font-size: 12px;
-        }
-
-        .reply-text {
-            color: var(--wa-text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Reaction */
-        .reaction {
-            position: absolute;
-            bottom: -10px;
-            right: 8px;
-            background: var(--wa-surface);
-            border-radius: 10px;
-            padding: 2px 6px;
-            font-size: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            z-index: 4;
-        }
-
-        .reaction-container {
-            position: relative;
-            height: 0;
-        }
-
-        /* Typing */
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            animation: fadeIn 0.3s;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 3px;
-            background: var(--wa-bubble-in);
-            padding: 8px 14px;
-            border-radius: 12px;
-            border-top-left-radius: 2px;
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            background: var(--wa-text-secondary);
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-4px); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Chat Bar */
-        .chat-bar {
-            flex-shrink: 0;
-            display: flex;
-            align-items: flex-end;
-            gap: 6px;
-            padding: 6px 8px 8px;
-            background: var(--wa-bg);
-            z-index: 100;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            min-height: 44px;
-            max-height: 120px;
-            background: var(--wa-surface);
-            border-radius: 24px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            color: var(--wa-text);
-            font-size: 15px;
-            position: relative;
-            border: none;
-        }
-
-        .input-text {
-            outline: none;
-            width: 100%;
-            max-height: 100px;
-            overflow-y: auto;
-            word-wrap: break-word;
-            line-height: 1.4;
-        }
-
-        .input-text:empty::before {
-            content: 'Message';
-            color: var(--wa-text-secondary);
-        }
-
-        .input-actions-left {
-            display: flex;
-            gap: 4px;
-            padding-bottom: 6px;
-        }
-
-        .input-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--wa-text-secondary);
-            cursor: pointer;
-        }
-
-        .input-btn:active {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .input-btn svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .send-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--wa-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            flex-shrink: 0;
-            border: none;
-            box-shadow: 0 2px 6px rgba(0,128,105,0.3);
-            transition: transform 0.1s;
-        }
-
-        .send-btn:active {
-            transform: scale(0.92);
-        }
-
-        .send-btn svg {
-            width: 24px;
-            height: 24px;
-            margin-left: 2px;
-        }
-
-        /* Jump Button */
-        .jump-btn {
-            position: absolute;
-            bottom: 80px;
-            right: 16px;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: var(--wa-surface);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--wa-text);
-            cursor: pointer;
-            z-index: 50;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s;
-            pointer-events: none;
-            border: 1px solid var(--wa-divider);
-        }
-
-        .jump-btn.visible {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-        }
-
-        /* Emoji Bar */
-        .emoji-bar {
-            position: absolute;
-            background: var(--wa-surface);
-            border-radius: 20px;
-            padding: 6px 10px;
-            display: flex;
-            gap: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 150;
-            border: 1px solid var(--wa-divider);
-            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .emoji-option {
-            font-size: 22px;
-            cursor: pointer;
-            padding: 2px;
-            transition: transform 0.2s;
-        }
-
-        .emoji-option:hover {
-            transform: scale(1.2);
-        }
-
-        /* Context Menu */
-        .context-menu {
-            position: absolute;
-            background: var(--wa-surface);
-            border-radius: 8px;
-            padding: 8px 0;
-            min-width: 180px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            z-index: 200;
-            display: none;
-            border: 1px solid var(--wa-divider);
-        }
-
-        .context-menu-item {
-            padding: 12px 16px;
-            color: var(--wa-text);
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .context-menu-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .context-menu-item.danger {
-            color: #ff6b6b;
-        }
-
-        /* Link Preview */
-        .link-preview {
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            margin: 4px -4px 4px;
-            overflow: hidden;
-        }
-
-        .link-preview-img {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-        }
-
-        .link-preview-text {
-            padding: 8px;
-        }
-
-        .link-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--wa-text);
-            margin-bottom: 2px;
-        }
-
-        .link-url {
-            font-size: 12px;
-            color: var(--wa-text-secondary);
-        }
-
-        .mention {
-            color: var(--wa-light-green);
-            font-weight: 500;
-        }
-
-        /* Settings Page */
-        .settings-page {
-            position: absolute;
-            inset: 0;
-            background: var(--wa-bg);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .settings-page.show {
-            display: flex;
-            animation: slideIn 0.2s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        .settings-app-bar {
-            position: sticky;
+        /* Silk Overlay Texture */
+        .silk-texture {
+            position: fixed;
             top: 0;
-            height: 56px;
-            background: var(--wa-green);
-            display: flex;
-            align-items: center;
-            padding: 0 4px;
-            color: white;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            flex-shrink: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.6;
         }
 
-        .settings-title {
-            font-size: 20px;
-            font-weight: 500;
-            margin-left: 8px;
+        /* Custom Premium Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark-maroon);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-primary);
+            border-radius: 4px;
         }
 
-        .settings-section {
-            padding: 16px;
+        /* Three.js Background Canvas Container */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
         }
 
-        .settings-section-title {
-            color: var(--wa-light-green);
-            font-size: 13px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            padding-left: 16px;
+        /* Ambient Global Lighting Effects */
+        .ambient-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(122,27,46,0.3) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .ambient-glow-right {
+            position: fixed;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 75%);
+            bottom: -300px;
+            right: -300px;
+            pointer-events: none;
+            z-index: 2;
         }
 
-        .setting-item {
-            background: var(--wa-surface);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 8px;
+        /* Cinematic Loader Intro Sequence */
+        #loader-sequence {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark-maroon);
+            z-index: 10000;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            justify-content: center;
+            align-items: center;
         }
 
-        .setting-label {
-            color: var(--wa-text);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .setting-input {
-            background: transparent;
-            border: 1px solid var(--wa-divider);
-            border-radius: 8px;
-            padding: 12px;
-            color: var(--wa-text);
-            font-size: 15px;
-            outline: none;
-            width: 100%;
-        }
-
-        .setting-input:focus {
-            border-color: var(--wa-light-green);
-        }
-
-        .setting-input::placeholder {
-            color: var(--wa-text-secondary);
-        }
-
-        .avatar-picker {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-
-        .avatar-option {
-            width: 48px;
-            height: 48px;
+        .loader-mandala {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed var(--gold-primary);
             border-radius: 50%;
+            animation: spin 25s linear infinite;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-mandala::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 1px solid var(--crimson);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .loader-text-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .loader-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            letter-spacing: 6px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+        }
+
+        .loader-sub {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ivory);
+            margin-top: 10px;
+            letter-spacing: 2px;
+            opacity: 0;
+        }
+
+        .enter-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: transparent;
+            border: 1px solid var(--gold-primary);
+            color: var(--ivory);
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 15px rgba(212,175,55,0.1);
+        }
+
+        .enter-btn:hover {
+            background: var(--gold-primary);
+            color: var(--bg-dark-maroon);
+            box-shadow: 0 0 25px rgba(212,175,55,0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Persistent Premium Controls Overlay */
+        .premium-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .control-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-base);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--gold-primary);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .control-circle:hover {
+            transform: scale(1.1);
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Master Section Layouts */
+        section {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            padding: 80px 20px;
+        }
+
+        /* Glassmorphic Cards */
+        .glass-card {
+            background: var(--glass-base);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 4px;
+            padding: 60px 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Decorative Bengali Alpana and Punjabi Phulkari subtle frames */
+        .card-frame {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid rgba(212,175,55,0.15);
+            pointer-events: none;
+        }
+
+        .card-frame::before, .card-frame::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--gold-primary);
+        }
+        .card-frame::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+        .card-frame::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+        /* Typography & Visual Elements */
+        .cinematic-sub {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--gold-primary);
+            margin-bottom: 20px;
+        }
+
+        .grand-heading {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .romantic-prose {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            line-height: 1.6;
+            color: var(--ivory);
+            font-style: italic;
+        }
+
+        /* Section 1: Hero Scene */
+        #hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-initials-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            border: 2px solid transparent;
-            transition: all 0.2s;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .avatar-option:hover, .avatar-option.selected {
-            border-color: var(--wa-light-green);
-            transform: scale(1.1);
-        }
-
-        .color-picker {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-
-        .color-option {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+        .initial-trigger {
+            font-family: var(--font-display);
+            font-size: 5rem;
             cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.3s;
+            position: relative;
         }
 
-        .color-option:hover, .color-option.selected {
-            border-color: white;
+        .initial-trigger:hover {
             transform: scale(1.15);
         }
 
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .heart-center {
+            font-size: 2.5rem;
+            color: var(--crimson);
+            animation: pulse 2s infinite;
+            cursor: pointer;
         }
 
-        .toggle {
-            width: 48px;
-            height: 28px;
-            background: var(--wa-text-secondary);
-            border-radius: 14px;
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 2px var(--crimson));}
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 15px rgba(230,20,60,0.8));}
+            100% { transform: scale(1); filter: drop-shadow(0 0 2px var(--crimson));}
+        }
+
+        /* Section 2: Story Journey Timeline */
+        .timeline-container {
             position: relative;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .toggle.active {
-            background: var(--wa-light-green);
-        }
-
-        .toggle-knob {
-            width: 24px;
-            height: 24px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
-
-        .toggle.active .toggle-knob {
-            transform: translateX(20px);
-        }
-
-        .btn-primary {
-            background: var(--wa-green);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 24px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary:active {
-            background: var(--wa-dark-green);
-        }
-
-        .preview-card {
-            background: var(--wa-surface);
-            border-radius: 12px;
-            padding: 16px;
+            margin-top: 50px;
             display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 16px;
+            flex-direction: column;
+            gap: 40px;
         }
 
-        .preview-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
+        .timeline-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .timeline-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-badge {
+            padding: 6px 20px;
+            border: 1px solid var(--gold-primary);
+            font-size: 0.75rem;
+            font-family: var(--font-sans);
+            letter-spacing: 3px;
+            border-radius: 20px;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            background: rgba(20,5,10,0.6);
+        }
+
+        .timeline-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: var(--ivory);
+            margin-bottom: 8px;
+        }
+
+        .timeline-desc {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: rgba(253, 251, 247, 0.8);
+            max-width: 450px;
+        }
+
+        /* Section 3: Cultural Fusion Showcase */
+        .fusion-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .fusion-card {
+            background: rgba(253, 251, 247, 0.03);
+            border: 1px solid rgba(212,175,55,0.1);
+            padding: 30px;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+
+        .fusion-card:hover {
+            border-color: var(--gold-primary);
+            background: rgba(212,175,55,0.05);
+            transform: translateY(-5px);
+        }
+
+        .fusion-icon-art {
+            font-size: 2.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        /* Section 4: Gamified Scratch Card Reveal */
+        .scratch-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 250px;
+            margin: 40px auto 0;
+            border: 2px solid var(--gold-primary);
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        .scratch-reveal-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #3D121B 0%, #1A050A 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            padding: 20px;
+        }
+
+        #scratch-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="gold" opacity="0.6"/></svg>'), auto;
+        }
+
+        /* Section 5: Event Details with Countdown */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .detail-item-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            color: white;
-            flex-shrink: 0;
+            gap: 20px;
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
         }
 
-        .preview-info h3 {
-            color: var(--wa-text);
-            font-size: 16px;
-            font-weight: 500;
+        .detail-item-row i {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
         }
 
-        .preview-info p {
-            color: var(--wa-text-secondary);
-            font-size: 13px;
-            margin-top: 2px;
+        /* Countdown Timer Component */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
         }
 
-        ::-webkit-scrollbar {
-            width: 0;
+        .countdown-block {
+            background: rgba(20,5,10,0.5);
+            border: 1px solid rgba(212,175,55,0.2);
+            padding: 15px;
+            min-width: 80px;
+            border-radius: 4px;
         }
 
-        ::selection {
-            background: rgba(0,168,132,0.3);
+        .countdown-val {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--gold-primary);
+            display: block;
+        }
+
+        .countdown-lbl {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ivory);
+            opacity: 0.7;
+        }
+
+        /* Section 6: Interactive Blessings Wall */
+        .blessings-input-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 500px;
+            margin: 30px auto;
+        }
+
+        .premium-input {
+            background: rgba(20,5,10,0.4);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            color: var(--ivory);
+            font-family: var(--font-sans);
+            outline: none;
+            border-radius: 4px;
+            transition: border 0.3s;
+        }
+
+        .premium-input:focus {
+            border-color: var(--gold-primary);
+        }
+
+        .premium-btn {
+            background: var(--gold-gradient);
+            color: var(--bg-dark-maroon);
+            border: none;
+            padding: 15px;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: box-shadow 0.3s;
+        }
+
+        .premium-btn:hover {
+            box-shadow: 0 0 20px rgba(251, 245, 183, 0.6);
+        }
+
+        .blessings-display-ticker {
+            height: 120px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 30px;
+            border-top: 1px dashed rgba(212,175,55,0.2);
+            padding-top: 20px;
+        }
+
+        .ticker-track {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: absolute;
+            width: 100%;
+            animation: tickerScroll 12s linear infinite;
+        }
+
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes tickerScroll {
+            0% { top: 0; }
+            100% { top: -200px; }
+        }
+
+        .blessing-bubble {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1.15rem;
+            color: rgba(253,251,247,0.9);
+        }
+
+        /* Interactive Compatibility Playfield Area */
+        .meter-container {
+            margin-top: 30px;
+            position: relative;
+        }
+        
+        .meter-track-bg {
+            width: 100%;
+            height: 8px;
+            background: rgba(253,251,247,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .meter-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--gold-gradient);
+            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+
+        /* Easter Egg Overlay Module */
+        #easter-egg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26,5,10,0.95);
+            z-index: 20000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .ee-mandala {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(214,175,55,0.15) 0%, transparent 70%);
+            position: absolute;
+            animation: spin 40s linear infinite;
+        }
+
+        .ee-text {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            z-index: 2;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .grand-heading { font-size: 2.2rem; }
+            .romantic-prose { font-size: 1.2rem; }
+            .initial-trigger { font-size: 3.5rem; }
+            .fusion-grid { grid-template-columns: 1fr; }
+            .glass-card { padding: 40px 20px; }
+            .premium-controls { bottom: 15px; right: 15px; }
         }
     </style>
 </head>
 <body>
-    <div class="app" id="app">
-        <!-- Android Status Bar -->
-        <div class="status-bar">
-            <span class="time" id="clock">9:41</span>
-            <div class="status-icons">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
-            </div>
+
+    <!-- Silk Mesh / Overlay Pattern -->
+    <div class="silk-texture"></div>
+
+    <!-- Three.js Environment Render Target Window -->
+    <div id="canvas-container"></div>
+
+    <!-- Ambient Glow Backgrounds -->
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-right"></div>
+
+    <!-- Audio Engine Node Asset Declarations -->
+    <!-- Ambient Indian classical sitar/flute structure background asset loop -->
+    <audio id="ambient-audio" loop src="https://assets.mixkit.co/active_storage/sfx/123/123-84.wav"></audio>
+
+    <!-- Cinematic Intro Sequence / Loading Screen Gates -->
+    <div id="loader-sequence">
+        <div class="loader-mandala"></div>
+        <div class="loader-text-container">
+            <h2 class="loader-title">Two Hearts. Two Cultures.</h2>
+            <p class="loader-sub">One Beautiful Beginning</p>
         </div>
+        <button class="enter-btn" id="enter-experience-trigger">Enter Experience</button>
+    </div>
 
-        <!-- App Bar -->
-        <div class="app-bar" id="appBar">
-            <div class="back-btn" id="backBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"/>
-                </svg>
-            </div>
-            <div class="avatar" id="chatAvatar">
-                <span id="avatarInitials">AR</span>
-            </div>
-            <div class="chat-info">
-                <div class="chat-name" id="chatName">Alex Rivera</div>
-                <div class="chat-status" id="chatStatus">online</div>
-            </div>
-            <div class="nav-actions">
-                <div class="nav-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                    </svg>
-                </div>
-                <div class="nav-btn" id="menuBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="5" r="1"/>
-                        <circle cx="12" cy="12" r="1"/>
-                        <circle cx="12" cy="19" r="1"/>
-                    </svg>
-                </div>
-            </div>
+    <!-- Ambient UI Controls Layer -->
+    <div class="premium-controls">
+        <div class="control-circle" id="audio-toggle-node" title="Toggle Soundscape">
+            <i class="fa-solid fa-volume-xmark"></i>
         </div>
-
-        <!-- Dropdown Menu -->
-        <div class="dropdown-menu" id="dropdownMenu">
-            <div class="dropdown-item" id="settingsItem">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
-                Chat Settings
-            </div>
-            <div class="dropdown-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="16" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                </svg>
-                Contact Info
-            </div>
-            <div class="dropdown-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Export Chat
-            </div>
-            <div class="dropdown-item danger">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
-                Clear Chat
-            </div>
-        </div>
-
-        <!-- Chat Area -->
-        <div class="chat-area">
-            <div class="wallpaper"></div>
-            
-            <div class="chat-container" id="chatContainer">
-                <div class="date-separator">
-                    <div class="date-pill">Today</div>
-                </div>
-
-                <div class="message-group">
-                    <div class="message incoming">
-                        <div class="message-text">Hey! Are we still on for dinner tonight? 🍕</div>
-                        <div class="message-meta">9:30 AM</div>
-                    </div>
-                </div>
-
-                <div class="message-group">
-                    <div class="message outgoing">
-                        <div class="message-text">Yes definitely! What time works for you?</div>
-                        <div class="message-meta">
-                            9:32 AM
-                            <div class="checkmarks">
-                                <div class="check blue">
-                                    <svg viewBox="0 0 14 10" fill="none">
-                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                                <div class="check blue">
-                                    <svg viewBox="0 0 14 10" fill="none">
-                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="message-group" id="voiceGroup">
-                    <div class="message incoming">
-                        <div class="voice-message">
-                            <div class="voice-play">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <polygon points="5 3 19 12 5 21 5 3"/>
-                                </svg>
-                            </div>
-                            <div class="voice-wave">
-                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                            </div>
-                            <span class="voice-time">0:42</span>
-                        </div>
-                        <div class="message-meta" style="margin-top: 4px;">9:35 AM</div>
-                    </div>
-                    <div class="reaction-container">
-                        <div class="reaction">❤️</div>
-                    </div>
-                </div>
-
-                <div class="message-group">
-                    <div class="message outgoing">
-                        <div class="reply-preview">
-                            <div class="reply-name" id="replyName1">Alex Rivera</div>
-                            <div class="reply-text">Voice message (0:42)</div>
-                        </div>
-                        <div class="message-text">Haha that sounds perfect! I'll book the table for 8pm</div>
-                        <div class="message-meta">
-                            9:36 AM
-                            <div class="checkmarks">
-                                <div class="check blue">
-                                    <svg viewBox="0 0 14 10" fill="none">
-                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                                <div class="check blue">
-                                    <svg viewBox="0 0 14 10" fill="none">
-                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="message-group" id="imageGroup">
-                    <div class="message outgoing image-message">
-                        <div class="image-placeholder">🍕</div>
-                        <div class="image-caption">The place we're going to!</div>
-                        <div class="message-meta" style="position: relative; margin-top: 0; padding-right: 4px;">
-                            9:38 AM
-                            <div class="checkmarks">
-                                <div class="check blue">
-                                    <svg viewBox="0 0 14 10" fill="none">
-                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                                <div class="check blue">
-                                    <svg viewBox="0 0 14 10" fill="none">
-                                        <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="message-group" id="linkGroup">
-                    <div class="message incoming">
-                        <div class="message-text">Check out their menu: <span class="mention">@alex</span></div>
-                        <div class="link-preview">
-                            <div class="link-preview-img">🍝</div>
-                            <div class="link-preview-text">
-                                <div class="link-title">Trattoria Bella - Menu & Reservations</div>
-                                <div class="link-url">trattoriabella.com</div>
-                            </div>
-                        </div>
-                        <div class="message-meta">9:40 AM</div>
-                    </div>
-                </div>
-
-                <div class="typing-indicator" id="typingIndicator" style="display: none;">
-                    <div class="typing-dots">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </div>
-                </div>
-
-                <div style="height: 20px;"></div>
-            </div>
-
-            <!-- Jump Button -->
-            <div class="jump-btn" id="jumpBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"/>
-                </svg>
-            </div>
-
-            <!-- Chat Bar -->
-            <div class="chat-bar" id="chatBar">
-                <div class="input-actions-left">
-                    <div class="input-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                            <line x1="9" y1="9" x2="9.01" y2="9"/>
-                            <line x1="15" y1="9" x2="15.01" y2="9"/>
-                        </svg>
-                    </div>
-                    <div class="input-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="input-wrapper" id="inputWrapper">
-                    <div class="input-text" id="inputText" contenteditable="true"></div>
-                </div>
-                <button class="send-btn" id="sendBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"/>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Context Menu -->
-        <div class="context-menu" id="contextMenu">
-            <div class="context-menu-item">Reply</div>
-            <div class="context-menu-item">Forward</div>
-            <div class="context-menu-item">Copy</div>
-            <div class="context-menu-item">Star</div>
-            <div class="context-menu-item">Pin</div>
-            <div class="context-menu-item danger">Delete</div>
-        </div>
-
-        <!-- Emoji Bar -->
-        <div class="emoji-bar" id="emojiBar" style="display: none;">
-            <div class="emoji-option">❤️</div>
-            <div class="emoji-option">👍</div>
-            <div class="emoji-option">😂</div>
-            <div class="emoji-option">😮</div>
-            <div class="emoji-option">😢</div>
-            <div class="emoji-option">🙏</div>
-        </div>
-
-        <!-- SETTINGS PAGE -->
-        <div class="settings-page" id="settingsPage">
-            <div class="settings-app-bar">
-                <div class="back-btn" id="settingsBackBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6"/>
-                    </svg>
-                </div>
-                <div class="settings-title">Chat Settings</div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title">Preview</div>
-                <div class="preview-card">
-                    <div class="preview-avatar" id="previewAvatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <span id="previewInitials">AR</span>
-                    </div>
-                    <div class="preview-info">
-                        <h3 id="previewName">Alex Rivera</h3>
-                        <p id="previewStatus">online</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title">Contact Info</div>
-                <div class="setting-item">
-                    <div class="setting-label">Name</div>
-                    <input type="text" class="setting-input" id="settingName" value="Alex Rivera" placeholder="Enter contact name">
-                </div>
-                <div class="setting-item">
-                    <div class="setting-label">Status</div>
-                    <input type="text" class="setting-input" id="settingStatus" value="online" placeholder="online, typing..., last seen...">
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title">Avatar</div>
-                <div class="setting-item">
-                    <div class="setting-label">Choose Avatar Style</div>
-                    <div class="avatar-picker" id="avatarPicker">
-                        <div class="avatar-option selected" data-gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)" data-emoji="👤" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">👤</div>
-                        <div class="avatar-option" data-gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" data-emoji="🌸" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🌸</div>
-                        <div class="avatar-option" data-gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" data-emoji="🐬" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">🐬</div>
-                        <div class="avatar-option" data-gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)" data-emoji="🌿" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">🌿</div>
-                        <div class="avatar-option" data-gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)" data-emoji="🌅" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">🌅</div>
-                        <div class="avatar-option" data-gradient="linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)" data-emoji="☁️" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">☁️</div>
-                        <div class="avatar-option" data-gradient="linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)" data-emoji="🎀" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">🎀</div>
-                        <div class="avatar-option" data-gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)" data-emoji="🎩" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🎩</div>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div class="setting-label">Or Type Initials</div>
-                    <input type="text" class="setting-input" id="settingInitials" value="AR" maxlength="3" placeholder="e.g. JD">
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title">Theme</div>
-                <div class="setting-item">
-                    <div class="setting-label">Bubble Color (Outgoing)</div>
-                    <div class="color-picker" id="bubbleColorPicker">
-                        <div class="color-option selected" data-color="#005c4b" style="background: #005c4b;"></div>
-                        <div class="color-option" data-color="#1a5f7a" style="background: #1a5f7a;"></div>
-                        <div class="color-option" data-color="#6b4c35" style="background: #6b4c35;"></div>
-                        <div class="color-option" data-color="#5c3a21" style="background: #5c3a21;"></div>
-                        <div class="color-option" data-color="#4a6741" style="background: #4a6741;"></div>
-                        <div class="color-option" data-color="#6b4c9a" style="background: #6b4c9a;"></div>
-                        <div class="color-option" data-color="#8b4513" style="background: #8b4513;"></div>
-                        <div class="color-option" data-color="#2c3e50" style="background: #2c3e50;"></div>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div class="toggle-row">
-                        <div class="setting-label">Show Typing Indicator</div>
-                        <div class="toggle active" id="typingToggle">
-                            <div class="toggle-knob"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title">Chat Content</div>
-                <div class="setting-item">
-                    <div class="toggle-row">
-                        <div class="setting-label">Show Voice Message</div>
-                        <div class="toggle active" id="voiceToggle">
-                            <div class="toggle-knob"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div class="toggle-row">
-                        <div class="setting-label">Show Image Message</div>
-                        <div class="toggle active" id="imageToggle">
-                            <div class="toggle-knob"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div class="toggle-row">
-                        <div class="setting-label">Show Link Preview</div>
-                        <div class="toggle active" id="linkToggle">
-                            <div class="toggle-knob"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section" style="padding-bottom: 32px;">
-                <button class="btn-primary" id="saveBtn">Apply Changes</button>
-            </div>
+        <div class="control-circle" id="interact-petal-trigger" title="Shower Blessings">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
         </div>
     </div>
 
-    <script>
-        // Clock
-        function updateClock() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('clock').textContent = `${hours}:${minutes}`;
-        }
-        updateClock();
-        setInterval(updateClock, 1000);
+    <!-- Main Scrollable Structural Layout Matrix -->
+    <main id="scroll-container">
 
-        // Elements
-        const chatContainer = document.getElementById('chatContainer');
-        const appBar = document.getElementById('appBar');
-        const inputText = document.getElementById('inputText');
-        const sendBtn = document.getElementById('sendBtn');
-        const jumpBtn = document.getElementById('jumpBtn');
-        const chatStatus = document.getElementById('chatStatus');
-        const typingIndicator = document.getElementById('typingIndicator');
-        const emojiBar = document.getElementById('emojiBar');
-        const contextMenu = document.getElementById('contextMenu');
-        const menuBtn = document.getElementById('menuBtn');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const settingsItem = document.getElementById('settingsItem');
-        const settingsPage = document.getElementById('settingsPage');
-        const settingsBackBtn = document.getElementById('settingsBackBtn');
-        const saveBtn = document.getElementById('saveBtn');
+        <!-- 1. HERO HOME SCENE -->
+        <section id="hero">
+            <div class="glass-card" style="box-shadow: none; background: transparent; border: none; backdrop-filter: none;">
+                <p class="cinematic-sub" style="opacity: 0; transform: translateY(20px);" id="hero-sub">The Royal Union Announcement</p>
+                
+                <div class="hero-initials-container">
+                    <span class="initial-trigger" id="initial-m">M</span>
+                    <i class="fa-solid fa-heart heart-center" id="heart-egg"></i>
+                    <span class="initial-trigger" id="initial-v">V</span>
+                </div>
 
-        // Settings elements
-        const settingName = document.getElementById('settingName');
-        const settingStatus = document.getElementById('settingStatus');
-        const settingInitials = document.getElementById('settingInitials');
-        const chatName = document.getElementById('chatName');
-        const chatAvatar = document.getElementById('chatAvatar');
-        const avatarInitials = document.getElementById('avatarInitials');
-        const previewAvatar = document.getElementById('previewAvatar');
-        const previewInitials = document.getElementById('previewInitials');
-        const previewName = document.getElementById('previewName');
-        const previewStatus = document.getElementById('previewStatus');
-        const replyName1 = document.getElementById('replyName1');
-        const voiceGroup = document.getElementById('voiceGroup');
-        const imageGroup = document.getElementById('imageGroup');
-        const linkGroup = document.getElementById('linkGroup');
+                <h1 class="grand-heading" id="hero-title" style="opacity: 0; transform: translateY(20px);">Manasvika & Vishwajeet</h1>
+                <p class="romantic-prose" id="hero-prose" style="opacity: 0; transform: translateY(20px);">Are getting married.</p>
+                <p class="cinematic-sub" style="margin-top:40px; font-size:0.7rem; color: rgba(253,251,247,0.4);">Scroll to unfold the journey</p>
+            </div>
+        </section>
 
-        let currentGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        let currentBubbleColor = '#005c4b';
-
-        // Scroll handling
-        chatContainer.addEventListener('scroll', () => {
-            const scrollTop = chatContainer.scrollTop;
-            const scrollHeight = chatContainer.scrollHeight;
-            const clientHeight = chatContainer.clientHeight;
-            
-            if (scrollTop > 20) {
-                appBar.classList.add('scrolled');
-            } else {
-                appBar.classList.remove('scrolled');
-            }
-
-            const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-            if (!isNearBottom && scrollTop > 200) {
-                jumpBtn.classList.add('visible');
-            } else {
-                jumpBtn.classList.remove('visible');
-            }
-        });
-
-        jumpBtn.addEventListener('click', () => {
-            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-        });
-
-        // Menu toggle
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-
-        document.addEventListener('click', () => {
-            dropdownMenu.classList.remove('show');
-        });
-
-        // Settings page
-        settingsItem.addEventListener('click', () => {
-            dropdownMenu.classList.remove('show');
-            settingsPage.classList.add('show');
-        });
-
-        settingsBackBtn.addEventListener('click', () => {
-            settingsPage.classList.remove('show');
-        });
-
-        // Avatar picker
-        document.querySelectorAll('.avatar-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
-                option.classList.add('selected');
-                currentGradient = option.dataset.gradient;
-                const emoji = option.dataset.emoji;
-                previewAvatar.style.background = currentGradient;
-                previewInitials.textContent = emoji;
-            });
-        });
-
-        // Bubble color picker
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
-                option.classList.add('selected');
-                currentBubbleColor = option.dataset.color;
-            });
-        });
-
-        // Toggles
-        document.querySelectorAll('.toggle').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                toggle.classList.toggle('active');
-            });
-        });
-
-        // Live preview updates
-        settingName.addEventListener('input', () => {
-            previewName.textContent = settingName.value || 'Contact Name';
-        });
-
-        settingStatus.addEventListener('input', () => {
-            previewStatus.textContent = settingStatus.value || 'online';
-        });
-
-        settingInitials.addEventListener('input', () => {
-            previewInitials.textContent = settingInitials.value || '??';
-        });
-
-        // Save settings
-        saveBtn.addEventListener('click', () => {
-            chatName.textContent = settingName.value || 'Contact Name';
-            chatStatus.textContent = settingStatus.value || 'online';
-            avatarInitials.textContent = settingInitials.value || '??';
-            chatAvatar.style.background = currentGradient;
-            replyName1.textContent = settingName.value || 'Contact Name';
-
-            document.documentElement.style.setProperty('--wa-bubble-out', currentBubbleColor);
-
-            voiceGroup.style.display = document.getElementById('voiceToggle').classList.contains('active') ? 'flex' : 'none';
-            imageGroup.style.display = document.getElementById('imageToggle').classList.contains('active') ? 'flex' : 'none';
-            linkGroup.style.display = document.getElementById('linkToggle').classList.contains('active') ? 'flex' : 'none';
-
-            settingsPage.classList.remove('show');
-        });
-
-        // Input handling
-        inputText.addEventListener('focus', () => {
-            setTimeout(() => {
-                chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-            }, 300);
-        });
-
-        // Send message
-        function sendMessage() {
-            const text = inputText.textContent.trim();
-            if (!text) return;
-
-            const now = new Date();
-            const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-            const messageGroup = document.createElement('div');
-            messageGroup.className = 'message-group';
-            messageGroup.innerHTML = `
-                <div class="message outgoing">
-                    <div class="message-text">${escapeHtml(text)}</div>
-                    <div class="message-meta">
-                        ${time}
-                        <div class="checkmarks">
-                            <div class="check">
-                                <svg viewBox="0 0 14 10" fill="none">
-                                    <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                        </div>
+        <!-- 2. THE STORY INTERACTIVE JOURNEY -->
+        <section id="story">
+            <div class="glass-card">
+                <div class="card-frame"></div>
+                <p class="cinematic-sub">The Journey of Convergence</p>
+                <h2 class="grand-heading" style="font-size: 2.5rem;">How Horizons Met</h2>
+                
+                <div class="timeline-container">
+                    <div class="timeline-item">
+                        <span class="timeline-badge">The Prelude</span>
+                        <h3 class="timeline-title">First Hello</h3>
+                        <p class="timeline-desc">A modern confluence of ideas, shared passion for engineering, design, and aesthetics sparked an unbreakable digital connection.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-badge">The Union of Heritages</span>
+                        <h3 class="timeline-title">Families Meet</h3>
+                        <p class="timeline-desc">Where grand Punjabi laughter harmonized beautifully with intellectual Bengali warmth, weaving a beautiful tapestry of mutual love.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-badge">The Destiny Boundary</span>
+                        <h3 class="timeline-title">Roka 2027</h3>
+                        <p class="timeline-desc">Securing the infinite promise of tomorrow. Two paths converging permanently into one legacy.</p>
                     </div>
                 </div>
-            `;
+            </div>
+        </section>
 
-            if (typingIndicator.style.display !== 'none') {
-                typingIndicator.before(messageGroup);
-            } else {
-                chatContainer.appendChild(messageGroup);
-            }
-
-            inputText.textContent = '';
-            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-
-            setTimeout(() => {
-                const check = messageGroup.querySelector('.check');
-                if (check) check.classList.add('blue');
-            }, 2000);
-
-            setTimeout(() => {
-                const checkmarks = messageGroup.querySelector('.checkmarks');
-                if (checkmarks && checkmarks.children.length === 1) {
-                    checkmarks.innerHTML += `
-                        <div class="check blue">
-                            <svg viewBox="0 0 14 10" fill="none">
-                                <path d="M1 5l4 4L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                    `;
-                }
-            }, 3500);
-        }
-
-        sendBtn.addEventListener('click', sendMessage);
-        inputText.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Long press for reactions
-        let longPressTimer;
-        document.querySelectorAll('.message').forEach(msg => {
-            msg.addEventListener('touchstart', (e) => {
-                longPressTimer = setTimeout(() => {
-                    showEmojiBar(e, msg);
-                }, 500);
-            });
-            msg.addEventListener('touchend', () => clearTimeout(longPressTimer));
-            msg.addEventListener('touchmove', () => clearTimeout(longPressTimer));
-            
-            msg.addEventListener('mousedown', (e) => {
-                if (e.button === 2) return;
-                longPressTimer = setTimeout(() => {
-                    showEmojiBar(e, msg);
-                }, 500);
-            });
-            msg.addEventListener('mouseup', () => clearTimeout(longPressTimer));
-            msg.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
-        });
-
-        function showEmojiBar(e, msg) {
-            const rect = msg.getBoundingClientRect();
-            const appRect = document.getElementById('app').getBoundingClientRect();
-            
-            emojiBar.style.display = 'flex';
-            emojiBar.style.left = `${rect.left - appRect.left + rect.width/2 - emojiBar.offsetWidth/2}px`;
-            emojiBar.style.top = `${rect.top - appRect.top - 50}px`;
-            
-            setTimeout(() => {
-                emojiBar.style.display = 'none';
-            }, 3000);
-        }
-
-        document.querySelectorAll('.emoji-option').forEach(emoji => {
-            emoji.addEventListener('click', () => {
-                emojiBar.style.display = 'none';
-            });
-        });
-
-        // Context menu
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.closest('.message')) {
-                e.preventDefault();
-                const appRect = document.getElementById('app').getBoundingClientRect();
-                contextMenu.style.display = 'block';
-                contextMenu.style.left = `${e.clientX - appRect.left}px`;
-                contextMenu.style.top = `${e.clientY - appRect.top}px`;
-            }
-        });
-
-        document.addEventListener('click', () => {
-            contextMenu.style.display = 'none';
-        });
-
-        // Typing simulation
-        function simulateTyping() {
-            if (!document.getElementById('typingToggle').classList.contains('active')) return;
-            
-            chatStatus.textContent = 'typing...';
-            typingIndicator.style.display = 'flex';
-            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-
-            setTimeout(() => {
-                typingIndicator.style.display = 'none';
-                chatStatus.textContent = settingStatus.value || 'online';
+        <!-- 3. CULTURAL FUSION INTERACTIVE PARALLEY -->
+        <section id="fusion">
+            <div class="glass-card">
+                <div class="card-frame"></div>
+                <p class="cinematic-sub">A Symphony of Traditions</p>
+                <h2 class="grand-heading" style="font-size: 2.5rem;">Punjabi Warmth & Bengali Grace</h2>
+                <p class="romantic-prose" style="font-size: 1.3rem;">An exquisite fusion of vibrant cultural rhythms and rich artistic heritage.</p>
                 
-                const responses = [
-                    "Sounds great! See you at 8 then 🎉",
-                    "Can't wait! I heard their pasta is amazing",
-                    "Perfect, I'll bring the wine 🍷",
-                    "Awesome! Just sent you the location pin"
-                ];
-                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                
-                const now = new Date();
-                const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-                
-                const messageGroup = document.createElement('div');
-                messageGroup.className = 'message-group';
-                messageGroup.innerHTML = `
-                    <div class="message incoming">
-                        <div class="message-text">${randomResponse}</div>
-                        <div class="message-meta">${time}</div>
+                <div class="fusion-grid">
+                    <div class="fusion-card">
+                        <i class="fa-solid fa-sun fusion-icon-art"></i>
+                        <h4 style="font-family: var(--font-display); margin-bottom: 10px; color: var(--gold-primary);">Phulkari Rhythms</h4>
+                        <p style="font-size:0.9rem; line-height:1.6; opacity:0.8;">The robust joy, the dynamic dhol beats, the luxurious, protective, structural patterns of Punjabi hospitality.</p>
                     </div>
-                `;
-                chatContainer.appendChild(messageGroup);
-                chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
-            }, 2000 + Math.random() * 2000);
+                    <div class="fusion-card">
+                        <i class="fa-solid fa-palette fusion-icon-art"></i>
+                        <h4 style="font-family: var(--font-display); margin-bottom: 10px; color: var(--gold-primary);">Alpana Canvas</h4>
+                        <p style="font-size:0.9rem; line-height:1.6; opacity:0.8;">The deep, fluid, organic elegance of handcrafted traditional floor art, symbolizing pristine fortune and pure grace.</p>
+                    </div>
+                </div>
+
+                <!-- Playful Interactive Compatibility Meter -->
+                <div class="meter-container">
+                    <p class="cinematic-sub" style="font-size:0.7rem; margin-top:20px;">Cultural Symphony Index</p>
+                    <div class="meter-track-bg">
+                        <div class="meter-fill" id="compatibility-gauge"></div>
+                    </div>
+                    <span id="meter-score-label" style="font-family: var(--font-serif); font-style:italic; color:var(--gold-primary);">Click to compute resonance...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. REVELATION: INTERACTIVE SCRATCH CARD -->
+        <section id="revelation">
+            <div class="glass-card">
+                <div class="card-frame"></div>
+                <p class="cinematic-sub">Exclusive Ritual Reveal</p>
+                <h2 class="grand-heading" style="font-size: 2.5rem;">Unveil The Ceremony Date</h2>
+                <p class="romantic-prose" style="font-size: 1.2rem; margin-bottom:20px;">Scribble/Scratch away the royal mask layer below to discover the magical alignment timeline.</p>
+                
+                <div class="scratch-wrapper">
+                    <div class="scratch-reveal-content">
+                        <p class="cinematic-sub" style="margin-bottom: 5px;">The Auspicious Date</p>
+                        <h3 class="grand-heading" style="font-size: 2.2rem; margin-bottom: 5px;">19th June 2027</h3>
+                        <p class="romantic-prose" style="font-size: 1.2rem; color: var(--gold-primary);">Roka Ceremony Celebration</p>
+                    </div>
+                    <canvas id="scratch-canvas" width="500" height="250"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SCHEDULING DETAILS AND REALTIME COUNTDOWN -->
+        <section id="details">
+            <div class="glass-card">
+                <div class="card-frame"></div>
+                <p class="cinematic-sub">Event Blueprint</p>
+                <h2 class="grand-heading" style="font-size: 2.5rem;">The Celebration Grid</h2>
+                
+                <div class="details-grid">
+                    <div class="detail-item-row">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <span>Saturday, June 19, 2027</span>
+                    </div>
+                    <div class="detail-item-row">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>High Tea & Cocktails — 6:00 PM IST onwards</span>
+                    </div>
+                    <div class="detail-item-row">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>The Grand Palace Pavilion, Nexa Estate</span>
+                    </div>
+                </div>
+
+                <div class="countdown-container">
+                    <div class="countdown-block"><span class="countdown-val" id="cd-days">00</span><span class="countdown-lbl">Days</span></div>
+                    <div class="countdown-block"><span class="countdown-val" id="cd-hours">00</span><span class="countdown-lbl">Hrs</span></div>
+                    <div class="countdown-block"><span class="countdown-val" id="cd-mins">00</span><span class="countdown-lbl">Mins</span></div>
+                    <div class="countdown-block"><span class="countdown-val" id="cd-secs">00</span><span class="countdown-lbl">Secs</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. DIGITAL BLESSINGS CONSOLE WALL -->
+        <section id="blessings">
+            <div class="glass-card">
+                <div class="card-frame"></div>
+                <p class="cinematic-sub">Virtual Registry Node</p>
+                <h2 class="grand-heading" style="font-size: 2.5rem;">Shower Your Blessings</h2>
+                <p class="romantic-prose" style="font-size: 1.1rem;">Your lovely intentions manifest directly onto our shared aesthetic constellation wall.</p>
+                
+                <div class="blessings-input-zone">
+                    <input type="text" id="guest-name" class="premium-input" placeholder="Your Noble Name">
+                    <input type="text" id="guest-message" class="premium-input" placeholder="Message of Joy & Prosperity">
+                    <button class="premium-btn" id="submit-blessing-trigger">Transmit Blessing</button>
+                </div>
+
+                <div class="blessings-display-ticker">
+                    <div class="ticker-track" id="blessings-ticker-container">
+                        <div class="blessing-bubble">"May your synthesis of cultures create an legendary beautiful dynasty!" — The Roy Family</div>
+                        <div class="blessing-bubble">"Excited beyond measure for this spectacular fusion event!" — Amit Sharma</div>
+                        <div class="blessing-bubble">"A match truly written across celestial spheres. Congratulations!" — Priyanjali Mitra</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. CINEMATIC OUTRO GRAND STAND -->
+        <section id="outro" style="height:100vh;">
+            <div class="glass-card" style="border:none; background:transparent; backdrop-filter:none; box-shadow:none;">
+                <p class="cinematic-sub">Save The Date</p>
+                <h2 class="grand-heading" style="font-size: 4rem;">See You On <br>19.06.2027</h2>
+                <div class="loader-mandala" style="margin: 30px auto; animation-duration: 60s; width:80px; height:80px;"></div>
+                <p class="romantic-prose" style="color: var(--gold-primary);">With Warmest Regards & Love,</p>
+                <p class="cinematic-sub" style="margin-top:10px; font-size:1rem;">The Ahluwalia & Banerjee Families</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- HIDDEN CINEMATIC TRICK EASTER EGG SCREEN INTERACTION -->
+    <div id="easter-egg-overlay">
+        <div class="ee-mandala"></div>
+        <h1 class="ee-text">Rab Ne Bana Di Jodi</h1>
+        <p class="romantic-prose" style="font-size: 1.5rem; color: var(--gold-primary);">Vishwajeet ❤️ Manasvika</p>
+        <p class="cinematic-sub" style="margin-top: 30px; font-size:0.7rem; color:rgba(253,251,247,0.5);">Click anywhere to resume reality</p>
+    </div>
+
+    <!-- INJECT ALL POWERFUL CDN DEPENDENCY LAYERS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lenis Smooth Scroll CDN -->
+    <script src="https://cdn.jsdelivr.net/gh/darkroomengineering/lenis@1.0.27/dist/lenis.min.js"></script>
+
+    <script>
+        // -------------------------------------------------------------
+        // MAIN APPLICATION ARCHITECT & LIFECYCLE CONTROLLER
+        // -------------------------------------------------------------
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            initCinematicLoader();
+            initThreeJsUniverse();
+            initLenisScroll();
+            initGsapSequencing();
+            initScratchCardComponent();
+            initCountdownEngine();
+            initInteractionsRegistry();
+        });
+
+        // Global Variable Management Scope
+        let scene, camera, renderer, starParticles, flowerPetals = [];
+        let audioContext, audioNode, isPlaying = false;
+
+        // -------------------------------------------------------------
+        // 1. CINEMATIC INTRO LOADER SEQUENCE
+        // -------------------------------------------------------------
+        function initCinematicLoader() {
+            const tl = gsap.timeline();
+            tl.to(".loader-title", { opacity: 1, duration: 1.5, y: 0, delay: 0.5 })
+              .to(".loader-sub", { opacity: 1, duration: 1.2, y: 0 }, "-=0.5")
+              .to(".enter-btn", { autoAlpha: 1, y: 0, duration: 0.8 });
+
+            document.getElementById("enter-experience-trigger").addEventListener("click", () => {
+                // Initialize web audio engine on explicit human gesture interaction pattern
+                initAudioEngine();
+                
+                gsap.timeline()
+                    .to("#loader-sequence", { 
+                        opacity: 0, 
+                        duration: 1.5, 
+                        ease: "power4.inOut",
+                        onComplete: () => {
+                            document.getElementById("loader-sequence").style.display = "none";
+                            triggerHeroCinematicReveal();
+                        }
+                    });
+            });
         }
 
-        setTimeout(simulateTyping, 10000);
+        function triggerHeroCinematicReveal() {
+            gsap.timeline()
+                .to("#hero-sub", { opacity: 1, y: 0, duration: 1, ease: "power3.out" })
+                .to("#initial-m", { scale: 1, rotate: 360, duration: 1.2, ease: "back.out(1.7)" }, "-=0.6")
+                .to("#initial-v", { scale: 1, rotate: -360, duration: 1.2, ease: "back.out(1.7)" }, "-=1.2")
+                .to("#hero-title", { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.6")
+                .to("#hero-prose", { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.8");
+        }
 
-        // Status cycling
-        setInterval(() => {
-            if (chatStatus.textContent === (settingStatus.value || 'online')) {
-                setTimeout(() => {
-                    if (Math.random() > 0.7) {
-                        chatStatus.textContent = 'last seen recently';
-                        setTimeout(() => {
-                            chatStatus.textContent = settingStatus.value || 'online';
-                        }, 3000);
-                    }
-                }, 5000);
+        // -------------------------------------------------------------
+        // 2. AUDIO MANAGEMENT SYSTEM ENGINE
+        // -------------------------------------------------------------
+        function initAudioEngine() {
+            audioNode = document.getElementById("ambient-audio");
+            // Standard safety check to guarantee context bindings
+            audioNode.volume = 0.4;
+        }
+
+        document.getElementById("audio-toggle-node").addEventListener("click", () => {
+            const btnIcon = document.getElementById("audio-toggle-node").querySelector("i");
+            if (!isPlaying) {
+                audioNode.play().catch(e => console.log("Audio play context deferred"));
+                btnIcon.className = "fa-solid fa-volume-high";
+                isPlaying = true;
+                gsap.to(audioNode, { volume: 0.5, duration: 2 });
+            } else {
+                audioNode.pause();
+                btnIcon.className = "fa-solid fa-volume-xmark";
+                isPlaying = false;
             }
-        }, 15000);
+        });
 
-        // Initial scroll
-        setTimeout(() => {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 100);
+        // -------------------------------------------------------------
+        // 3. THREE.JS 3D PARTICLE SYSTEMS AND LIGHT ENVIRONMENT
+        // -------------------------------------------------------------
+        function initThreeJsUniverse() {
+            const container = document.getElementById("canvas-container");
+            
+            // Core Scene Framework Setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Lighting Constructs
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalGoldLight = new THREE.DirectionalLight(0xD4AF37, 1.5);
+            directionalGoldLight.position.set(5, 5, 5);
+            scene.add(directionalGoldLight);
+
+            // System A: Floating Golden Stardust Particles
+            const starGeometry = new THREE.BufferGeometry();
+            const starCount = 350;
+            const starPositions = new Float32Array(starCount * 3);
+
+            for(let i=0; i<starCount*3; i+=3) {
+                starPositions[i] = (Math.random() - 0.5) * 80;
+                starPositions[i+1] = (Math.random() - 0.5) * 80;
+                starPositions[i+2] = (Math.random() - 0.5) * 40;
+            }
+
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+            
+            // Custom Procedural Texturing via Canvas Context Generation for Smooth Round Glowing Points
+            const starMat = new THREE.PointsMaterial({
+                color: 0xFBF5B7,
+                size: 0.25,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            starParticles = new THREE.Points(starGeometry, starMat);
+            scene.add(starParticles);
+
+            // System B: Soft Procedural Falling Crimson Rose Petals
+            generatePetalSystem(40);
+
+            // Animation Frame Render Loop Loop Execution Target
+            function animateThreeUniverse() {
+                requestAnimationFrame(animateThreeUniverse);
+
+                // Spin Stardust System
+                starParticles.rotation.y += 0.0008;
+                starParticles.rotation.x += 0.0003;
+
+                // Processing Falling Petals Engine Loop
+                flowerPetals.forEach(petal => {
+                    petal.position.y -= petal.userData.speed;
+                    petal.rotation.x += petal.userData.rotSpeed;
+                    petal.rotation.y += petal.userData.rotSpeed * 0.5;
+
+                    // Boundaries Recycling Reset System Execution
+                    if (petal.position.y < -30) {
+                        petal.position.y = 30;
+                        petal.position.x = (Math.random() - 0.5) * 60;
+                    }
+                });
+
+                renderer.render(scene, camera);
+            }
+            animateThreeUniverse();
+
+            // Handle Viewport Dimension Resizing Realtime Matrix Recalculation
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Gyro / Mouse Interactive Parallax Tracking Response Vector System
+            window.addEventListener('mousemove', (e) => {
+                const xVal = (e.clientX / window.innerWidth) - 0.5;
+                const yVal = (e.clientY / window.innerHeight) - 0.5;
+                
+                gsap.to(camera.position, {
+                    x: xVal * 6,
+                    y: -yVal * 6,
+                    duration: 1.5,
+                    ease: "power2.out"
+                });
+            });
+        }
+
+        function generatePetalSystem(count) {
+            const petalGeometry = new THREE.ConeGeometry(0.4, 0.8, 3);
+            const petalMaterial = new THREE.MeshStandardMaterial({
+                color: 0x7A1B2E,
+                roughness: 0.4,
+                side: THREE.DoubleSide
+            });
+
+            for(let i=0; i<count; i++) {
+                const petalMesh = new THREE.Mesh(petalGeometry, petalMaterial);
+                petalMesh.position.set(
+                    (Math.random() - 0.5) * 60,
+                    (Math.random() - 0.5) * 60,
+                    (Math.random() - 0.5) * 30
+                );
+                petalMesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+                
+                petalMesh.userData = {
+                    speed: 0.04 + Math.random() * 0.05,
+                    rotSpeed: 0.01 + Math.random() * 0.02
+                };
+
+                scene.add(petalMesh);
+                flowerPetals.push(petalMesh);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 4. LENIS REVOLUTIONARY SMOOTH SCROLL MECHANICS
+        // -------------------------------------------------------------
+        function initLenisScroll() {
+            const lenis = new Lenis({
+                duration: 1.4,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                orientation: 'vertical',
+                gestureOrientation: 'vertical',
+                smoothWheel: true,
+                wheelMultiplier: 1.1
+            });
+
+            function lenisRaf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(lenisRaf);
+            }
+            requestAnimationFrame(lenisRaf);
+
+            // Bind Lenis updates explicitly into GSAP ScrollTrigger runtime module
+            lenis.on('scroll', ScrollTrigger.update);
+        }
+
+        // -------------------------------------------------------------
+        // 5. GSAP CINEMATIC INTERACTIVE TIMELINES & SCROLLTRIGGERS
+        // -------------------------------------------------------------
+        function initGsapSequencing() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Structural Target Auto-Reveal Loop Configuration
+            const interactiveTimelineCards = document.querySelectorAll('.glass-card');
+            interactiveTimelineCards.forEach(card => {
+                gsap.fromTo(card, 
+                    { opacity: 0, y: 60, scale: 0.97 },
+                    {
+                        opacity: 1, y: 0, scale: 1,
+                        duration: 1.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 82%",
+                            toggleActions: "play none none none"
+                        }
+                    }
+                );
+            });
+
+            // Timeline Element Stagger Cascade Triggering
+            gsap.utils.toArray('.timeline-item').forEach((item, index) => {
+                ScrollTrigger.create({
+                    trigger: item,
+                    start: "top 80%",
+                    onEnter: () => item.classList.add('active'),
+                    once: true
+                });
+            });
+        }
+
+        // -------------------------------------------------------------
+        // 6. GAMIFIED RITUAL SCRATCH CARD REVEAL ENGINE
+        // -------------------------------------------------------------
+        function initScratchCardComponent() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+
+            // Paint Premium Metallic Gold Cover Overlay Mask Layout Frame
+            ctx.fillStyle = '#B38728';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add Elegant Text Indicator On Scratch Area
+            ctx.font = '14px Montserrat';
+            ctx.fillStyle = '#1A050A';
+            ctx.textAlign = 'center';
+            ctx.fillText('SCRATCH ROYAL FABRIC TO UNVEIL', canvas.width/2, canvas.height/2 + 5);
+
+            // Event Vector Bindings for Scratch Action Dynamics
+            ['mousedown', 'touchstart'].forEach(evt => canvas.addEventListener(evt, (e) => {
+                isDrawing = true;
+                scratchAction(getCanvasCoordinates(e, canvas), ctx);
+            }));
+
+            ['mousemove', 'touchmove'].forEach(evt => canvas.addEventListener(evt, (e) => {
+                if(!isDrawing) return;
+                e.preventDefault();
+                scratchAction(getCanvasCoordinates(e, canvas), ctx);
+            }));
+
+            ['mouseup', 'touchend'].forEach(evt => canvas.addEventListener(evt, () => isDrawing = false));
+
+            function scratchAction(pos, context) {
+                context.globalCompositeOperation = 'destination-out';
+                context.beginPath();
+                context.arc(pos.x, pos.y, 24, 0, Math.PI * 2);
+                context.fill();
+            }
+
+            function getCanvasCoordinates(e, tgtCanvas) {
+                const rect = tgtCanvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 7. ASTROLOGICAL / TEMPORAL REALTIME COUNTDOWN ENGINE
+        // -------------------------------------------------------------
+        function initCountdownEngine() {
+            const targetCelebrationDate = new Date("June 19, 2027 18:00:00").getTime();
+
+            const timerMechanismInterval = setInterval(() => {
+                const currentTimeStamp = new Date().getTime();
+                const totalMetricDifference = targetCelebrationDate - currentTimeStamp;
+
+                if (totalMetricDifference < 0) {
+                    clearInterval(timerMechanismInterval);
+                    return;
+                }
+
+                const calculateDays = Math.floor(totalMetricDifference / (1000 * 60 * 60 * 24));
+                const calculateHours = Math.floor((totalMetricDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const calculateMinutes = Math.floor((totalMetricDifference % (1000 * 60 * 60)) / (1000 * 60));
+                const calculateSeconds = Math.floor((totalMetricDifference % (1000 * 60)) / 1000);
+
+                document.getElementById("cd-days").innerText = String(calculateDays).padStart(2, '0');
+                document.getElementById("cd-hours").innerText = String(calculateHours).padStart(2, '0');
+                document.getElementById("cd-mins").innerText = String(calculateMinutes).padStart(2, '0');
+                document.getElementById("cd-secs").innerText = String(calculateSeconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        // -------------------------------------------------------------
+        // 8. RICH USER ENGAGEMENT & SECRET EASTER EGGS REGISTRY
+        // -------------------------------------------------------------
+        function initInteractionsRegistry() {
+            // A. Magical Extra Flower Burst Control Action
+            document.getElementById("interact-petal-trigger").addEventListener("click", () => {
+                generatePetalSystem(15);
+                gsap.to("#interact-petal-trigger", { scale: 0.8, yoyo: true, repeat: 1, duration: 0.1 });
+            });
+
+            // B. Playful Compatibility Index Gauge Interaction Routine
+            const fillGauge = document.getElementById("compatibility-gauge");
+            const labelScore = document.getElementById("meter-score-label");
+            
+            fillGauge.parentElement.addEventListener("click", () => {
+                fillGauge.style.width = "100%";
+                labelScore.innerText = "Calculating Resonance...";
+                setTimeout(() => {
+                    labelScore.innerText = "Infinite Destiny Resonance Lock Found! (100% Perfect Fusion)";
+                }, 2000);
+            });
+
+            // C. Constellation Wall Registry Form Submission Pipeline Manifestation
+            document.getElementById("submit-blessing-trigger").addEventListener("click", () => {
+                const nameNode = document.getElementById("guest-name");
+                const msgNode = document.getElementById("guest-message");
+                const destinationTickerContainer = document.getElementById("blessings-ticker-container");
+
+                if(nameNode.value.trim() !== "" && msgNode.value.trim() !== "") {
+                    const newBubble = document.createElement("div");
+                    newBubble.className = "blessing-bubble";
+                    newBubble.innerHTML = `"${msgNode.value.trim()}" — ${nameNode.value.trim()}`;
+                    
+                    destinationTickerContainer.prepend(newBubble);
+                    
+                    // Reset input states instantly
+                    nameNode.value = "";
+                    msgNode.value = "";
+                    
+                    alert("Blessings integrated into the celestial constellation!");
+                } else {
+                    alert("Kindly complete both Name and Blessing metrics before transmission.");
+                }
+            });
+
+            // D. CRITICAL EASTER EGG REVELATION: TRIGGERED VIA INTERSECTION CLICK CHANNELS
+            const heartEggTrigger = document.getElementById("heart-egg");
+            const overlayEgg = document.getElementById("easter-egg-overlay");
+
+            heartEggTrigger.addEventListener("click", () => {
+                overlayEgg.style.display = "flex";
+                gsap.fromTo(".ee-text", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 1, ease: "elastic.out(1, 0.5)" });
+            });
+
+            overlayEgg.addEventListener("click", () => {
+                overlayEgg.style.display = "none";
+            });
+        }
     </script>
 </body>
 </html>
