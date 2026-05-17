@@ -22,7 +22,7 @@
             --gold-gradient: linear-gradient(135deg, #B38728 0%, #FBF5B7 50%, #DAA520 100%);
             --ivory: #FDFBF7;
             --emerald: #094F39;
-            --glass-base: rgba(45, 11, 18, 0.45);
+            --glass-base: rgba(45, 11, 18, 0.65);
             --glass-border: rgba(212, 175, 55, 0.3);
             --font-serif: 'Cormorant Garamond', serif;
             --font-display: 'Cinzel Decorative', serif;
@@ -44,12 +44,6 @@
             overflow-x: hidden;
             width: 100%;
             height: 100%;
-            scroll-behavior: smooth;
-        }
-
-        /* Lenis/Smooth Scroll adjustments */
-        html.lenis {
-            height: auto;
         }
 
         /* Silk Overlay Texture */
@@ -64,18 +58,6 @@
             pointer-events: none;
             z-index: 999;
             opacity: 0.6;
-        }
-
-        /* Custom Premium Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark-maroon);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gold-primary);
-            border-radius: 4px;
         }
 
         /* Three.js Background Canvas Container */
@@ -97,16 +79,6 @@
             background: radial-gradient(circle, rgba(122,27,46,0.3) 0%, transparent 70%);
             top: -200px;
             left: -200px;
-            pointer-events: none;
-            z-index: 2;
-        }
-        .ambient-glow-right {
-            position: fixed;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 75%);
-            bottom: -300px;
-            right: -300px;
             pointer-events: none;
             z-index: 2;
         }
@@ -133,19 +105,6 @@
             border-radius: 50%;
             animation: spin 25s linear infinite;
             position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .loader-mandala::before {
-            content: '';
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border: 1px solid var(--crimson);
-            border-radius: 50%;
-            transform: rotate(45deg);
         }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -162,7 +121,6 @@
             background: var(--gold-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            opacity: 0;
         }
 
         .loader-sub {
@@ -172,7 +130,6 @@
             color: var(--ivory);
             margin-top: 10px;
             letter-spacing: 2px;
-            opacity: 0;
         }
 
         .enter-btn {
@@ -186,10 +143,6 @@
             letter-spacing: 4px;
             text-transform: uppercase;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            visibility: hidden;
             transition: all 0.4s ease;
             box-shadow: 0 0 15px rgba(212,175,55,0.1);
         }
@@ -198,10 +151,9 @@
             background: var(--gold-primary);
             color: var(--bg-dark-maroon);
             box-shadow: 0 0 25px rgba(212,175,55,0.4);
-            transform: translateY(-2px);
         }
 
-        /* Persistent Premium Controls Overlay */
+        /* Controls */
         .premium-controls {
             position: fixed;
             bottom: 30px;
@@ -223,44 +175,39 @@
             color: var(--gold-primary);
             cursor: pointer;
             backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .control-circle:hover {
-            transform: scale(1.1);
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
         }
 
         /* Master Section Layouts */
-        section {
+        main {
             position: relative;
+            z-index: 5;
+            width: 100%;
+        }
+
+        section {
             min-height: 100vh;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 5;
-            padding: 80px 20px;
+            padding: 100px 20px;
         }
 
-        /* Glassmorphic Cards */
         .glass-card {
             background: var(--glass-base);
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 60px 40px;
             max-width: 800px;
             width: 100%;
             text-align: center;
             position: relative;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            overflow: hidden;
         }
 
-        /* Decorative Bengali Alpana and Punjabi Phulkari subtle frames */
         .card-frame {
             position: absolute;
             top: 15px;
@@ -271,17 +218,6 @@
             pointer-events: none;
         }
 
-        .card-frame::before, .card-frame::after {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 1px solid var(--gold-primary);
-        }
-        .card-frame::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
-        .card-frame::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
-
-        /* Typography & Visual Elements */
         .cinematic-sub {
             font-family: var(--font-sans);
             font-size: 0.85rem;
@@ -310,15 +246,7 @@
             font-style: italic;
         }
 
-        /* Section 1: Hero Scene */
-        #hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
+        /* Initials setup */
         .hero-initials-container {
             display: flex;
             align-items: center;
@@ -335,29 +263,17 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             transition: transform 0.3s;
-            position: relative;
-        }
-
-        .initial-trigger:hover {
-            transform: scale(1.15);
         }
 
         .heart-center {
             font-size: 2.5rem;
             color: var(--crimson);
-            animation: pulse 2s infinite;
             cursor: pointer;
+            transition: transform 0.3s;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); filter: drop-shadow(0 0 2px var(--crimson));}
-            50% { transform: scale(1.15); filter: drop-shadow(0 0 15px rgba(230,20,60,0.8));}
-            100% { transform: scale(1); filter: drop-shadow(0 0 2px var(--crimson));}
-        }
-
-        /* Section 2: Story Journey Timeline */
+        /* Timeline */
         .timeline-container {
-            position: relative;
             margin-top: 50px;
             display: flex;
             flex-direction: column;
@@ -370,19 +286,12 @@
             align-items: center;
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-
-        .timeline-item.active {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .timeline-badge {
             padding: 6px 20px;
             border: 1px solid var(--gold-primary);
             font-size: 0.75rem;
-            font-family: var(--font-sans);
             letter-spacing: 3px;
             border-radius: 20px;
             color: var(--gold-primary);
@@ -390,21 +299,7 @@
             background: rgba(20,5,10,0.6);
         }
 
-        .timeline-title {
-            font-family: var(--font-display);
-            font-size: 1.6rem;
-            color: var(--ivory);
-            margin-bottom: 8px;
-        }
-
-        .timeline-desc {
-            font-family: var(--font-serif);
-            font-size: 1.2rem;
-            color: rgba(253, 251, 247, 0.8);
-            max-width: 450px;
-        }
-
-        /* Section 3: Cultural Fusion Showcase */
+        /* Fusion Grid */
         .fusion-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -417,32 +312,19 @@
             border: 1px solid rgba(212,175,55,0.1);
             padding: 30px;
             border-radius: 4px;
-            transition: all 0.4s ease;
         }
 
-        .fusion-card:hover {
-            border-color: var(--gold-primary);
-            background: rgba(212,175,55,0.05);
-            transform: translateY(-5px);
-        }
-
-        .fusion-icon-art {
-            font-size: 2.5rem;
-            color: var(--gold-primary);
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
-
-        /* Section 4: Gamified Scratch Card Reveal */
+        /* FIXED SCRATCH CARD LAYOUT */
         .scratch-wrapper {
             position: relative;
             width: 100%;
-            max-width: 500px;
-            height: 250px;
+            max-width: 450px;
+            height: 220px;
             margin: 40px auto 0;
             border: 2px solid var(--gold-primary);
             border-radius: 8px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            background: radial-gradient(circle, #3D121B 0%, #1A050A 100%);
             overflow: hidden;
         }
 
@@ -452,13 +334,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, #3D121B 0%, #1A050A 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1;
             padding: 20px;
+            z-index: 1;
+            pointer-events: none; /* Allows scratching through to canvas underneath */
         }
 
         #scratch-canvas {
@@ -468,37 +350,39 @@
             width: 100%;
             height: 100%;
             z-index: 2;
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="gold" opacity="0.6"/></svg>'), auto;
+            touch-action: none; /* Crucial for mobile smooth tracking */
+            cursor: pointer;
         }
 
-        /* Section 5: Event Details with Countdown */
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            margin: 30px 0;
+        /* Compatibility Meter */
+        .meter-container {
+            margin-top: 30px;
+            cursor: pointer;
+        }
+        
+        .meter-track-bg {
+            width: 100%;
+            height: 12px;
+            background: rgba(253,251,247,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 20px 0;
         }
 
-        .detail-item-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            font-family: var(--font-serif);
-            font-size: 1.4rem;
+        .meter-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--gold-gradient);
+            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
         }
 
-        .detail-item-row i {
-            color: var(--gold-primary);
-            font-size: 1.2rem;
-        }
-
-        /* Countdown Timer Component */
+        /* Countdown */
         .countdown-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             margin-top: 40px;
+            flex-wrap: wrap;
         }
 
         .countdown-block {
@@ -513,18 +397,9 @@
             font-family: var(--font-display);
             font-size: 2rem;
             color: var(--gold-primary);
-            display: block;
         }
 
-        .countdown-lbl {
-            font-size: 0.65rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--ivory);
-            opacity: 0.7;
-        }
-
-        /* Section 6: Interactive Blessings Wall */
+        /* Blessings */
         .blessings-input-zone {
             display: flex;
             flex-direction: column;
@@ -541,11 +416,6 @@
             font-family: var(--font-sans);
             outline: none;
             border-radius: 4px;
-            transition: border 0.3s;
-        }
-
-        .premium-input:focus {
-            border-color: var(--gold-primary);
         }
 
         .premium-btn {
@@ -559,70 +429,9 @@
             text-transform: uppercase;
             cursor: pointer;
             border-radius: 4px;
-            transition: box-shadow 0.3s;
         }
 
-        .premium-btn:hover {
-            box-shadow: 0 0 20px rgba(251, 245, 183, 0.6);
-        }
-
-        .blessings-display-ticker {
-            height: 120px;
-            overflow: hidden;
-            position: relative;
-            margin-top: 30px;
-            border-top: 1px dashed rgba(212,175,55,0.2);
-            padding-top: 20px;
-        }
-
-        .ticker-track {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            position: absolute;
-            width: 100%;
-            animation: tickerScroll 12s linear infinite;
-        }
-
-        .ticker-track:hover {
-            animation-play-state: paused;
-        }
-
-        @keyframes tickerScroll {
-            0% { top: 0; }
-            100% { top: -200px; }
-        }
-
-        .blessing-bubble {
-            font-family: var(--font-serif);
-            font-style: italic;
-            font-size: 1.15rem;
-            color: rgba(253,251,247,0.9);
-        }
-
-        /* Interactive Compatibility Playfield Area */
-        .meter-container {
-            margin-top: 30px;
-            position: relative;
-        }
-        
-        .meter-track-bg {
-            width: 100%;
-            height: 8px;
-            background: rgba(253,251,247,0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-
-        .meter-fill {
-            width: 0%;
-            height: 100%;
-            background: var(--gold-gradient);
-            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
-        }
-
-        /* Easter Egg Overlay Module */
+        /* Easter Egg */
         #easter-egg-overlay {
             position: fixed;
             top: 0;
@@ -638,52 +447,23 @@
             text-align: center;
         }
 
-        .ee-mandala {
-            width: 250px;
-            height: 250px;
-            background: radial-gradient(circle, rgba(214,175,55,0.15) 0%, transparent 70%);
-            position: absolute;
-            animation: spin 40s linear infinite;
-        }
-
-        .ee-text {
-            font-family: var(--font-display);
-            font-size: 3rem;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            z-index: 2;
-        }
-
-        /* Responsive Breakpoints */
         @media (max-width: 768px) {
             .grand-heading { font-size: 2.2rem; }
-            .romantic-prose { font-size: 1.2rem; }
             .initial-trigger { font-size: 3.5rem; }
             .fusion-grid { grid-template-columns: 1fr; }
-            .glass-card { padding: 40px 20px; }
-            .premium-controls { bottom: 15px; right: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Silk Mesh / Overlay Pattern -->
     <div class="silk-texture"></div>
-
-    <!-- Three.js Environment Render Target Window -->
     <div id="canvas-container"></div>
-
-    <!-- Ambient Glow Backgrounds -->
     <div class="ambient-glow"></div>
-    <div class="ambient-glow-right"></div>
 
-    <!-- Audio Engine Node Asset Declarations -->
-    <!-- Ambient Indian classical sitar/flute structure background asset loop -->
+    <!-- Background Soundscape Loop Asset -->
     <audio id="ambient-audio" loop src="https://assets.mixkit.co/active_storage/sfx/123/123-84.wav"></audio>
 
-    <!-- Cinematic Intro Sequence / Loading Screen Gates -->
+    <!-- Loader Screen -->
     <div id="loader-sequence">
         <div class="loader-mandala"></div>
         <div class="loader-text-container">
@@ -693,7 +473,7 @@
         <button class="enter-btn" id="enter-experience-trigger">Enter Experience</button>
     </div>
 
-    <!-- Ambient UI Controls Layer -->
+    <!-- UI Interaction Overlays -->
     <div class="premium-controls">
         <div class="control-circle" id="audio-toggle-node" title="Toggle Soundscape">
             <i class="fa-solid fa-volume-xmark"></i>
@@ -703,33 +483,29 @@
         </div>
     </div>
 
-    <!-- Main Scrollable Structural Layout Matrix -->
-    <main id="scroll-container">
-
-        <!-- 1. HERO HOME SCENE -->
+    <!-- Content Matrix Frame -->
+    <main>
+        <!-- HERO -->
         <section id="hero">
-            <div class="glass-card" style="box-shadow: none; background: transparent; border: none; backdrop-filter: none;">
-                <p class="cinematic-sub" style="opacity: 0; transform: translateY(20px);" id="hero-sub">The Royal Union Announcement</p>
-                
+            <div class="glass-card" style="background:transparent; border:none; backdrop-filter:none; box-shadow:none;">
+                <p class="cinematic-sub">The Royal Union Announcement</p>
                 <div class="hero-initials-container">
                     <span class="initial-trigger" id="initial-m">M</span>
                     <i class="fa-solid fa-heart heart-center" id="heart-egg"></i>
                     <span class="initial-trigger" id="initial-v">V</span>
                 </div>
-
-                <h1 class="grand-heading" id="hero-title" style="opacity: 0; transform: translateY(20px);">Manasvika & Vishwajeet</h1>
-                <p class="romantic-prose" id="hero-prose" style="opacity: 0; transform: translateY(20px);">Are getting married.</p>
+                <h1 class="grand-heading">Manasvika & Vishwajeet</h1>
+                <p class="romantic-prose">Are getting married.</p>
                 <p class="cinematic-sub" style="margin-top:40px; font-size:0.7rem; color: rgba(253,251,247,0.4);">Scroll to unfold the journey</p>
             </div>
         </section>
 
-        <!-- 2. THE STORY INTERACTIVE JOURNEY -->
+        <!-- STORY -->
         <section id="story">
             <div class="glass-card">
                 <div class="card-frame"></div>
                 <p class="cinematic-sub">The Journey of Convergence</p>
                 <h2 class="grand-heading" style="font-size: 2.5rem;">How Horizons Met</h2>
-                
                 <div class="timeline-container">
                     <div class="timeline-item">
                         <span class="timeline-badge">The Prelude</span>
@@ -737,42 +513,33 @@
                         <p class="timeline-desc">A modern confluence of ideas, shared passion for engineering, design, and aesthetics sparked an unbreakable digital connection.</p>
                     </div>
                     <div class="timeline-item">
-                        <span class="timeline-badge">The Union of Heritages</span>
+                        <span class="timeline-badge">The Union</span>
                         <h3 class="timeline-title">Families Meet</h3>
-                        <p class="timeline-desc">Where grand Punjabi laughter harmonized beautifully with intellectual Bengali warmth, weaving a beautiful tapestry of mutual love.</p>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="timeline-badge">The Destiny Boundary</span>
-                        <h3 class="timeline-title">Roka 2027</h3>
-                        <p class="timeline-desc">Securing the infinite promise of tomorrow. Two paths converging permanently into one legacy.</p>
+                        <p class="timeline-desc">Where grand Punjabi warmth harmonized beautifully with intellectual Bengali warmth, weaving a beautiful tapestry of mutual love.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3. CULTURAL FUSION INTERACTIVE PARALLEY -->
+        <!-- CULTURAL FUSION -->
         <section id="fusion">
             <div class="glass-card">
                 <div class="card-frame"></div>
                 <p class="cinematic-sub">A Symphony of Traditions</p>
                 <h2 class="grand-heading" style="font-size: 2.5rem;">Punjabi Warmth & Bengali Grace</h2>
-                <p class="romantic-prose" style="font-size: 1.3rem;">An exquisite fusion of vibrant cultural rhythms and rich artistic heritage.</p>
-                
                 <div class="fusion-grid">
                     <div class="fusion-card">
-                        <i class="fa-solid fa-sun fusion-icon-art"></i>
-                        <h4 style="font-family: var(--font-display); margin-bottom: 10px; color: var(--gold-primary);">Phulkari Rhythms</h4>
-                        <p style="font-size:0.9rem; line-height:1.6; opacity:0.8;">The robust joy, the dynamic dhol beats, the luxurious, protective, structural patterns of Punjabi hospitality.</p>
+                        <i class="fa-solid fa-sun fusion-icon-art" style="font-size:2rem; color:var(--gold-primary);"></i>
+                        <h4 style="font-family: var(--font-display); margin: 10px 0; color: var(--gold-primary);">Phulkari Rhythms</h4>
+                        <p style="font-size:0.9rem; opacity:0.8;">The robust joy, the dynamic dhol beats, the luxurious, protective, structural patterns of Punjabi hospitality.</p>
                     </div>
                     <div class="fusion-card">
-                        <i class="fa-solid fa-palette fusion-icon-art"></i>
-                        <h4 style="font-family: var(--font-display); margin-bottom: 10px; color: var(--gold-primary);">Alpana Canvas</h4>
-                        <p style="font-size:0.9rem; line-height:1.6; opacity:0.8;">The deep, fluid, organic elegance of handcrafted traditional floor art, symbolizing pristine fortune and pure grace.</p>
+                        <i class="fa-solid fa-palette fusion-icon-art" style="font-size:2rem; color:var(--gold-primary);"></i>
+                        <h4 style="font-family: var(--font-display); margin: 10px 0; color: var(--gold-primary);">Alpana Canvas</h4>
+                        <p style="font-size:0.9rem; opacity:0.8;">The deep, fluid, organic elegance of handcrafted traditional floor art, symbolizing pristine fortune and pure grace.</p>
                     </div>
                 </div>
-
-                <!-- Playful Interactive Compatibility Meter -->
-                <div class="meter-container">
+                <div class="meter-container" id="meter-box">
                     <p class="cinematic-sub" style="font-size:0.7rem; margin-top:20px;">Cultural Symphony Index</p>
                     <div class="meter-track-bg">
                         <div class="meter-fill" id="compatibility-gauge"></div>
@@ -782,503 +549,251 @@
             </div>
         </section>
 
-        <!-- 4. REVELATION: INTERACTIVE SCRATCH CARD -->
+        <!-- FIXED REVELATION CARDS -->
         <section id="revelation">
             <div class="glass-card">
                 <div class="card-frame"></div>
                 <p class="cinematic-sub">Exclusive Ritual Reveal</p>
                 <h2 class="grand-heading" style="font-size: 2.5rem;">Unveil The Ceremony Date</h2>
-                <p class="romantic-prose" style="font-size: 1.2rem; margin-bottom:20px;">Scribble/Scratch away the royal mask layer below to discover the magical alignment timeline.</p>
+                <p class="romantic-prose" style="font-size: 1.2rem; margin-bottom:20px;">Scribble or scratch away the gold canvas texture to uncover the magical timeline.</p>
                 
                 <div class="scratch-wrapper">
                     <div class="scratch-reveal-content">
                         <p class="cinematic-sub" style="margin-bottom: 5px;">The Auspicious Date</p>
-                        <h3 class="grand-heading" style="font-size: 2.2rem; margin-bottom: 5px;">19th June 2027</h3>
+                        <h3 class="grand-heading" style="font-size: 2.2rem; margin-bottom: 5px; -webkit-text-fill-color: var(--ivory);">19th June 2027</h3>
                         <p class="romantic-prose" style="font-size: 1.2rem; color: var(--gold-primary);">Roka Ceremony Celebration</p>
                     </div>
-                    <canvas id="scratch-canvas" width="500" height="250"></canvas>
+                    <canvas id="scratch-canvas"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- 5. SCHEDULING DETAILS AND REALTIME COUNTDOWN -->
+        <!-- DETAILS & TIMERS -->
         <section id="details">
             <div class="glass-card">
                 <div class="card-frame"></div>
                 <p class="cinematic-sub">Event Blueprint</p>
                 <h2 class="grand-heading" style="font-size: 2.5rem;">The Celebration Grid</h2>
-                
-                <div class="details-grid">
-                    <div class="detail-item-row">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <span>Saturday, June 19, 2027</span>
-                    </div>
-                    <div class="detail-item-row">
-                        <i class="fa-solid fa-clock"></i>
-                        <span>High Tea & Cocktails — 6:00 PM IST onwards</span>
-                    </div>
-                    <div class="detail-item-row">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>The Grand Palace Pavilion, Nexa Estate</span>
-                    </div>
-                </div>
-
+                <p style="font-size:1.2rem; margin-bottom:10px;"><i class="fa-solid fa-calendar-days" style="color:var(--gold-primary);"></i> Saturday, June 19, 2027</p>
+                <p style="font-size:1.2rem; margin-bottom:10px;"><i class="fa-solid fa-clock" style="color:var(--gold-primary);"></i> High Tea & Cocktails — 6:00 PM IST</p>
                 <div class="countdown-container">
-                    <div class="countdown-block"><span class="countdown-val" id="cd-days">00</span><span class="countdown-lbl">Days</span></div>
-                    <div class="countdown-block"><span class="countdown-val" id="cd-hours">00</span><span class="countdown-lbl">Hrs</span></div>
-                    <div class="countdown-block"><span class="countdown-val" id="cd-mins">00</span><span class="countdown-lbl">Mins</span></div>
-                    <div class="countdown-block"><span class="countdown-val" id="cd-secs">00</span><span class="countdown-lbl">Secs</span></div>
+                    <div class="countdown-block"><span class="countdown-val" id="cd-days">00</span><br><span style="font-size:0.7rem;">Days</span></div>
+                    <div class="countdown-block"><span class="countdown-val" id="cd-hours">00</span><br><span style="font-size:0.7rem;">Hrs</span></div>
+                    <div class="countdown-block"><span class="countdown-val" id="cd-mins">00</span><br><span style="font-size:0.7rem;">Mins</span></div>
+                    <div class="countdown-block"><span class="countdown-val" id="cd-secs">00</span><br><span style="font-size:0.7rem;">Secs</span></div>
                 </div>
             </div>
         </section>
 
-        <!-- 6. DIGITAL BLESSINGS CONSOLE WALL -->
+        <!-- BLESSINGS WALL -->
         <section id="blessings">
             <div class="glass-card">
                 <div class="card-frame"></div>
                 <p class="cinematic-sub">Virtual Registry Node</p>
                 <h2 class="grand-heading" style="font-size: 2.5rem;">Shower Your Blessings</h2>
-                <p class="romantic-prose" style="font-size: 1.1rem;">Your lovely intentions manifest directly onto our shared aesthetic constellation wall.</p>
-                
                 <div class="blessings-input-zone">
                     <input type="text" id="guest-name" class="premium-input" placeholder="Your Noble Name">
                     <input type="text" id="guest-message" class="premium-input" placeholder="Message of Joy & Prosperity">
                     <button class="premium-btn" id="submit-blessing-trigger">Transmit Blessing</button>
                 </div>
-
-                <div class="blessings-display-ticker">
-                    <div class="ticker-track" id="blessings-ticker-container">
-                        <div class="blessing-bubble">"May your synthesis of cultures create an legendary beautiful dynasty!" — The Roy Family</div>
-                        <div class="blessing-bubble">"Excited beyond measure for this spectacular fusion event!" — Amit Sharma</div>
-                        <div class="blessing-bubble">"A match truly written across celestial spheres. Congratulations!" — Priyanjali Mitra</div>
-                    </div>
+                <div style="margin-top:20px; font-family:var(--font-serif); font-style:italic;" id="live-blessings-box">
+                    "A match truly written across celestial spheres. Congratulations!" — The Roy Family
                 </div>
             </div>
         </section>
-
-        <!-- 7. CINEMATIC OUTRO GRAND STAND -->
-        <section id="outro" style="height:100vh;">
-            <div class="glass-card" style="border:none; background:transparent; backdrop-filter:none; box-shadow:none;">
-                <p class="cinematic-sub">Save The Date</p>
-                <h2 class="grand-heading" style="font-size: 4rem;">See You On <br>19.06.2027</h2>
-                <div class="loader-mandala" style="margin: 30px auto; animation-duration: 60s; width:80px; height:80px;"></div>
-                <p class="romantic-prose" style="color: var(--gold-primary);">With Warmest Regards & Love,</p>
-                <p class="cinematic-sub" style="margin-top:10px; font-size:1rem;">The Ahluwalia & Banerjee Families</p>
-            </div>
-        </section>
-
     </main>
 
-    <!-- HIDDEN CINEMATIC TRICK EASTER EGG SCREEN INTERACTION -->
+    <!-- EASTER EGG FRAME -->
     <div id="easter-egg-overlay">
-        <div class="ee-mandala"></div>
-        <h1 class="ee-text">Rab Ne Bana Di Jodi</h1>
-        <p class="romantic-prose" style="font-size: 1.5rem; color: var(--gold-primary);">Vishwajeet ❤️ Manasvika</p>
-        <p class="cinematic-sub" style="margin-top: 30px; font-size:0.7rem; color:rgba(253,251,247,0.5);">Click anywhere to resume reality</p>
+        <h1 class="grand-heading" style="font-size:3.5rem;">Rab Ne Bana Di Jodi</h1>
+        <p class="romantic-prose" style="color: var(--gold-primary);">Vishwajeet ❤️ Manasvika</p>
+        <p class="cinematic-sub" style="margin-top: 30px; font-size:0.7rem;">Click anywhere to return</p>
     </div>
 
-    <!-- INJECT ALL POWERFUL CDN DEPENDENCY LAYERS -->
+    <!-- CDN ENGINE DEPENDENCIES -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Lenis Smooth Scroll CDN -->
-    <script src="https://cdn.jsdelivr.net/gh/darkroomengineering/lenis@1.0.27/dist/lenis.min.js"></script>
 
     <script>
-        // -------------------------------------------------------------
-        // MAIN APPLICATION ARCHITECT & LIFECYCLE CONTROLLER
-        // -------------------------------------------------------------
-        
-        document.addEventListener("DOMContentLoaded", () => {
-            initCinematicLoader();
-            initThreeJsUniverse();
-            initLenisScroll();
-            initGsapSequencing();
-            initScratchCardComponent();
-            initCountdownEngine();
-            initInteractionsRegistry();
+        let scene, camera, renderer, starParticles, flowerPetals = [];
+        let audioNode, isPlaying = false;
+
+        // 1. ENGINE LOADER LIFECYCLE
+        document.getElementById("enter-experience-trigger").addEventListener("click", () => {
+            audioNode = document.getElementById("ambient-audio");
+            gsap.to("#loader-sequence", { 
+                opacity: 0, 
+                duration: 1, 
+                onComplete: () => {
+                    document.getElementById("loader-sequence").style.display = "none";
+                    initThreeJsUniverse();
+                    initGsapScrollAnimations();
+                    setupScratchCard(); // Executed instantly when visibility parameters align
+                }
+            });
         });
 
-        // Global Variable Management Scope
-        let scene, camera, renderer, starParticles, flowerPetals = [];
-        let audioContext, audioNode, isPlaying = false;
-
-        // -------------------------------------------------------------
-        // 1. CINEMATIC INTRO LOADER SEQUENCE
-        // -------------------------------------------------------------
-        function initCinematicLoader() {
-            const tl = gsap.timeline();
-            tl.to(".loader-title", { opacity: 1, duration: 1.5, y: 0, delay: 0.5 })
-              .to(".loader-sub", { opacity: 1, duration: 1.2, y: 0 }, "-=0.5")
-              .to(".enter-btn", { autoAlpha: 1, y: 0, duration: 0.8 });
-
-            document.getElementById("enter-experience-trigger").addEventListener("click", () => {
-                // Initialize web audio engine on explicit human gesture interaction pattern
-                initAudioEngine();
-                
-                gsap.timeline()
-                    .to("#loader-sequence", { 
-                        opacity: 0, 
-                        duration: 1.5, 
-                        ease: "power4.inOut",
-                        onComplete: () => {
-                            document.getElementById("loader-sequence").style.display = "none";
-                            triggerHeroCinematicReveal();
-                        }
-                    });
-            });
-        }
-
-        function triggerHeroCinematicReveal() {
-            gsap.timeline()
-                .to("#hero-sub", { opacity: 1, y: 0, duration: 1, ease: "power3.out" })
-                .to("#initial-m", { scale: 1, rotate: 360, duration: 1.2, ease: "back.out(1.7)" }, "-=0.6")
-                .to("#initial-v", { scale: 1, rotate: -360, duration: 1.2, ease: "back.out(1.7)" }, "-=1.2")
-                .to("#hero-title", { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.6")
-                .to("#hero-prose", { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.8");
-        }
-
-        // -------------------------------------------------------------
-        // 2. AUDIO MANAGEMENT SYSTEM ENGINE
-        // -------------------------------------------------------------
-        function initAudioEngine() {
-            audioNode = document.getElementById("ambient-audio");
-            // Standard safety check to guarantee context bindings
-            audioNode.volume = 0.4;
-        }
-
+        // 2. AUDIO TOGGLE MECHANISM
         document.getElementById("audio-toggle-node").addEventListener("click", () => {
-            const btnIcon = document.getElementById("audio-toggle-node").querySelector("i");
+            const icon = document.getElementById("audio-toggle-node").querySelector("i");
             if (!isPlaying) {
-                audioNode.play().catch(e => console.log("Audio play context deferred"));
-                btnIcon.className = "fa-solid fa-volume-high";
+                audioNode.play().catch(e => console.log("Audio deferred"));
+                icon.className = "fa-solid fa-volume-high";
                 isPlaying = true;
-                gsap.to(audioNode, { volume: 0.5, duration: 2 });
             } else {
                 audioNode.pause();
-                btnIcon.className = "fa-solid fa-volume-xmark";
+                icon.className = "fa-solid fa-volume-xmark";
                 isPlaying = false;
             }
         });
 
-        // -------------------------------------------------------------
-        // 3. THREE.JS 3D PARTICLE SYSTEMS AND LIGHT ENVIRONMENT
-        // -------------------------------------------------------------
+        // 3. THREE.JS 3D PARTICLE ENVIRONMENT SYSTEM
         function initThreeJsUniverse() {
             const container = document.getElementById("canvas-container");
-            
-            // Core Scene Framework Setup
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.z = 30;
 
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Lighting Constructs
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambientLight);
 
-            const directionalGoldLight = new THREE.DirectionalLight(0xD4AF37, 1.5);
-            directionalGoldLight.position.set(5, 5, 5);
-            scene.add(directionalGoldLight);
-
-            // System A: Floating Golden Stardust Particles
+            // Gold Particles Array
             const starGeometry = new THREE.BufferGeometry();
-            const starCount = 350;
-            const starPositions = new Float32Array(starCount * 3);
-
-            for(let i=0; i<starCount*3; i+=3) {
-                starPositions[i] = (Math.random() - 0.5) * 80;
-                starPositions[i+1] = (Math.random() - 0.5) * 80;
-                starPositions[i+2] = (Math.random() - 0.5) * 40;
-            }
-
-            starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-            
-            // Custom Procedural Texturing via Canvas Context Generation for Smooth Round Glowing Points
-            const starMat = new THREE.PointsMaterial({
-                color: 0xFBF5B7,
-                size: 0.25,
-                transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending
-            });
-
+            const positions = new Float32Array(200 * 3);
+            for(let i=0; i<200*3; i++) { positions[i] = (Math.random() - 0.5) * 60; }
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0xD4AF37, size: 0.3, transparent: true, opacity: 0.7 });
             starParticles = new THREE.Points(starGeometry, starMat);
             scene.add(starParticles);
 
-            // System B: Soft Procedural Falling Crimson Rose Petals
-            generatePetalSystem(40);
+            // Crimson Flowers Generator Array
+            const petalGeometry = new THREE.ConeGeometry(0.3, 0.6, 4);
+            const petalMat = new THREE.MeshBasicMaterial({ color: 0x7A1B2E });
+            for(let i=0; i<30; i++) {
+                const mesh = new THREE.Mesh(petalGeometry, petalMat);
+                mesh.position.set((Math.random()-0.5)*50, (Math.random()-0.5)*50, (Math.random()-0.5)*20);
+                mesh.userData = { speed: 0.03 + Math.random()*0.04 };
+                scene.add(mesh);
+                flowerPetals.push(mesh);
+            }
 
-            // Animation Frame Render Loop Loop Execution Target
-            function animateThreeUniverse() {
-                requestAnimationFrame(animateThreeUniverse);
-
-                // Spin Stardust System
-                starParticles.rotation.y += 0.0008;
-                starParticles.rotation.x += 0.0003;
-
-                // Processing Falling Petals Engine Loop
-                flowerPetals.forEach(petal => {
-                    petal.position.y -= petal.userData.speed;
-                    petal.rotation.x += petal.userData.rotSpeed;
-                    petal.rotation.y += petal.userData.rotSpeed * 0.5;
-
-                    // Boundaries Recycling Reset System Execution
-                    if (petal.position.y < -30) {
-                        petal.position.y = 30;
-                        petal.position.x = (Math.random() - 0.5) * 60;
-                    }
+            function frameLoop() {
+                requestAnimationFrame(frameLoop);
+                starParticles.rotation.y += 0.001;
+                flowerPetals.forEach(p => {
+                    p.position.y -= p.userData.speed;
+                    p.rotation.x += 0.01;
+                    if(p.position.y < -25) p.position.y = 25;
                 });
-
                 renderer.render(scene, camera);
             }
-            animateThreeUniverse();
-
-            // Handle Viewport Dimension Resizing Realtime Matrix Recalculation
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            // Gyro / Mouse Interactive Parallax Tracking Response Vector System
-            window.addEventListener('mousemove', (e) => {
-                const xVal = (e.clientX / window.innerWidth) - 0.5;
-                const yVal = (e.clientY / window.innerHeight) - 0.5;
-                
-                gsap.to(camera.position, {
-                    x: xVal * 6,
-                    y: -yVal * 6,
-                    duration: 1.5,
-                    ease: "power2.out"
-                });
-            });
+            frameLoop();
         }
 
-        function generatePetalSystem(count) {
-            const petalGeometry = new THREE.ConeGeometry(0.4, 0.8, 3);
-            const petalMaterial = new THREE.MeshStandardMaterial({
-                color: 0x7A1B2E,
-                roughness: 0.4,
-                side: THREE.DoubleSide
-            });
-
-            for(let i=0; i<count; i++) {
-                const petalMesh = new THREE.Mesh(petalGeometry, petalMaterial);
-                petalMesh.position.set(
-                    (Math.random() - 0.5) * 60,
-                    (Math.random() - 0.5) * 60,
-                    (Math.random() - 0.5) * 30
-                );
-                petalMesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
-                
-                petalMesh.userData = {
-                    speed: 0.04 + Math.random() * 0.05,
-                    rotSpeed: 0.01 + Math.random() * 0.02
-                };
-
-                scene.add(petalMesh);
-                flowerPetals.push(petalMesh);
-            }
-        }
-
-        // -------------------------------------------------------------
-        // 4. LENIS REVOLUTIONARY SMOOTH SCROLL MECHANICS
-        // -------------------------------------------------------------
-        function initLenisScroll() {
-            const lenis = new Lenis({
-                duration: 1.4,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                orientation: 'vertical',
-                gestureOrientation: 'vertical',
-                smoothWheel: true,
-                wheelMultiplier: 1.1
-            });
-
-            function lenisRaf(time) {
-                lenis.raf(time);
-                requestAnimationFrame(lenisRaf);
-            }
-            requestAnimationFrame(lenisRaf);
-
-            // Bind Lenis updates explicitly into GSAP ScrollTrigger runtime module
-            lenis.on('scroll', ScrollTrigger.update);
-        }
-
-        // -------------------------------------------------------------
-        // 5. GSAP CINEMATIC INTERACTIVE TIMELINES & SCROLLTRIGGERS
-        // -------------------------------------------------------------
-        function initGsapSequencing() {
+        // 4. GSAP ENTER/SCROLL REVEALS
+        function initGsapScrollAnimations() {
             gsap.registerPlugin(ScrollTrigger);
-
-            // Structural Target Auto-Reveal Loop Configuration
-            const interactiveTimelineCards = document.querySelectorAll('.glass-card');
-            interactiveTimelineCards.forEach(card => {
-                gsap.fromTo(card, 
-                    { opacity: 0, y: 60, scale: 0.97 },
-                    {
-                        opacity: 1, y: 0, scale: 1,
-                        duration: 1.2,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 82%",
-                            toggleActions: "play none none none"
-                        }
-                    }
-                );
-            });
-
-            // Timeline Element Stagger Cascade Triggering
-            gsap.utils.toArray('.timeline-item').forEach((item, index) => {
-                ScrollTrigger.create({
-                    trigger: item,
-                    start: "top 80%",
-                    onEnter: () => item.classList.add('active'),
-                    once: true
+            gsap.utils.toArray('.timeline-item').forEach(item => {
+                gsap.to(item, {
+                    opacity: 1, y: 0, duration: 1,
+                    scrollTrigger: { trigger: item, start: "top 85%" }
                 });
             });
         }
 
-        // -------------------------------------------------------------
-        // 6. GAMIFIED RITUAL SCRATCH CARD REVEAL ENGINE
-        // -------------------------------------------------------------
-        function initScratchCardComponent() {
+        // 5. BULLETPROOF SCRATCH CARD COMPONENT ENGINE (CRITICAL FIX)
+        function setupScratchCard() {
             const canvas = document.getElementById('scratch-canvas');
+            const wrapper = canvas.parentElement;
             const ctx = canvas.getContext('2d');
-            let isDrawing = false;
+            
+            // Set rendering canvas coordinates directly from wrapper parent metrics
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
 
-            // Paint Premium Metallic Gold Cover Overlay Mask Layout Frame
-            ctx.fillStyle = '#B38728';
+            // Paint elegant gold canvas shroud mask overlay safely 
+            ctx.fillStyle = '#C59B27';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Add Elegant Text Indicator On Scratch Area
-            ctx.font = '14px Montserrat';
+            // Add instructional label layer cleanly onto overlay sheet
+            ctx.font = 'bold 12px Montserrat';
             ctx.fillStyle = '#1A050A';
             ctx.textAlign = 'center';
-            ctx.fillText('SCRATCH ROYAL FABRIC TO UNVEIL', canvas.width/2, canvas.height/2 + 5);
+            ctx.fillText('SCRATCH WITH FINGER OR MOUSE', canvas.width / 2, canvas.height / 2 + 5);
 
-            // Event Vector Bindings for Scratch Action Dynamics
-            ['mousedown', 'touchstart'].forEach(evt => canvas.addEventListener(evt, (e) => {
-                isDrawing = true;
-                scratchAction(getCanvasCoordinates(e, canvas), ctx);
-            }));
+            let painting = false;
 
-            ['mousemove', 'touchmove'].forEach(evt => canvas.addEventListener(evt, (e) => {
-                if(!isDrawing) return;
-                e.preventDefault();
-                scratchAction(getCanvasCoordinates(e, canvas), ctx);
-            }));
-
-            ['mouseup', 'touchend'].forEach(evt => canvas.addEventListener(evt, () => isDrawing = false));
-
-            function scratchAction(pos, context) {
-                context.globalCompositeOperation = 'destination-out';
-                context.beginPath();
-                context.arc(pos.x, pos.y, 24, 0, Math.PI * 2);
-                context.fill();
-            }
-
-            function getCanvasCoordinates(e, tgtCanvas) {
-                const rect = tgtCanvas.getBoundingClientRect();
+            function scratch(e) {
+                if (!painting) return;
+                
+                // Track relative positioning coordinates cleanly over layout window bounds
+                const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                return {
-                    x: clientX - rect.left,
-                    y: clientY - rect.top
-                };
+                
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 30, 0, Math.PI * 2);
+                ctx.fill();
             }
-        }
 
-        // -------------------------------------------------------------
-        // 7. ASTROLOGICAL / TEMPORAL REALTIME COUNTDOWN ENGINE
-        // -------------------------------------------------------------
-        function initCountdownEngine() {
-            const targetCelebrationDate = new Date("June 19, 2027 18:00:00").getTime();
-
-            const timerMechanismInterval = setInterval(() => {
-                const currentTimeStamp = new Date().getTime();
-                const totalMetricDifference = targetCelebrationDate - currentTimeStamp;
-
-                if (totalMetricDifference < 0) {
-                    clearInterval(timerMechanismInterval);
-                    return;
-                }
-
-                const calculateDays = Math.floor(totalMetricDifference / (1000 * 60 * 60 * 24));
-                const calculateHours = Math.floor((totalMetricDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const calculateMinutes = Math.floor((totalMetricDifference % (1000 * 60 * 60)) / (1000 * 60));
-                const calculateSeconds = Math.floor((totalMetricDifference % (1000 * 60)) / 1000);
-
-                document.getElementById("cd-days").innerText = String(calculateDays).padStart(2, '0');
-                document.getElementById("cd-hours").innerText = String(calculateHours).padStart(2, '0');
-                document.getElementById("cd-mins").innerText = String(calculateMinutes).padStart(2, '0');
-                document.getElementById("cd-secs").innerText = String(calculateSeconds).padStart(2, '0');
-            }, 1000);
-        }
-
-        // -------------------------------------------------------------
-        // 8. RICH USER ENGAGEMENT & SECRET EASTER EGGS REGISTRY
-        // -------------------------------------------------------------
-        function initInteractionsRegistry() {
-            // A. Magical Extra Flower Burst Control Action
-            document.getElementById("interact-petal-trigger").addEventListener("click", () => {
-                generatePetalSystem(15);
-                gsap.to("#interact-petal-trigger", { scale: 0.8, yoyo: true, repeat: 1, duration: 0.1 });
-            });
-
-            // B. Playful Compatibility Index Gauge Interaction Routine
-            const fillGauge = document.getElementById("compatibility-gauge");
-            const labelScore = document.getElementById("meter-score-label");
+            // Dual Event Handlers Registry Matrix mapping Desktop + Mobile Touch Interfaces
+            canvas.addEventListener('mousedown', () => painting = true);
+            canvas.addEventListener('touchstart', () => painting = true);
             
-            fillGauge.parentElement.addEventListener("click", () => {
-                fillGauge.style.width = "100%";
-                labelScore.innerText = "Calculating Resonance...";
-                setTimeout(() => {
-                    labelScore.innerText = "Infinite Destiny Resonance Lock Found! (100% Perfect Fusion)";
-                }, 2000);
-            });
-
-            // C. Constellation Wall Registry Form Submission Pipeline Manifestation
-            document.getElementById("submit-blessing-trigger").addEventListener("click", () => {
-                const nameNode = document.getElementById("guest-name");
-                const msgNode = document.getElementById("guest-message");
-                const destinationTickerContainer = document.getElementById("blessings-ticker-container");
-
-                if(nameNode.value.trim() !== "" && msgNode.value.trim() !== "") {
-                    const newBubble = document.createElement("div");
-                    newBubble.className = "blessing-bubble";
-                    newBubble.innerHTML = `"${msgNode.value.trim()}" — ${nameNode.value.trim()}`;
-                    
-                    destinationTickerContainer.prepend(newBubble);
-                    
-                    // Reset input states instantly
-                    nameNode.value = "";
-                    msgNode.value = "";
-                    
-                    alert("Blessings integrated into the celestial constellation!");
-                } else {
-                    alert("Kindly complete both Name and Blessing metrics before transmission.");
-                }
-            });
-
-            // D. CRITICAL EASTER EGG REVELATION: TRIGGERED VIA INTERSECTION CLICK CHANNELS
-            const heartEggTrigger = document.getElementById("heart-egg");
-            const overlayEgg = document.getElementById("easter-egg-overlay");
-
-            heartEggTrigger.addEventListener("click", () => {
-                overlayEgg.style.display = "flex";
-                gsap.fromTo(".ee-text", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 1, ease: "elastic.out(1, 0.5)" });
-            });
-
-            overlayEgg.addEventListener("click", () => {
-                overlayEgg.style.display = "none";
-            });
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('touchmove', (e) => { scratch(e); e.preventDefault(); });
+            
+            window.addEventListener('mouseup', () => painting = false);
+            window.addEventListener('touchend', () => painting = false);
         }
+
+        // 6. FUNCTIONAL LOGIC COUPLING MATRIX (METER, COUNTDOWN, BLESSINGS, EASTER EGG)
+        document.getElementById("interact-petal-trigger").addEventListener("click", () => {
+            flowerPetals.forEach(p => p.position.y += Math.random() * 10);
+        });
+
+        document.getElementById("meter-box").addEventListener("click", () => {
+            document.getElementById("compatibility-gauge").style.width = "100%";
+            document.getElementById("meter-score-label").innerText = "Destiny Connection Locked: 100% Perfect Synergy Match!";
+        });
+
+        // Countdown Calculations Setup
+        setInterval(() => {
+            const diff = new Date("June 19, 2027 18:00:00").getTime() - new Date().getTime();
+            if(diff <= 0) return;
+            document.getElementById("cd-days").innerText = Math.floor(diff / (1000*60*60*24));
+            document.getElementById("cd-hours").innerText = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            document.getElementById("cd-mins").innerText = Math.floor((diff % (1000*60*60)) / (1000*60));
+            document.getElementById("cd-secs").innerText = Math.floor((diff % (1000*60)) / 1000);
+        }, 1000);
+
+        // Registry Intercept Submissions
+        document.getElementById("submit-blessing-trigger").addEventListener("click", () => {
+            const name = document.getElementById("guest-name").value;
+            const msg = document.getElementById("guest-message").value;
+            if(name && msg) {
+                document.getElementById("live-blessings-box").innerHTML = `"${msg}" — ${name}`;
+                document.getElementById("guest-name").value = "";
+                document.getElementById("guest-message").value = "";
+            }
+        });
+
+        // Heart Interactive Overlay
+        document.getElementById("heart-egg").addEventListener("click", () => {
+            document.getElementById("easter-egg-overlay").style.display = "flex";
+        });
+        document.getElementById("easter-egg-overlay").addEventListener("click", () => {
+            document.getElementById("easter-egg-overlay").style.display = "none";
+        });
     </script>
 </body>
 </html>
