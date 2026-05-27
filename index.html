@@ -67,15 +67,6 @@
       font-family: monospace;
     }
     
-    .qr-box {
-      text-align: center;
-      padding: 20px;
-      background: white;
-      border-radius: 12px;
-      margin: 15px 0;
-    }
-    .qr-box canvas, .qr-box img { max-width: 200px; }
-    
     .messages {
       max-height: 300px;
       overflow-y: auto;
@@ -118,8 +109,6 @@
       font-size: 0.85rem;
     }
     
-    #swStatus { font-size: 0.8rem; color: #a0a0c0; text-align: center; margin-top: 10px; }
-    
     .manual-box {
       background: rgba(0,0,0,0.2);
       border-radius: 8px;
@@ -130,6 +119,7 @@
       word-break: break-all;
       max-height: 100px;
       overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     
     .toast {
@@ -149,18 +139,38 @@
       from { transform: translateX(-50%) translateY(100px); opacity: 0; }
       to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
+    
+    .note {
+      font-size: 0.8rem;
+      color: #a0a0c0;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    
+    #keepAliveStatus {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 0.7rem;
+      color: #00d4aa;
+      background: rgba(0,0,0,0.5);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
+  <div id="keepAliveStatus" class="hidden">● Keep-alive active</div>
+  
   <div class="container">
     <h1>🔔 WiFi Push Notifier</h1>
     <p class="subtitle">Send notifications to another device on your WiFi</p>
     
     <!-- Setup -->
     <div id="setupCard" class="card">
-      <div id="setupStatus" class="status status-info">Click below to enable background notifications</div>
+      <div id="setupStatus" class="status status-info">Click below to enable notifications</div>
       <button class="btn btn-primary" onclick="initApp()" id="initBtn">🔔 Enable Notifications</button>
-      <div id="swStatus"></div>
+      <p class="note">Keep this page open (even in background) to receive notifications. On Android Chrome, you can minimize the browser and still receive alerts.</p>
     </div>
     
     <!-- Role Selection -->
@@ -178,7 +188,7 @@
         <span style="color:#00d4aa" id="connCount">0 connected</span>
       </div>
       <p style="font-size:0.85rem; margin-bottom:10px">Ask guest to paste this code:</p>
-      <div class="manual-box" id="hostCodeBox">Generating...</div>
+      <div class="manual-box" id="hostCodeBox">Click "Copy Code" to generate...</div>
       <button class="btn btn-secondary" onclick="copyHostCode()">📋 Copy Code</button>
       <button class="btn btn-secondary" onclick="hostPasteAnswer()">📋 Paste Answer from Guest</button>
       <div id="hostMessages" class="messages"></div>
@@ -207,41 +217,13 @@
   </div>
 
   <script>
-    // ==================== SERVICE WORKER (Base64 Data URI) ====================
-    // Browsers accept data: URIs for SW registration on HTTPS origins
-    const SW_JS = `self.addEventListener('install',e=>self.skipWaiting());
-self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
-self.addEventListener('message',e=>{
-  if(e.data.type==='NOTIFY'){
-    self.registration.showNotification(e.data.title,{
-      body:e.data.body,
-      icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔔</text></svg>',
-      badge:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📡</text></svg>',
-      tag:'wifi-push-'+Date.now(),
-      requireInteraction:true,
-      vibrate:[200,100,200],
-      actions:[{action:'open',title:'Open'},{action:'close',title:'Dismiss'}]
-    });
-  }
-});
-self.addEventListener('notificationclick',e=>{
-  e.notification.close();
-  if(e.action!=='close'){
-    e.waitUntil(clients.matchAll({type:'window'}).then(cs=>{
-      if(cs.length)cs[0].focus();
-      else clients.openWindow('/');
-    }));
-  }
-});`;
-    
-    const SW_B64 = 'data:text/javascript;base64,' + btoa(SW_JS);
-    
     // ==================== STATE ====================
-    let swRegistration = null;
     let peerConnection = null;
     let dataChannel = null;
     let isHost = false;
     let messageQueue = [];
+    let keepAliveInterval = null;
+    let wakeLock = null;
     
     // ==================== INIT ====================
     async function initApp() {
@@ -250,21 +232,26 @@ self.addEventListener('notificationclick',e=>{
       btn.textContent = 'Setting up...';
       
       try {
-        if (!('serviceWorker' in navigator)) throw new Error('Service Workers not supported');
         if (!('Notification' in window)) throw new Error('Notifications not supported');
-        
-        // Register SW from base64 data URI
-        swRegistration = await navigator.serviceWorker.register(SW_B64);
-        await swRegistration.update();
         
         const perm = await Notification.requestPermission();
         if (perm !== 'granted') throw new Error('Notification permission denied');
         
-        await navigator.serviceWorker.ready;
+        // Request wake lock to keep CPU active when minimized (Android/Chrome)
+        if ('wakeLock' in navigator) {
+          try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            document.getElementById('keepAliveStatus').classList.remove('hidden');
+          } catch(e) {
+            console.log('Wake lock failed:', e);
+          }
+        }
+        
+        // Keep-alive ping to prevent tab suspension
+        startKeepAlive();
         
         document.getElementById('setupStatus').className = 'status status-success';
-        document.getElementById('setupStatus').textContent = '✅ Ready! Background notifications enabled.';
-        document.getElementById('swStatus').textContent = 'SW: Active | Push: Granted';
+        document.getElementById('setupStatus').textContent = '✅ Ready! Notifications enabled.';
         
         setTimeout(() => {
           document.getElementById('setupCard').classList.add('hidden');
@@ -279,6 +266,24 @@ self.addEventListener('notificationclick',e=>{
       }
     }
     
+    function startKeepAlive() {
+      // Ping every 15 seconds to keep WebRTC alive when backgrounded
+      keepAliveInterval = setInterval(() => {
+        if (dataChannel?.readyState === 'open') {
+          dataChannel.send(JSON.stringify({type: 'ping', time: Date.now()}));
+        }
+      }, 15000);
+      
+      // Re-acquire wake lock if lost (e.g., when switching back to tab)
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible' && wakeLock?.released && 'wakeLock' in navigator) {
+          try {
+            wakeLock = await navigator.wakeLock.request('screen');
+          } catch(e) {}
+        }
+      });
+    }
+    
     // ==================== WEBRTC ====================
     const ICE_SERVERS = [
       {urls: 'stun:stun.l.google.com:19302'},
@@ -290,7 +295,6 @@ self.addEventListener('notificationclick',e=>{
       
       pc.onicecandidate = e => {
         if (!e.candidate) {
-          // ICE complete - update codes
           if (isHost) updateHostCode();
           else if (!document.getElementById('guestAnswerBox').classList.contains('hidden')) updateGuestCode();
         }
@@ -302,7 +306,7 @@ self.addEventListener('notificationclick',e=>{
           updateStatus(isHost ? 'hostCard' : 'guestCard', 'status-success', '✅ Connected! Send messages below.');
           if (isHost) document.getElementById('connCount').textContent = '1 connected';
         } else if (state === 'disconnected' || state === 'failed') {
-          updateStatus(isHost ? 'hostCard' : 'guestCard', 'status-error', '❌ Connection lost. Refresh to reconnect.');
+          updateStatus(isHost ? 'hostCard' : 'guestCard', 'status-warn', '⚠️ Connection unstable. Keep page open.');
         }
       };
       
@@ -317,28 +321,49 @@ self.addEventListener('notificationclick',e=>{
           dc.send(JSON.stringify(messageQueue.shift()));
         }
       };
-      dc.onmessage = e => handleIncomingMessage(JSON.parse(e.data));
+      dc.onmessage = e => {
+        const data = JSON.parse(e.data);
+        if (data.type === 'ping') return; // Ignore keepalive pings
+        handleIncomingMessage(data);
+      };
     }
     
     function handleIncomingMessage(data) {
       const time = new Date().toLocaleTimeString();
+      
+      // Show in-app
       const div = document.createElement('div');
       div.className = 'msg msg-received';
       div.innerHTML = `<b>${data.title || 'Message'}</b><br>${data.body}<div class="msg-time">${time}</div>`;
-      
       const container = isHost ? document.getElementById('hostMessages') : document.getElementById('guestMessages');
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
       
-      // PUSH NOTIFICATION via Service Worker (works minimized!)
-      pushNotify(data.title || 'WiFi Message', data.body);
+      // OS Notification - works when minimized on Android Chrome!
+      showNotification(data.title || 'WiFi Message', data.body);
     }
     
-    function pushNotify(title, body) {
-      if (swRegistration?.active) {
-        swRegistration.active.postMessage({type: 'NOTIFY', title, body});
-      } else {
-        new Notification(title, {body});
+    function showNotification(title, body) {
+      // Try Notification API (works when tab is backgrounded on mobile Chrome)
+      if (Notification.permission === 'granted') {
+        try {
+          const notif = new Notification(title, {
+            body: body,
+            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔔</text></svg>',
+            badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📡</text></svg>',
+            tag: 'wifi-push-' + Date.now(),
+            requireInteraction: true,
+            vibrate: [200, 100, 200]
+          });
+          
+          notif.onclick = () => {
+            window.focus();
+            notif.close();
+          };
+        } catch(e) {
+          // Fallback: show in-page alert if notifications fail
+          showToast('📩 ' + title + ': ' + body);
+        }
       }
     }
     
@@ -375,7 +400,6 @@ self.addEventListener('notificationclick',e=>{
     }
     
     function getCompactDesc() {
-      // Return local description as compact base64
       if (!peerConnection?.localDescription) return null;
       return btoa(JSON.stringify(peerConnection.localDescription));
     }
@@ -389,9 +413,12 @@ self.addEventListener('notificationclick',e=>{
     }
     
     function copyHostCode() {
-      if (window._hostCode) {
-        navigator.clipboard.writeText(window._hostCode);
-        showToast('Copied to clipboard!');
+      const code = window._hostCode || document.getElementById('hostCodeBox').textContent;
+      if (code && code !== 'Click "Copy Code" to generate...') {
+        navigator.clipboard.writeText(code);
+        showToast('Copied! Share with guest.');
+      } else {
+        showToast('Wait for code to generate...');
       }
     }
     
@@ -438,7 +465,7 @@ self.addEventListener('notificationclick',e=>{
         
         document.getElementById('guestAnswerBox').classList.remove('hidden');
         updateGuestCode();
-        updateStatus('guestCard', 'status-success', '✅ Connected! Or give answer code to host.');
+        updateStatus('guestCard', 'status-success', '✅ Give answer code to host to complete connection.');
         
       } catch (err) {
         updateStatus('guestCard', 'status-error', '❌ Invalid offer code');
@@ -454,9 +481,10 @@ self.addEventListener('notificationclick',e=>{
     }
     
     function copyGuestCode() {
-      if (window._guestCode) {
-        navigator.clipboard.writeText(window._guestCode);
-        showToast('Copied to clipboard!');
+      const code = window._guestCode || document.getElementById('guestCodeBox').textContent;
+      if (code && code !== '...') {
+        navigator.clipboard.writeText(code);
+        showToast('Copied! Share with host.');
       }
     }
     
@@ -477,11 +505,14 @@ self.addEventListener('notificationclick',e=>{
     }
     
     function showToast(msg) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      
       const t = document.createElement('div');
       t.className = 'toast';
       t.textContent = msg;
       document.body.appendChild(t);
-      setTimeout(() => t.remove(), 2000);
+      setTimeout(() => t.remove(), 2500);
     }
   </script>
 </body>
