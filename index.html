@@ -8,14 +8,14 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
       color: #eee;
       min-height: 100vh;
       padding: 20px;
     }
     .container { max-width: 600px; margin: 0 auto; }
     h1 { text-align: center; margin-bottom: 10px; font-size: 1.5rem; }
-    .subtitle { text-align: center; color: #8892b0; margin-bottom: 30px; font-size: 0.9rem; }
+    .subtitle { text-align: center; color: #a0a0c0; margin-bottom: 30px; font-size: 0.9rem; }
     
     .card {
       background: rgba(255,255,255,0.05);
@@ -37,10 +37,10 @@
       transition: all 0.2s;
       margin-bottom: 10px;
     }
-    .btn-primary { background: #64ffda; color: #0a192f; }
-    .btn-primary:hover { background: #4fd1c5; transform: translateY(-1px); }
-    .btn-secondary { background: #233554; color: #64ffda; border: 1px solid #64ffda; }
-    .btn-secondary:hover { background: #1d2d4f; }
+    .btn-primary { background: #00d4aa; color: #0a192f; }
+    .btn-primary:hover { background: #00b894; transform: translateY(-1px); }
+    .btn-secondary { background: rgba(0,212,170,0.1); color: #00d4aa; border: 1px solid #00d4aa; }
+    .btn-secondary:hover { background: rgba(0,212,170,0.2); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     
     .status {
@@ -50,7 +50,7 @@
       font-size: 0.85rem;
       text-align: center;
     }
-    .status-info { background: #233554; color: #64ffda; }
+    .status-info { background: #1a1a40; color: #a0a0c0; }
     .status-success { background: #064e3b; color: #6ee7b7; }
     .status-error { background: #450a0a; color: #fca5a5; }
     .status-warn { background: #451a03; color: #fcd34d; }
@@ -88,9 +88,9 @@
       font-size: 0.9rem;
       animation: slideIn 0.3s ease;
     }
-    .msg-received { background: #233554; border-left: 3px solid #64ffda; }
+    .msg-received { background: #1a1a40; border-left: 3px solid #00d4aa; }
     .msg-sent { background: #1d4ed8; border-right: 3px solid #60a5fa; text-align: right; }
-    .msg-time { font-size: 0.7rem; color: #8892b0; margin-top: 4px; }
+    .msg-time { font-size: 0.7rem; color: #a0a0c0; margin-top: 4px; }
     
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -112,13 +112,43 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px;
-      background: rgba(100,255,218,0.1);
+      background: rgba(0,212,170,0.1);
       border-radius: 8px;
       margin-bottom: 15px;
       font-size: 0.85rem;
     }
     
-    #swStatus { font-size: 0.8rem; color: #8892b0; text-align: center; margin-top: 10px; }
+    #swStatus { font-size: 0.8rem; color: #a0a0c0; text-align: center; margin-top: 10px; }
+    
+    .manual-box {
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 0.75rem;
+      word-break: break-all;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #00d4aa;
+      color: #0a192f;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      z-index: 1000;
+      animation: toastUp 0.3s ease;
+    }
+    @keyframes toastUp {
+      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -137,19 +167,20 @@
     <div id="roleCard" class="card hidden">
       <h3 style="margin-bottom:15px">Choose your role:</h3>
       <button class="btn btn-primary" onclick="becomeHost()">📱 Host (Create Room)</button>
-      <button class="btn btn-secondary" onclick="becomeGuest()">🔗 Join (Scan QR)</button>
+      <button class="btn btn-secondary" onclick="becomeGuest()">🔗 Join (Paste Code)</button>
     </div>
     
-    <!-- Host: Show QR -->
+    <!-- Host -->
     <div id="hostCard" class="card hidden">
-      <div class="status status-success">✅ Waiting for peer to connect...</div>
+      <div class="status status-info">Waiting for peer to connect...</div>
       <div class="peer-info">
-        <span>Your ID: <b id="hostId">---</b></span>
-        <span style="color:#64ffda" id="connCount">0 connected</span>
+        <span>Room: <b id="hostId">---</b></span>
+        <span style="color:#00d4aa" id="connCount">0 connected</span>
       </div>
-      <p style="font-size:0.85rem; margin-bottom:10px">Scan this QR with the other device:</p>
-      <div class="qr-box" id="hostQr"></div>
-      <button class="btn btn-secondary" onclick="copyOffer()">📋 Copy Offer (Manual)</button>
+      <p style="font-size:0.85rem; margin-bottom:10px">Ask guest to paste this code:</p>
+      <div class="manual-box" id="hostCodeBox">Generating...</div>
+      <button class="btn btn-secondary" onclick="copyHostCode()">📋 Copy Code</button>
+      <button class="btn btn-secondary" onclick="hostPasteAnswer()">📋 Paste Answer from Guest</button>
       <div id="hostMessages" class="messages"></div>
       <div class="send-box">
         <input type="text" id="hostInput" placeholder="Type message..." onkeypress="if(event.key==='Enter')hostSend()">
@@ -157,16 +188,16 @@
       </div>
     </div>
     
-    <!-- Guest: Scan QR -->
+    <!-- Guest -->
     <div id="guestCard" class="card hidden">
       <div class="status status-info">Paste the offer code from the host:</div>
-      <input type="text" id="guestInput" placeholder="Paste offer JSON here...">
+      <input type="text" id="guestInput" placeholder="Paste offer code here...">
       <button class="btn btn-primary" onclick="guestConnect()">🔗 Connect</button>
-      <div id="guestQrBox" class="qr-box hidden">
-        <p style="color:#333; margin-bottom:10px">Scan this answer QR back to host:</p>
-        <div id="guestQr"></div>
+      <div id="guestAnswerBox" class="hidden">
+        <p style="font-size:0.85rem; margin:15px 0 10px">Give this answer code back to host:</p>
+        <div class="manual-box" id="guestCodeBox">...</div>
+        <button class="btn btn-secondary" onclick="copyGuestCode()">📋 Copy Answer</button>
       </div>
-      <button class="btn btn-secondary hidden" id="copyAnswerBtn" onclick="copyAnswer()">📋 Copy Answer (Manual)</button>
       <div id="guestMessages" class="messages"></div>
       <div class="send-box">
         <input type="text" id="guestMsgInput" placeholder="Type message..." onkeypress="if(event.key==='Enter')guestSend()">
@@ -175,74 +206,70 @@
     </div>
   </div>
 
-  <!-- QRCode.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  
   <script>
-    // ==================== SERVICE WORKER ====================
-    const SW_CODE = `
-      self.addEventListener('install', e => self.skipWaiting());
-      self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-      
-      self.addEventListener('message', e => {
-        if (e.data.type === 'NOTIFY') {
-          self.registration.showNotification(e.data.title, {
-            body: e.data.body,
-            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔔</text></svg>',
-            badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📡</text></svg>',
-            tag: 'wifi-push-' + Date.now(),
-            requireInteraction: true,
-            vibrate: [200, 100, 200],
-            actions: [{action:'open', title:'Open'}, {action:'close', title:'Dismiss'}]
-          });
-        }
-      });
-      
-      self.addEventListener('notificationclick', e => {
-        e.notification.close();
-        if (e.action !== 'close') {
-          e.waitUntil(clients.matchAll({type:'window'}).then(cs => {
-            if (cs.length) cs[0].focus();
-            else clients.openWindow('/');
-          }));
-        }
-      });
-    `;
+    // ==================== SERVICE WORKER (Base64 Data URI) ====================
+    // Browsers accept data: URIs for SW registration on HTTPS origins
+    const SW_JS = `self.addEventListener('install',e=>self.skipWaiting());
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('message',e=>{
+  if(e.data.type==='NOTIFY'){
+    self.registration.showNotification(e.data.title,{
+      body:e.data.body,
+      icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔔</text></svg>',
+      badge:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📡</text></svg>',
+      tag:'wifi-push-'+Date.now(),
+      requireInteraction:true,
+      vibrate:[200,100,200],
+      actions:[{action:'open',title:'Open'},{action:'close',title:'Dismiss'}]
+    });
+  }
+});
+self.addEventListener('notificationclick',e=>{
+  e.notification.close();
+  if(e.action!=='close'){
+    e.waitUntil(clients.matchAll({type:'window'}).then(cs=>{
+      if(cs.length)cs[0].focus();
+      else clients.openWindow('/');
+    }));
+  }
+});`;
     
+    const SW_B64 = 'data:text/javascript;base64,' + btoa(SW_JS);
+    
+    // ==================== STATE ====================
     let swRegistration = null;
     let peerConnection = null;
     let dataChannel = null;
     let isHost = false;
-    let pendingCandidates = [];
     let messageQueue = [];
     
+    // ==================== INIT ====================
     async function initApp() {
       const btn = document.getElementById('initBtn');
       btn.disabled = true;
       btn.textContent = 'Setting up...';
       
       try {
-        // Register Service Worker from blob
-        const blob = new Blob([SW_CODE], {type: 'application/javascript'});
-        const swUrl = URL.createObjectURL(blob);
-        swRegistration = await navigator.serviceWorker.register(swUrl);
+        if (!('serviceWorker' in navigator)) throw new Error('Service Workers not supported');
+        if (!('Notification' in window)) throw new Error('Notifications not supported');
+        
+        // Register SW from base64 data URI
+        swRegistration = await navigator.serviceWorker.register(SW_B64);
         await swRegistration.update();
         
-        // Request notification permission
         const perm = await Notification.requestPermission();
         if (perm !== 'granted') throw new Error('Notification permission denied');
         
-        // Wait for SW to be ready
         await navigator.serviceWorker.ready;
         
         document.getElementById('setupStatus').className = 'status status-success';
-        document.getElementById('setupStatus').textContent = '✅ Ready! Service Worker active.';
-        document.getElementById('swStatus').textContent = 'SW: Active | Notifications: Granted';
+        document.getElementById('setupStatus').textContent = '✅ Ready! Background notifications enabled.';
+        document.getElementById('swStatus').textContent = 'SW: Active | Push: Granted';
         
         setTimeout(() => {
           document.getElementById('setupCard').classList.add('hidden');
           document.getElementById('roleCard').classList.remove('hidden');
-        }, 800);
+        }, 600);
         
       } catch (err) {
         document.getElementById('setupStatus').className = 'status status-error';
@@ -263,50 +290,38 @@
       
       pc.onicecandidate = e => {
         if (!e.candidate) {
-          // ICE gathering complete - update QR if needed
-          if (isHost) showHostQR();
-          else if (document.getElementById('guestQrBox').classList.contains('hidden') === false) showGuestQR();
+          // ICE complete - update codes
+          if (isHost) updateHostCode();
+          else if (!document.getElementById('guestAnswerBox').classList.contains('hidden')) updateGuestCode();
         }
       };
       
       pc.onconnectionstatechange = () => {
-        console.log('Connection state:', pc.connectionState);
-        if (pc.connectionState === 'connected') {
-          updateStatus(isHost ? 'hostCard' : 'guestCard', 'status-success', '✅ Connected! You can now send messages.');
+        const state = pc.connectionState;
+        if (state === 'connected') {
+          updateStatus(isHost ? 'hostCard' : 'guestCard', 'status-success', '✅ Connected! Send messages below.');
           if (isHost) document.getElementById('connCount').textContent = '1 connected';
-        } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+        } else if (state === 'disconnected' || state === 'failed') {
           updateStatus(isHost ? 'hostCard' : 'guestCard', 'status-error', '❌ Connection lost. Refresh to reconnect.');
         }
       };
       
-      pc.ondatachannel = e => {
-        setupDataChannel(e.channel);
-      };
-      
+      pc.ondatachannel = e => setupDataChannel(e.channel);
       return pc;
     }
     
     function setupDataChannel(dc) {
       dataChannel = dc;
       dc.onopen = () => {
-        console.log('Data channel open');
-        // Send any queued messages
         while (messageQueue.length) {
-          const msg = messageQueue.shift();
-          dc.send(JSON.stringify(msg));
+          dc.send(JSON.stringify(messageQueue.shift()));
         }
       };
-      dc.onmessage = e => {
-        const data = JSON.parse(e.data);
-        handleIncomingMessage(data);
-      };
-      dc.onclose = () => console.log('Data channel closed');
+      dc.onmessage = e => handleIncomingMessage(JSON.parse(e.data));
     }
     
     function handleIncomingMessage(data) {
       const time = new Date().toLocaleTimeString();
-      
-      // Show in-app message
       const div = document.createElement('div');
       div.className = 'msg msg-received';
       div.innerHTML = `<b>${data.title || 'Message'}</b><br>${data.body}<div class="msg-time">${time}</div>`;
@@ -315,28 +330,26 @@
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
       
-      // Push notification via Service Worker (works when minimized!)
+      // PUSH NOTIFICATION via Service Worker (works minimized!)
       pushNotify(data.title || 'WiFi Message', data.body);
     }
     
     function pushNotify(title, body) {
-      if (swRegistration && swRegistration.active) {
+      if (swRegistration?.active) {
         swRegistration.active.postMessage({type: 'NOTIFY', title, body});
       } else {
-        // Fallback
         new Notification(title, {body});
       }
     }
     
     function sendMessage(title, body) {
       const msg = {title, body, time: Date.now()};
-      if (dataChannel && dataChannel.readyState === 'open') {
+      if (dataChannel?.readyState === 'open') {
         dataChannel.send(JSON.stringify(msg));
       } else {
         messageQueue.push(msg);
       }
       
-      // Show in own chat
       const div = document.createElement('div');
       div.className = 'msg msg-sent';
       div.innerHTML = `<b>${title}</b><br>${body}<div class="msg-time">${new Date().toLocaleTimeString()}</div>`;
@@ -350,6 +363,7 @@
       isHost = true;
       document.getElementById('roleCard').classList.add('hidden');
       document.getElementById('hostCard').classList.remove('hidden');
+      document.getElementById('hostId').textContent = Math.random().toString(36).substr(2, 6).toUpperCase();
       
       peerConnection = createPeer();
       const dc = peerConnection.createDataChannel('messages', {ordered: true});
@@ -357,38 +371,40 @@
       
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-      
-      // Show initial QR (will update when ICE gathering completes)
-      showHostQR();
-      document.getElementById('hostId').textContent = Math.random().toString(36).substr(2, 6).toUpperCase();
+      updateHostCode();
     }
     
-    function showHostQR() {
-      const box = document.getElementById('hostQr');
-      box.innerHTML = '';
-      const offerStr = btoa(JSON.stringify(peerConnection.localDescription));
-      
-      // Create compact QR
-      try {
-        new QRCode(box, {
-          text: offerStr,
-          width: 200,
-          height: 200,
-          colorDark: '#0a192f',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M
-        });
-      } catch(e) {
-        box.innerHTML = '<p style="color:#333">QR generation failed. Use manual copy.</p>';
+    function getCompactDesc() {
+      // Return local description as compact base64
+      if (!peerConnection?.localDescription) return null;
+      return btoa(JSON.stringify(peerConnection.localDescription));
+    }
+    
+    function updateHostCode() {
+      const code = getCompactDesc();
+      if (code) {
+        document.getElementById('hostCodeBox').textContent = code;
+        window._hostCode = code;
       }
-      
-      window._currentOffer = offerStr;
     }
     
-    function copyOffer() {
-      if (window._currentOffer) {
-        navigator.clipboard.writeText(window._currentOffer);
-        alert('Offer copied! Paste it on the guest device.');
+    function copyHostCode() {
+      if (window._hostCode) {
+        navigator.clipboard.writeText(window._hostCode);
+        showToast('Copied to clipboard!');
+      }
+    }
+    
+    async function hostPasteAnswer() {
+      const answerStr = prompt('Paste the answer code from guest:');
+      if (!answerStr) return;
+      
+      try {
+        const answer = JSON.parse(atob(answerStr));
+        await peerConnection.setRemoteDescription(answer);
+        updateStatus('hostCard', 'status-success', '✅ Answer received. Connecting...');
+      } catch (err) {
+        updateStatus('hostCard', 'status-error', '❌ Invalid answer code');
       }
     }
     
@@ -410,71 +426,37 @@
     async function guestConnect() {
       const input = document.getElementById('guestInput');
       const offerStr = input.value.trim();
-      if (!offerStr) return alert('Please paste the offer code');
+      if (!offerStr) return showToast('Please paste the offer code');
       
       try {
         const offer = JSON.parse(atob(offerStr));
         
         peerConnection = createPeer();
-        
-        // Handle incoming ICE candidates from host (would need another QR/round for full trickle)
-        // For simplicity, we assume offer contains all candidates after gathering
-        
         await peerConnection.setRemoteDescription(offer);
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         
-        // Show answer QR for host to scan
-        document.getElementById('guestQrBox').classList.remove('hidden');
-        document.getElementById('copyAnswerBtn').classList.remove('hidden');
-        showGuestQR();
-        
-        updateStatus('guestCard', 'status-success', '✅ Answer generated! Show QR to host or copy manually.');
+        document.getElementById('guestAnswerBox').classList.remove('hidden');
+        updateGuestCode();
+        updateStatus('guestCard', 'status-success', '✅ Connected! Or give answer code to host.');
         
       } catch (err) {
-        updateStatus('guestCard', 'status-error', '❌ Invalid offer: ' + err.message);
+        updateStatus('guestCard', 'status-error', '❌ Invalid offer code');
       }
     }
     
-    function showGuestQR() {
-      const box = document.getElementById('guestQr');
-      box.innerHTML = '';
-      const answerStr = btoa(JSON.stringify(peerConnection.localDescription));
-      
-      try {
-        new QRCode(box, {
-          text: answerStr,
-          width: 180,
-          height: 180,
-          colorDark: '#0a192f',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M
-        });
-      } catch(e) {
-        box.innerHTML = '<p style="color:#333">QR failed. Use manual copy.</p>';
-      }
-      
-      window._currentAnswer = answerStr;
-    }
-    
-    function copyAnswer() {
-      if (window._currentAnswer) {
-        navigator.clipboard.writeText(window._currentAnswer);
-        alert('Answer copied! Paste it on the host device.');
+    function updateGuestCode() {
+      const code = getCompactDesc();
+      if (code) {
+        document.getElementById('guestCodeBox').textContent = code;
+        window._guestCode = code;
       }
     }
     
-    // Host receives answer
-    async function hostReceiveAnswer() {
-      const answerStr = prompt('Paste the answer from guest:');
-      if (!answerStr) return;
-      
-      try {
-        const answer = JSON.parse(atob(answerStr));
-        await peerConnection.setRemoteDescription(answer);
-        updateStatus('hostCard', 'status-success', '✅ Answer received. Connecting...');
-      } catch (err) {
-        updateStatus('hostCard', 'status-error', '❌ Invalid answer: ' + err.message);
+    function copyGuestCode() {
+      if (window._guestCode) {
+        navigator.clipboard.writeText(window._guestCode);
+        showToast('Copied to clipboard!');
       }
     }
     
@@ -494,20 +476,13 @@
       status.textContent = text;
     }
     
-    // Add button for host to paste answer
-    document.addEventListener('DOMContentLoaded', () => {
-      // Inject "Paste Answer" button into host card
-      const hostCard = document.getElementById('hostCard');
-      const pasteBtn = document.createElement('button');
-      pasteBtn.className = 'btn btn-secondary';
-      pasteBtn.textContent = '📋 Paste Answer (from Guest)';
-      pasteBtn.onclick = hostReceiveAnswer;
-      pasteBtn.style.marginTop = '10px';
-      hostCard.insertBefore(pasteBtn, document.getElementById('hostMessages'));
-    });
-    
-    // Also allow scanning QR via camera (simplified - would need qr scanner lib)
-    // For now, manual paste is the robust single-file approach
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2000);
+    }
   </script>
 </body>
 </html>
