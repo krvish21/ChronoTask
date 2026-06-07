@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bishwajeet Mandal - Portfolio OS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            overflow: hidden;
+            background: #008080;
+            height: 100vh;
+            width: 100vw;
+            cursor: default;
+        }
+
+        /* Desktop Background */
+        .desktop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 40px);
+            background: linear-gradient(135deg, #1a5276 0%, #2980b9 50%, #3498db 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Desktop Icons */
+        .desktop-icons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .desktop-icon {
+            width: 80px;
+            text-align: center;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .desktop-icon:active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .desktop-icon.selected {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px dotted white;
+        }
+
+        .desktop-icon .icon-img {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 5px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .desktop-icon .icon-text {
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            word-wrap: break-word;
+        }
+
+        /* Windows */
+        .window {
+            position: absolute;
+            background: #e8e8e8;
+            border: 1px solid #0055ea;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            min-width: 400px;
+            min-height: 300px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .window.active {
+            display: flex;
+            z-index: 100;
+        }
+
+        .window-header {
+            background: linear-gradient(90deg, #0055ea 0%, #0078d7 100%);
+            color: white;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        }
+
+        .window-title {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .window-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .window-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        .window-btn.close:hover {
+            background: #e81123;
+        }
+
+        .window-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Taskbar */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(180deg, #1f1f1f 0%, #171717 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 1000;
+            border-top: 1px solid #333;
+        }
+
+        .start-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%);
+            border: 1px solid #444;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(180deg, #3d3d3d 0%, #2a2a2a 100%);
+        }
+
+        .start-btn.active {
+            background: linear-gradient(180deg, #0078d7 0%, #005a9e 100%);
+        }
+
+        .start-icon {
+            width: 20px;
+            height: 20px;
+            background: #0078d7;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .taskbar-apps {
+            flex: 1;
+            display: flex;
+            gap: 4px;
+            margin: 0 10px;
+            overflow-x: auto;
+        }
+
+        .taskbar-app {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .taskbar-app:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .taskbar-app.active {
+            background: rgba(255,255,255,0.25);
+            border-bottom: 2px solid #0078d7;
+        }
+
+        .taskbar-time {
+            color: white;
+            font-size: 13px;
+            padding: 0 10px;
+        }
+
+        /* Start Menu */
+        .start-menu {
+            position: fixed;
+            bottom: 40px;
+            left: 10px;
+            width: 320px;
+            height: 500px;
+            background: #1f1f1f;
+            border-radius: 8px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .start-menu.open {
+            display: flex;
+        }
+
+        .start-menu-header {
+            background: linear-gradient(90deg, #0055ea 0%, #0078d7 100%);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .start-avatar {
+            width: 60px;
+            height: 60px;
+            background: #e8e8e8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            border: 3px solid white;
+        }
+
+        .start-user-info h3 {
+            color: white;
+            font-size: 18px;
+        }
+
+        .start-user-info p {
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+        }
+
+        .start-menu-apps {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .start-app-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .start-app-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .start-app-icon {
+            width: 32px;
+            height: 32px;
+            background: #333;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .start-app-name {
+            font-size: 14px;
+        }
+
+        .start-menu-footer {
+            padding: 10px;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .start-footer-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .start-footer-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Window Content Styles */
+        .content-section {
+            margin-bottom: 20px;
+        }
+
+        .content-section h2 {
+            color: #0055ea;
+            font-size: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .content-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin: 15px 0 8px;
+        }
+
+        .content-section p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .content-section ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .content-section li {
+            margin-bottom: 5px;
+        }
+
+        .highlight-box {
+            background: #f0f8ff;
+            border-left: 4px solid #0055ea;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #0055ea;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin: 4px;
+            border: 1px solid #bbdefb;
+        }
+
+        .experience-card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .experience-card h4 {
+            color: #0055ea;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .experience-card .date {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .cert-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff3e0;
+            border: 1px solid #ffe0b2;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px;
+            font-size: 14px;
+            color: #e65100;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .contact-item .icon {
+            width: 36px;
+            height: 36px;
+            background: #0055ea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* About Me Special Window */
+        .about-hero {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .about-hero h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .about-hero p {
+            color: rgba(255,255,255,0.9);
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0055ea;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Boot Screen */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Consolas', monospace;
+        }
+
+        .boot-logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .boot-text {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .boot-loader {
+            width: 200px;
+            height: 4px;
+            background: #333;
+            margin-top: 30px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .boot-loader-bar {
+            height: 100%;
+            background: #0078d7;
+            width: 0%;
+            animation: load 2s ease-in-out forwards;
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Boot Screen -->
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-logo">💻</div>
+        <div class="boot-text">Starting Portfolio OS...</div>
+        <div class="boot-loader">
+            <div class="boot-loader-bar"></div>
+        </div>
+        <div class="boot-text" style="margin-top: 20px; font-size: 12px;">Bishwajeet Mandal Portfolio v2.0</div>
+    </div>
+
+    <!-- Desktop -->
+    <div class="desktop" id="desktop">
+        <div class="desktop-icons">
+            <div class="desktop-icon" onclick="openWindow('about')">
+                <div class="icon-img">👤</div>
+                <div class="icon-text">About Me</div>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('experience')">
+                <div class="icon-img">💼</div>
+                <div class="icon-text">Experience</div>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('skills')">
+                <div class="icon-img">⚡</div>
+                <div class="icon-text">Skills</div>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('projects')">
+                <div class="icon-img">🚀</div>
+                <div class="icon-text">Projects</div>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('certs')">
+                <div class="icon-img">📜</div>
+                <div class="icon-text">Certificates</div>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('contact')">
+                <div class="icon-img">📧</div>
+                <div class="icon-text">Contact</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Windows -->
+    <!-- About Window -->
+    <div class="window" id="window-about" style="top: 50px; left: 100px; width: 600px; height: 500px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-about')">
+            <div class="window-title">👤 About Me - Bishwajeet Mandal</div>
+            <div class="window-controls">
+                <button class="window-btn" onclick="minimizeWindow('about')">─</button>
+                <button class="window-btn" onclick="maximizeWindow('about')">□</button>
+                <button class="window-btn close" onclick="closeWindow('about')">✕</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="about-hero">
+                <h1>Bishwajeet Mandal</h1>
+                <p>Software Engineer | Full-Stack & AWS Serverless Development</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">7+</div>
+                    <div class="label">Years Experience</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">200K+</div>
+                    <div class="label">Users Secured</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">30%</div>
+                    <div class="label">Performance Gain</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2>Professional Summary</h2>
+                <p>Software Engineer with 7+ years of experience in scalable cloud-native applications leveraging AWS serverless architectures, Node.js, TypeScript, and distributed systems. Dedicated to continuous learning and eager to contribute more deeply to end-to-end solution design and architecture.</p>
+                
+                <div class="highlight-box">
+                    <strong>Core Focus:</strong> Building high-performance, secure, and scalable serverless microservices that drive business value and enhance user experience.
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2>Career Highlights</h2>
+                <ul>
+                    <li>Improved performance of serverless microservices by ~30% through optimization strategies</li>
+                    <li>Reduced issue resolution time by 40% through enhanced monitoring and debugging practices</li>
+                    <li>Strengthened authentication for 200K+ enterprise users through Cognito implementation</li>
+                    <li>Actively guided and supported junior developers to improve delivery speed and code quality</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>Education</h2>
+                <div class="experience-card">
+                    <h4>B.Tech (Computer Science Engineering)</h4>
+                    <div class="date">OEC | CGPA: [Available on Request]</div>
+                    <p>Foundation in computer science principles, algorithms, data structures, and software engineering practices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Experience Window -->
+    <div class="window" id="window-experience" style="top: 80px; left: 150px; width: 650px; height: 550px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-experience')">
+            <div class="window-title">💼 Professional Experience</div>
+            <div class="window-controls">
+                <button class="window-btn" onclick="minimizeWindow('experience')">─</button>
+                <button class="window-btn" onclick="maximizeWindow('experience')">□</button>
+                <button class="window-btn close" onclick="closeWindow('experience')">✕</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="content-section">
+                <h2>Work History</h2>
+                
+                <div class="experience-card">
+                    <h4>Cognizant Technology Solutions - Software Engineer</h4>
+                    <div class="date">October 2021 – Present</div>
+                    <ul>
+                        <li>Designed and deployed AWS serverless microservices for British Gas UK business</li>
+                        <li>Implemented secure authentication flows and authorization using Amazon Cognito</li>
+                        <li>Built automated CI/CD deployments using AWS CloudFormation and CodePipeline</li>
+                        <li>Integrated CloudWatch and X-Ray to increase system reliability and observability</li>
+                        <li>Led performance optimization initiatives achieving ~30% improvement in microservice response times</li>
+                    </ul>
+                </div>
+
+                <div class="experience-card">
+                    <h4>ESSPL - Software Engineer</h4>
+                    <div class="date">December 2020 – October 2021</div>
+                    <ul>
+                        <li>Developed RESTful APIs using Spring Boot with proper documentation in Swagger</li>
+                        <li>Implemented UI modules using JSF/PrimeFaces to improve user experience</li>
+                        <li>Collaborated with cross-functional teams to deliver enterprise-grade solutions</li>
+                    </ul>
+                </div>
+
+                <div class="experience-card">
+                    <h4>Silicon Techlabs Pvt. Ltd. - Software Engineer</h4>
+                    <div class="date">May 2018 – December 2020</div>
+                    <ul>
+                        <li>Delivered full-stack development using Spring Boot, Angular, and JPA</li>
+                        <li>Performed database optimization and reusable component creation</li>
+                        <li>Contributed toward high-impact citizen services improving public sector efficiency</li>
+                        <li>Mentored junior developers and established coding standards</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Window -->
+    <div class="window" id="window-skills" style="top: 100px; left: 200px; width: 550px; height: 500px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-skills')">
+            <div class="window-title">⚡ Core Competencies</div>
+            <div class="window-controls">
+                <button class="window-btn" onclick="minimizeWindow('skills')">─</button>
+                <button class="window-btn" onclick="maximizeWindow('skills')">□</button>
+                <button class="window-btn close" onclick="closeWindow('skills')">✕</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="content-section">
+                <h2>Technical Skills</h2>
+                
+                <h3>Programming Languages</h3>
+                <div>
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">TypeScript</span>
+                    <span class="skill-tag">Node.js</span>
+                    <span class="skill-tag">Java</span>
+                </div>
+
+                <h3>Frameworks & Libraries</h3>
+                <div>
+                    <span class="skill-tag">Express.js</span>
+                    <span class="skill-tag">Spring Boot</span>
+                    <span class="skill-tag">Angular</span>
+                    <span class="skill-tag">JSF/PrimeFaces</span>
+                    <span class="skill-tag">JPA</span>
+                </div>
+
+                <h3>AWS Cloud Services</h3>
+                <div>
+                    <span class="skill-tag">AWS Lambda</span>
+                    <span class="skill-tag">API Gateway</span>
+                    <span class="skill-tag">Cognito</span>
+                    <span class="skill-tag">S3</span>
+                    <span class="skill-tag">SQS</span>
+                    <span class="skill-tag">SNS</span>
+                    <span class="skill-tag">CloudFormation</span>
+                    <span class="skill-tag">CodePipeline</span>
+                    <span class="skill-tag">CloudWatch</span>
+                    <span class="skill-tag">X-Ray</span>
+                </div>
+
+                <h3>Databases</h3>
+                <div>
+                    <span class="skill-tag">PostgreSQL</span>
+                    <span class="skill-tag">DynamoDB</span>
+                    <span class="skill-tag">MongoDB</span>
+                </div>
+
+                <h3>Methodologies & Practices</h3>
+                <div>
+                    <span class="skill-tag">TDD</span>
+                    <span class="skill-tag">Microservices</span>
+                    <span class="skill-tag">Agile Scrum</span>
+                    <span class="skill-tag">CI/CD</span>
+                    <span class="skill-tag">Serverless Architecture</span>
+                    <span class="skill-tag">Distributed Systems</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Window -->
+    <div class="window" id="window-projects" style="top: 120px; left: 250px; width: 600px; height: 500px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-projects')">
+            <div class="window-title">🚀 Key Projects & Achievements</div>
+            <div class="window-controls">
+                <button class="window-btn" onclick="minimizeWindow('projects')">─</button>
+                <button class="window-btn" onclick="maximizeWindow('projects')">□</button>
+                <button class="window-btn close" onclick="closeWindow('projects')">✕</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="content-section">
+                <h2>Notable Projects</h2>
+                
+                <div class="experience-card">
+                    <h4>🔐 Enterprise Authentication System</h4>
+                    <div class="date">Cognizant | British Gas UK</div>
+                    <p>Architected and implemented secure authentication flows using Amazon Cognito, handling 200K+ enterprise users. Integrated multi-factor authentication and role-based access control.</p>
+                    <div>
+                        <span class="skill-tag">Cognito</span>
+                        <span class="skill-tag">Lambda</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">OAuth 2.0</span>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <h4>⚡ Serverless Microservices Platform</h4>
+                    <div class="date">Cognizant | British Gas UK</div>
+                    <p>Designed and deployed AWS serverless microservices architecture, achieving 30% performance improvement. Implemented auto-scaling and optimized cold start times.</p>
+                    <div>
+                        <span class="skill-tag">AWS Lambda</span>
+                        <span class="skill-tag">API Gateway</span>
+                        <span class="skill-tag">CloudFormation</span>
+                        <span class="skill-tag">X-Ray</span>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <h4>🔄 Automated CI/CD Pipeline</h4>
+                    <div class="date">Cognizant | British Gas UK</div>
+                    <p>Built automated CI/CD deployments using AWS CloudFormation and CodePipeline, reducing deployment time by 40% and eliminating manual errors.</p>
+                    <div>
+                        <span class="skill-tag">CodePipeline</span>
+                        <span class="skill-tag">CloudFormation</span>
+                        <span class="skill-tag">DevOps</span>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <h4>🏛️ Citizen Services Portal</h4>
+                    <div class="date">Silicon Techlabs</div>
+                    <p>Full-stack development of high-impact citizen services portal using Spring Boot and Angular. Improved public sector service delivery efficiency.</p>
+                    <div>
+                        <span class="skill-tag">Spring Boot</span>
+                        <span class="skill-tag">Angular</span>
+                        <span class="skill-tag">JPA</span>
+                        <span class="skill-tag">PostgreSQL</span>
+                    </div>
+                </div>
+
+                <div class="experience-card">
+                    <h4>📊 Enterprise API Platform</h4>
+                    <div class="date">ESSPL</div>
+                    <p>Developed comprehensive RESTful APIs with Spring Boot, complete with Swagger documentation. Implemented UI modules using JSF/PrimeFaces.</p>
+                    <div>
+                        <span class="skill-tag">Spring Boot</span>
+                        <span class="skill-tag">Swagger</span>
+                        <span class="skill-tag">JSF</span>
+                        <span class="skill-tag">PrimeFaces</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificates Window -->
+    <div class="window" id="window-certs" style="top: 140px; left: 300px; width: 500px; height: 400px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-certs')">
+            <div class="window-title">📜 Certifications</div>
+            <div class="window-controls">
+                <button class="window-btn" onclick="minimizeWindow('certs')">─</button>
+                <button class="window-btn" onclick="maximizeWindow('certs')">□</button>
+                <button class="window-btn close" onclick="closeWindow('certs')">✕</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="content-section">
+                <h2>Professional Certifications</h2>
+                
+                <div class="cert-badge">☁️ AWS Developer Associate</div>
+                <div class="cert-badge">☁️ AWS Cloud Practitioner</div>
+                <div class="cert-badge">🌐 MERN Stack Certification</div>
+
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <strong>Continuous Learning:</strong> Committed to staying current with cloud technologies and modern development practices through ongoing certification and hands-on experience.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Window -->
+    <div class="window" id="window-contact" style="top: 160px; left: 350px; width: 500px; height: 450px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-contact')">
+            <div class="window-title">📧 Contact Information</div>
+            <div class="window-controls">
+                <button class="window-btn" onclick="minimizeWindow('contact')">─</button>
+                <button class="window-btn" onclick="maximizeWindow('contact')">□</button>
+                <button class="window-btn close" onclick="closeWindow('contact')">✕</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="content-section">
+                <h2>Get In Touch</h2>
+                <p>I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.</p>
+                
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="icon">📱</div>
+                        <div>
+                            <div style="font-weight: 600;">Phone</div>
+                            <div style="font-size: 13px; color: #666;">+91 7979755714</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">✉️</div>
+                        <div>
+                            <div style="font-weight: 600;">Email</div>
+                            <div style="font-size: 13px; color: #666;">[Available on Request]</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">💼</div>
+                        <div>
+                            <div style="font-weight: 600;">LinkedIn</div>
+                            <div style="font-size: 13px; color: #666;">Bishwajeet Mandal</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">🐙</div>
+                        <div>
+                            <div style="font-weight: 600;">GitHub</div>
+                            <div style="font-size: 13px; color: #666;">[Available on Request]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <strong>Location:</strong> India<br>
+                    <strong>Availability:</strong> Open to remote opportunities and relocation<br>
+                    <strong>Preferred Roles:</strong> Senior Software Engineer, Cloud Architect, Technical Lead
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-btn" id="startBtn" onclick="toggleStartMenu()">
+            <div class="start-icon">🪟</div>
+            <span>Start</span>
+        </button>
+        
+        <div class="taskbar-apps" id="taskbarApps"></div>
+        
+        <div class="taskbar-time" id="clock">12:00 PM</div>
+    </div>
+
+    <!-- Start Menu -->
+    <div class="start-menu" id="startMenu">
+        <div class="start-menu-header">
+            <div class="start-avatar">👤</div>
+            <div class="start-user-info">
+                <h3>Bishwajeet Mandal</h3>
+                <p>Software Engineer</p>
+            </div>
+        </div>
+        <div class="start-menu-apps">
+            <div class="start-app-item" onclick="openWindow('about'); toggleStartMenu();">
+                <div class="start-app-icon">👤</div>
+                <div class="start-app-name">About Me</div>
+            </div>
+            <div class="start-app-item" onclick="openWindow('experience'); toggleStartMenu();">
+                <div class="start-app-icon">💼</div>
+                <div class="start-app-name">Experience</div>
+            </div>
+            <div class="start-app-item" onclick="openWindow('skills'); toggleStartMenu();">
+                <div class="start-app-icon">⚡</div>
+                <div class="start-app-name">Skills</div>
+            </div>
+            <div class="start-app-item" onclick="openWindow('projects'); toggleStartMenu();">
+                <div class="start-app-icon">🚀</div>
+                <div class="start-app-name">Projects</div>
+            </div>
+            <div class="start-app-item" onclick="openWindow('certs'); toggleStartMenu();">
+                <div class="start-app-icon">📜</div>
+                <div class="start-app-name">Certificates</div>
+            </div>
+            <div class="start-app-item" onclick="openWindow('contact'); toggleStartMenu();">
+                <div class="start-app-icon">📧</div>
+                <div class="start-app-name">Contact</div>
+            </div>
+        </div>
+        <div class="start-menu-footer">
+            <button class="start-footer-btn" onclick="location.reload()">
+                <span>🔄</span> Restart
+            </button>
+            <button class="start-footer-btn" onclick="alert('Thank you for visiting!')">
+                <span>🚪</span> Exit
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Boot Sequence
+        setTimeout(() => {
+            document.getElementById('bootScreen').classList.add('hidden');
+        }, 2500);
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            document.getElementById('clock').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Window Management
+        let activeWindows = new Set();
+        let minimizedWindows = new Set();
+        let zIndexCounter = 100;
+        let draggedElement = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        function openWindow(windowId) {
+            const windowEl = document.getElementById('window-' + windowId);
+            if (!windowEl) return;
+
+            // If minimized, restore it
+            if (minimizedWindows.has(windowId)) {
+                minimizedWindows.delete(windowId);
+                windowEl.style.display = 'flex';
+            }
+
+            // Bring to front
+            zIndexCounter++;
+            windowEl.style.zIndex = zIndexCounter;
+            windowEl.classList.add('active');
+            activeWindows.add(windowId);
+            
+            updateTaskbar();
+        }
+
+        function closeWindow(windowId) {
+            const windowEl = document.getElementById('window-' + windowId);
+            if (windowEl) {
+                windowEl.classList.remove('active');
+                windowEl.style.display = 'none';
+                activeWindows.delete(windowId);
+                minimizedWindows.delete(windowId);
+            }
+            updateTaskbar();
+        }
+
+        function minimizeWindow(windowId) {
+            const windowEl = document.getElementById('window-' + windowId);
+            if (windowEl) {
+                windowEl.style.display = 'none';
+                minimizedWindows.add(windowId);
+            }
+            updateTaskbar();
+        }
+
+        function maximizeWindow(windowId) {
+            const windowEl = document.getElementById('window-' + windowId);
+            if (!windowEl) return;
+
+            if (windowEl.dataset.maximized === 'true') {
+                // Restore
+                windowEl.style.width = windowEl.dataset.prevWidth;
+                windowEl.style.height = windowEl.dataset.prevHeight;
+                windowEl.style.top = windowEl.dataset.prevTop;
+                windowEl.style.left = windowEl.dataset.prevLeft;
+                windowEl.dataset.maximized = 'false';
+            } else {
+                // Maximize
+                windowEl.dataset.prevWidth = windowEl.style.width;
+                windowEl.dataset.prevHeight = windowEl.style.height;
+                windowEl.dataset.prevTop = windowEl.style.top;
+                windowEl.dataset.prevLeft = windowEl.style.left;
+                
+                windowEl.style.width = '100%';
+                windowEl.style.height = 'calc(100% - 40px)';
+                windowEl.style.top = '0';
+                windowEl.style.left = '0';
+                windowEl.dataset.maximized = 'true';
+            }
+        }
+
+        function updateTaskbar() {
+            const taskbarApps = document.getElementById('taskbarApps');
+            taskbarApps.innerHTML = '';
+            
+            const allWindows = [...activeWindows, ...minimizedWindows];
+            
+            allWindows.forEach(windowId => {
+                const btn = document.createElement('button');
+                btn.className = 'taskbar-app' + (activeWindows.has(windowId) && !minimizedWindows.has(windowId) ? ' active' : '');
+                
+                const icons = {
+                    'about': '👤',
+                    'experience': '💼',
+                    'skills': '⚡',
+                    'projects': '🚀',
+                    'certs': '📜',
+                    'contact': '📧'
+                };
+                
+                const titles = {
+                    'about': 'About Me',
+                    'experience': 'Experience',
+                    'skills': 'Skills',
+                    'projects': 'Projects',
+                    'certs': 'Certificates',
+                    'contact': 'Contact'
+                };
+                
+                btn.innerHTML = `<span>${icons[windowId]}</span> ${titles[windowId]}`;
+                btn.onclick = () => {
+                    if (minimizedWindows.has(windowId)) {
+                        openWindow(windowId);
+                    } else if (activeWindows.has(windowId)) {
+                        minimizeWindow(windowId);
+                    } else {
+                        openWindow(windowId);
+                    }
+                };
+                
+                taskbarApps.appendChild(btn);
+            });
+        }
+
+        // Drag functionality
+        function startDrag(e, windowId) {
+            if (e.target.closest('.window-controls')) return;
+            
+            const windowEl = document.getElementById(windowId);
+            if (windowEl.dataset.maximized === 'true') return;
+            
+            draggedElement = windowEl;
+            dragOffset.x = e.clientX - windowEl.offsetLeft;
+            dragOffset.y = e.clientY - windowEl.offsetTop;
+            
+            // Bring to front
+            zIndexCounter++;
+            windowEl.style.zIndex = zIndexCounter;
+            
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function onDrag(e) {
+            if (!draggedElement) return;
+            
+            let newX = e.clientX - dragOffset.x;
+            let newY = e.clientY - dragOffset.y;
+            
+            // Keep within bounds
+            newX = Math.max(0, Math.min(newX, window.innerWidth - draggedElement.offsetWidth));
+            newY = Math.max(0, Math.min(newY, window.innerHeight - draggedElement.offsetHeight - 40));
+            
+            draggedElement.style.left = newX + 'px';
+            draggedElement.style.top = newY + 'px';
+        }
+
+        function stopDrag() {
+            draggedElement = null;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // Start Menu
+        function toggleStartMenu() {
+            const startMenu = document.getElementById('startMenu');
+            const startBtn = document.getElementById('startBtn');
+            
+            startMenu.classList.toggle('open');
+            startBtn.classList.toggle('active');
+        }
+
+        // Close start menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const startMenu = document.getElementById('startMenu');
+            const startBtn = document.getElementById('startBtn');
+            
+            if (!startMenu.contains(e.target) && !startBtn.contains(e.target)) {
+                startMenu.classList.remove('open');
+                startBtn.classList.remove('active');
+            }
+        });
+
+        // Desktop icon selection
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Double click to open
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+            icon.addEventListener('dblclick', function() {
+                const text = this.querySelector('.icon-text').textContent.toLowerCase().replace(/\s+/g, '');
+                const map = {
+                    'aboutme': 'about',
+                    'experience': 'experience',
+                    'skills': 'skills',
+                    'projects': 'projects',
+                    'certificates': 'certs',
+                    'contact': 'contact'
+                };
+                if (map[text]) openWindow(map[text]);
+            });
+        });
+
+        // Click window header to bring to front
+        document.querySelectorAll('.window-header').forEach(header => {
+            header.addEventListener('mousedown', function() {
+                const windowEl = this.closest('.window');
+                zIndexCounter++;
+                windowEl.style.zIndex = zIndexCounter;
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Open About Me by default after boot
+            setTimeout(() => {
+                openWindow('about');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
