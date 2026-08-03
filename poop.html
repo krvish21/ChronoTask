@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Poop Drop</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      min-height: 100vh;
+    }
+    h1 { margin-bottom: 12px; font-size: 24px; }
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 420px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+    .game-header span { font-variant-numeric: tabular-nums; }
+    canvas {
+      border: 2px solid #111;
+      border-radius: 12px;
+      background: #87CEEB;
+      cursor: crosshair;
+      max-width: 100%;
+      touch-action: none;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      padding: 8px 22px;
+      border-radius: 8px;
+      border: 1.5px solid #111;
+      background: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: #eee; }
+    .instructions {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Poop Drop</h1>
+  <div class="game-header">
+    <span>Score: <span id="score">0</span></span>
+    <span>Lives: <span id="lives">3</span></span>
+  </div>
+  <canvas id="gameCanvas" width="420" height="560"></canvas>
+  <div class="controls">
+    <button id="startBtn">Start game</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div class="instructions">Click or tap the canvas to drop poop into the toilets! Avoid the ground.</div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const scoreEl = document.getElementById('score');
+      const livesEl = document.getElementById('lives');
+      const startBtn = document.getElementById('startBtn');
+      const resetBtn = document.getElementById('resetBtn');
+
+      let gameState = 'menu';
+      let score = 0, lives = 3;
+      let lastTime = 0;
+
+      let bird = { x: 210, y: 50, vx: 2.5, radius: 18, dir: 1 };
+      let poops = [], targets = [], particles = [], clouds = [];
+      const groundY = 500;
+
+      function initClouds() {
+        clouds = [];
+        for (let i = 0; i < 5; i++) {
+          clouds.push({
+            x: Math.random() * canvas.width,
+            y: 30 + Math.random() * 80,
+            w: 50 + Math.random() * 40,
+            speed: 0.2 + Math.random() * 0.3
+          });
+        }
+      }
+
+      function initTargets() {
+        targets = [];
+        const rows = 3, cols = 4;
+        const startX = 50, gapX = 90, startY = 420, gapY = 50;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (Math.random() > 0.3) {
+              targets.push({
+                x: startX + c * gapX + (r % 2) * 45,
+                y: startY + r * gapY,
+                w: 40, h: 30,
+                hit: false,
+                type: Math.random() > 0.8 ? 'gold' : 'normal',
+                anim: 0
+              });
+            }
+          }
+        }
+      }
+
+      function resetGame() {
+        score = 0; lives = 3;
+        bird = { x: 210, y: 50, vx: 2.5, radius: 18, dir: 1 };
+        poops = []; particles = [];
+        initTargets(); initClouds();
+        updateUI();
+      }
+
+      function updateUI() {
+        scoreEl.textContent = score;
+        livesEl.textContent = lives;
+      }
+
+      function drawBird(x, y) {
+        ctx.save(); ctx.translate(x, y);
+        ctx.fillStyle = '#333';
+        ctx.beginPath(); ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(12, -8, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(15, -10, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.beginPath(); ctx.arc(16, -10, 1.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#f5a623';
+        ctx.beginPath(); ctx.moveTo(20, -8); ctx.lineTo(28, -5); ctx.lineTo(20, -2); ctx.fill();
+        ctx.fillStyle = '#555';
+        ctx.beginPath(); ctx.ellipse(-2, 2, 10, 6, 0.3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#333';
+        ctx.beginPath(); ctx.moveTo(-16, -2); ctx.lineTo(-26, -6); ctx.lineTo(-26, 4); ctx.lineTo(-16, 2); ctx.fill();
+        ctx.restore();
+      }
+
+      function drawPoop(x, y) {
+        ctx.save(); ctx.translate(x, y); ctx.fillStyle = '#8B4513';
+        ctx.beginPath(); ctx.ellipse(0, 6, 7, 5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, 0, 6, 5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, -5, 5, 4, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, -9, 3.5, 3, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
+      function drawTarget(t) {
+        if (t.hit) return;
+        ctx.save(); ctx.translate(t.x, t.y);
+        const bounce = Math.sin(t.anim * 0.2) * 2;
+        ctx.translate(0, bounce);
+        ctx.fillStyle = t.type === 'gold' ? '#f5a623' : '#fff';
+        ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(0, 0, t.w / 2, t.h / 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = t.type === 'gold' ? '#fff5d6' : '#b3e5fc';
+        ctx.beginPath(); ctx.ellipse(0, 2, t.w / 2 - 4, t.h / 2 - 6, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = t.type === 'gold' ? '#e69500' : '#e0e0e0';
+        ctx.fillRect(-8, t.h / 2 - 2, 16, 10);
+        ctx.fillStyle = t.type === 'gold' ? '#f5a623' : '#fff';
+        ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2;
+        ctx.fillRect(-14, -t.h / 2 - 14, 28, 14); ctx.strokeRect(-14, -t.h / 2 - 14, 28, 14);
+        ctx.fillStyle = '#999'; ctx.fillRect(8, -t.h / 2 - 18, 4, 6);
+        ctx.fillStyle = '#333'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(t.type === 'gold' ? '50' : '10', 0, -t.h / 2 - 20);
+        ctx.restore();
+      }
+
+      function drawCloud(c) {
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.beginPath(); ctx.arc(c.x, c.y, c.w * 0.3, 0, Math.PI * 2);
+        ctx.arc(c.x + c.w * 0.25, c.y - c.w * 0.1, c.w * 0.25, 0, Math.PI * 2);
+        ctx.arc(c.x + c.w * 0.5, c.y, c.w * 0.3, 0, Math.PI * 2);
+        ctx.arc(c.x + c.w * 0.25, c.y + c.w * 0.05, c.w * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawGround() {
+        ctx.fillStyle = '#7cb342'; ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+        ctx.fillStyle = '#8bc34a'; ctx.fillRect(0, groundY, canvas.width, 8);
+        ctx.fillStyle = '#689f38';
+        for (let i = 0; i < canvas.width; i += 20) ctx.fillRect(i, groundY + 10, 3, 12);
+      }
+
+      function drawParticles() {
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx; p.y += p.vy; p.life -= 0.02; p.vy += 0.15;
+          if (p.life <= 0) { particles.splice(i, 1); continue; }
+          ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      function spawnParticles(x, y, color, count) {
+        for (let i = 0; i < count; i++) {
+          particles.push({ x, y, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 1) * 4, life: 1, size: 2 + Math.random() * 3, color });
+        }
+      }
+
+      function drawMenu() {
+        ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 28px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('Poop Drop', canvas.width / 2, canvas.height / 2 - 20);
+        ctx.font = '16px sans-serif'; ctx.fillText('Click Start to play!', canvas.width / 2, canvas.height / 2 + 20);
+      }
+
+      function drawGameOver() {
+        ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 28px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 20);
+        ctx.font = '18px sans-serif'; ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 15);
+        ctx.font = '14px sans-serif'; ctx.fillText('Click Reset to try again', canvas.width / 2, canvas.height / 2 + 45);
+      }
+
+      function update() {
+        if (gameState !== 'playing') return;
+        bird.x += bird.vx * bird.dir;
+        if (bird.x <= bird.radius + 5) { bird.x = bird.radius + 5; bird.dir = 1; }
+        if (bird.x >= canvas.width - bird.radius - 5) { bird.x = canvas.width - bird.radius - 5; bird.dir = -1; }
+        clouds.forEach(c => { c.x += c.speed; if (c.x - c.w > canvas.width) c.x = -c.w; });
+
+        for (let i = poops.length - 1; i >= 0; i--) {
+          const p = poops[i];
+          p.vy += 0.25; p.x += p.vx; p.y += p.vy; p.rot += 0.1;
+          let hit = false;
+          for (let t of targets) {
+            if (t.hit) continue;
+            if (Math.abs(p.x - t.x) < t.w / 2 + 6 && Math.abs(p.y - t.y) < t.h / 2 + 6) {
+              t.hit = true; hit = true;
+              const pts = t.type === 'gold' ? 50 : 10;
+              score += pts; spawnParticles(t.x, t.y, t.type === 'gold' ? '#f5a623' : '#8B4513', 12); updateUI();
+              setTimeout(() => { t.hit = false; t.type = Math.random() > 0.8 ? 'gold' : 'normal'; }, 2000);
+              break;
+            }
+          }
+          if (hit || p.y > groundY || p.x < 0 || p.x > canvas.width) {
+            if (!hit) { lives--; spawnParticles(p.x, Math.min(p.y, groundY), '#8B4513', 8); updateUI(); if (lives <= 0) gameState = 'gameover'; }
+            poops.splice(i, 1);
+          }
+        }
+        targets.forEach(t => { if (!t.hit) t.anim += 1; });
+      }
+
+      function draw() {
+        ctx.fillStyle = '#87CEEB'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        clouds.forEach(drawCloud);
+        drawGround();
+        targets.forEach(drawTarget);
+        drawBird(bird.x, bird.y);
+        poops.forEach(p => drawPoop(p.x, p.y));
+        drawParticles();
+        if (gameState === 'menu') drawMenu();
+        if (gameState === 'gameover') drawGameOver();
+      }
+
+      function loop(timestamp) {
+        lastTime = timestamp;
+        update(); draw();
+        requestAnimationFrame(loop);
+      }
+
+      function dropPoop() {
+        if (gameState !== 'playing') return;
+        poops.push({ x: bird.x, y: bird.y + 15, vx: bird.dir * 0.5, vy: 0, rot: 0 });
+      }
+
+      canvas.addEventListener('mousedown', dropPoop);
+      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); dropPoop(); }, { passive: false });
+
+      startBtn.addEventListener('click', () => {
+        if (gameState === 'menu' || gameState === 'gameover') { resetGame(); gameState = 'playing'; }
+      });
+      resetBtn.addEventListener('click', () => { resetGame(); gameState = 'menu'; });
+
+      resetGame(); gameState = 'menu'; requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>
